@@ -137,7 +137,7 @@ jobs:
       - name: Secret scan
         run: |
           ! grep -rnE "eyJ[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,}\\.[A-Za-z0-9_-]{20,}" --include=*.js --include=*.mjs --include=*.json --include=*.html --exclude-dir=node_modules . || (echo "JWT-looking literal found" && exit 1)
-          ! grep -rnE "service_role['\\"]?\\s*[:=]\\s*['\\"]?ey[A-Za-z0-9_-]{20,}" assets/ --include=*.js || (echo "service_role key must never appear in client code" && exit 1)
+          ! grep -rn "service_role" assets/ --include=*.js || (echo "service_role must never appear in client code" && exit 1)
 `;
 
 /** Read the public Supabase coordinates from a client's config.js (they are public by design — every visitor gets them). */

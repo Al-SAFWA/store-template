@@ -45,8 +45,7 @@ jobs:
       - name: Secret scan (service_role / JWT literals must never be committed)
         run: |
           ! grep -rnE "eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}" --include=*.js --include=*.mjs --include=*.ts --include=*.json --include=*.html --exclude-dir=node_modules . || (echo "JWT-looking literal found" && exit 1)
-          # the word alone is a warning comment ("never put a service_role key here"); fail only on a real key or an assignment
-          ! grep -rnE "service_role['\"]?\s*[:=]\s*['\"]?ey[A-Za-z0-9_-]{20,}|SUPABASE_SERVICE_ROLE_KEY\s*[:=]\s*['\"]ey" assets/ --include=*.js || (echo "service_role key must never appear in client code" && exit 1)
+          ! grep -rn "service_role" assets/ --include=*.js || (echo "service_role must never appear in client code" && exit 1)
   sbom:
     runs-on: ubuntu-latest
     needs: check

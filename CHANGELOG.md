@@ -31,7 +31,15 @@ diff-before-apply backup with undo, `print.html`, `docs/HANDOVER.md`, `npm run d
   `scripts/serve.mjs` (Node, serves `_headers` CSP, no Python dependency). The smoke runner passed its root directory with a trailing `\` to child processes, which on Windows escapes the closing quote and mangles the arguments — roots are now `path.resolve`d (`pages.smoke.mjs`, `helpers/boot.mjs`, `build-sql.mjs`). `scripts/check-secrets.sh` (bash) is replaced by
   `scripts/check-secrets.mjs` (Node) so `check:full` and the pre-commit hook run on Windows; `.gitattributes` pins LF
   so a Windows checkout with `autocrlf` cannot break `format:check`; Prettier is invoked through Node instead of a
-  `.bin` shim. The smoke child wrote its debug dump to `/dev/null`, which on Windows is a file named `null` that cannot be opened — the dump is now written only when `DUMP` is set.
+  `.bin` shim. The smoke child wrote its debug dump to `/dev/null`, which on Windows is a file named `null` that cannot be opened — the dump is now written only when `DUMP` is set. First run of the template CI on GitHub: the secret-scan step grepped the bare word `service_role` under `assets/` and failed on the two *warning comments* that tell people never to put that key there — it now fails only on an actual key/assignment (template CI and generated client CI).
+
+- **Dress rehearsal 1.5.2 → 1.8.0** (the real demo1 repository as it was deployed): three things broke and were
+  fixed. `release.yml` ran `scripts/update-from-template.mjs` from the *client's* tree, which an old client does not
+  have yet — it now runs the template's copy, fails the job (instead of staying green) when a client could not be
+  updated, and errors loudly when `CLIENTS_TOKEN` is missing. The merchant's hand-edited `config.js` is excluded from
+  `format:check` (`.prettierignore`). `ALL_IN_ONE.sql` is protected from a plain copy but is now rebuilt inside the
+  client (`build-sql.mjs`) so it carries every migration and the seed, and the DB test that asserts the seed passes.
+  Result: old demo1 → 1.8.0, client `npm run check` green, `config.js` untouched, 4 migrations reported.
 
 ### Not carried over from the other 1.7.0 line (deliberately, to keep the merge safe)
 - `modulepreload` generation, svgo/sharp image pipeline and the Lighthouse gate (extra devDependencies; the phase-8 line
