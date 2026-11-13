@@ -21,7 +21,7 @@ diff-before-apply backup with undo, `print.html`, `docs/HANDOVER.md`, `npm run d
   `new-client --repo owner/name` registers the store; `template-manifest.json` records the installed version.
 - Migrations that need the database password are never applied by a robot: the update opens a GitHub issue listing the
   files to paste into SQL Editor.
-- **Numbers:** 137 unit tests, 8 e2e, smoke on all pages + 18 dashboard routes, PostgreSQL migration/RLS/fresh-store
+- **Numbers:** 142 unit tests, 8 e2e, smoke on all pages + 18 dashboard routes, PostgreSQL migration/RLS/fresh-store
   suites green, `npm run doctor` READY. Verified end-to-end: new-client → client `npm run check` 137/137 →
   simulated template 1.8.1 (changed file, deleted file, new migration) → update applied exactly, local `config.js`
   edit preserved, second run "already up to date".
@@ -51,6 +51,10 @@ diff-before-apply backup with undo, `print.html`, `docs/HANDOVER.md`, `npm run d
   `docs/AUTOMATION.md`. The client CI's JWT scan now excludes `assets/js/config.js`: the anon key is a JWT on older
   Supabase projects and is public by design. GitHub Actions bumped to `checkout@v5` / `setup-node@v5` /
   `upload-artifact@v5` (Node 24 runners).
+
+- **`template-update.yml` was not valid YAML** (a multi-line `--body` string spilled to column 0): GitHub listed it
+  by file path and would never have run it — i.e. the daily self-update was silently dead on every client. Fixed; a
+  new `tests/workflows.test.mjs` checks every shipped workflow for this class of error. 142 unit tests.
 
 ### Not carried over from the other 1.7.0 line (deliberately, to keep the merge safe)
 - `modulepreload` generation, svgo/sharp image pipeline and the Lighthouse gate (extra devDependencies; the phase-8 line
