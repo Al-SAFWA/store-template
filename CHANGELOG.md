@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.1 
+
+- Client CI: secret scan no longer trips on the public anon key or on warning comments.
+- template-update.yml was invalid YAML (daily self-update never ran); fixed and covered by tests/workflows.test.mjs.
+- GitHub Actions bumped to v5; Dependabot monthly, grouped, no major bumps.
+
 ## 1.8.0 — Phase 6: merge of the two 1.7.0 lines + zero-touch operations
 
 Two independent Phase 5 implementations existed on top of 1.6.0. This release takes the **phase-8 line** (strict CSP
