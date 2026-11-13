@@ -41,6 +41,17 @@ diff-before-apply backup with undo, `print.html`, `docs/HANDOVER.md`, `npm run d
   client (`build-sql.mjs`) so it carries every migration and the seed, and the DB test that asserts the seed passes.
   Result: old demo1 → 1.8.0, client `npm run check` green, `config.js` untouched, 4 migrations reported.
 
+- **First live push to a client (demo1) surfaced two more things.** The `CLIENTS_TOKEN` PAT needs the **Workflows**
+  permission as well (GitHub refuses a push that adds `.github/workflows/*.yml` without it) — documented in
+  `docs/AUTOMATION.md`. The client CI's JWT scan now excludes `assets/js/config.js`: the anon key is a JWT on older
+  Supabase projects and is public by design. GitHub Actions bumped to `checkout@v5` / `setup-node@v5` /
+  `upload-artifact@v5` (Node 24 runners).
+
+- **First live push to a client (demo1) surfaced two more things.** The `CLIENTS_TOKEN` PAT needs the **Workflows** permission as well (GitHub refuses a push that adds `.github/workflows/*.yml` without it) — documented in
+  `docs/AUTOMATION.md`. The client CI's JWT scan now excludes `assets/js/config.js`: the anon key is a JWT on older
+  Supabase projects and is public by design. GitHub Actions bumped to `checkout@v5` / `setup-node@v5` /
+  `upload-artifact@v5` (Node 24 runners).
+
 ### Not carried over from the other 1.7.0 line (deliberately, to keep the merge safe)
 - `modulepreload` generation, svgo/sharp image pipeline and the Lighthouse gate (extra devDependencies; the phase-8 line
   already measured FCP/LCP/CLS directly). Candidates for 1.9.
