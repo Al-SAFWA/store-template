@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
@@ -29,12 +29,12 @@ jobs:
   clients:
     needs: release
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
         with:
           path: template
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: cd template && npm ci --no-audit --no-fund
@@ -42,34 +42,19 @@ jobs:
         env:
           CLIENTS_TOKEN: ${{ secrets.CLIENTS_TOKEN }}
         run: |
-          if [ -z "$CLIENTS_TOKEN" ]; then
-            echo "::error::CLIENTS_TOKEN secret is not set in this repository (Settings → Secrets → Actions). No client was updated."
-            exit 1
-          fi
+          test -n "$CLIENTS_TOKEN" || { echo "::warning::CLIENTS_TOKEN not set — clients will update themselves via their own template-update workflow"; exit 0; }
           test -f template/clients.json || { echo "no clients.json — nothing to push"; exit 0; }
           git config --global user.name "store-bot"
           git config --global user.email "store-bot@users.noreply.github.com"
-          failed=""
           for repo in $(node -e 'console.log(JSON.parse(require("fs").readFileSync("template/clients.json","utf8")).clients.map(c=>c.repo).join(" "))'); do
             echo "::group::$repo"
-            rm -rf client
-            if ! git clone --depth 1 "https://x-access-token:${CLIENTS_TOKEN}@github.com/${repo}.git" client; then
-              echo "::error::$repo — cannot clone (does the repo exist? does CLIENTS_TOKEN cover it?)"; failed="$failed $repo"; echo "::endgroup::"; continue
-            fi
-            # Always run the TEMPLATE's updater: a client on an old version (e.g. 1.5.3) does not have the script yet.
-            if ( cd client && node ../template/scripts/update-from-template.mjs --from ../template 2>&1 | tee ../out.txt; exit ${PIPESTATUS[0]} ); then
-              if grep -q '^updated=true' out.txt; then
-                version=$(grep '^version=' out.txt | tail -1 | cut -d= -f2)
-                ( cd client && git add -A && git commit -m "template → ${version}" && git push ) || { echo "::error::$repo — push failed"; failed="$failed $repo"; }
-                mig=$(grep '^migrations=' out.txt | tail -1 | cut -d= -f2-)
-                if [ -n "$mig" ]; then GH_TOKEN="$CLIENTS_TOKEN" gh issue create -R "$repo" --title "Run database migrations for template ${version}" --body "New SQL files to run once in Supabase → SQL Editor: ${mig}" || echo "::warning::$repo — could not open the migrations issue (Issues permission?)"; fi
-                echo "$repo → ${version} pushed"
-              else
-                echo "$repo already up to date"
-              fi
-            else
-              echo "::error::$repo failed the update or its npm run check — nothing was pushed"; failed="$failed $repo"
+            rm -rf client && git clone --depth 1 "https://x-access-token:${CLIENTS_TOKEN}@github.com/${repo}.git" client
+            ( cd client && timeout 20m node scripts/update-from-template.mjs --from ../template 2>&1 | tee ../out.txt; exit ${PIPESTATUS[0]} ) && updated=$(grep -c '^updated=true' out.txt || true) || { echo "::error::$repo failed the gate — not pushed"; echo "::endgroup::"; continue; }
+            if [ "$updated" = "1" ]; then
+              version=$(grep '^version=' out.txt | tail -1 | cut -d= -f2)
+              ( cd client && git add -A && git commit -m "template → ${version}" && git push )
+              mig=$(grep '^migrations=' out.txt | tail -1 | cut -d= -f2-)
+              if [ -n "$mig" ]; then GH_TOKEN="$CLIENTS_TOKEN" gh issue create -R "$repo" --title "Run database migrations for template ${version}" --body "New SQL files to run once in Supabase → SQL Editor: ${mig}"; fi
             fi
             echo "::endgroup::"
           done
-          if [ -n "$failed" ]; then echo "::error::clients not updated:$failed"; exit 1; fi
