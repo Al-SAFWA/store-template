@@ -6,7 +6,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { ROOT } from "./helpers/boot.mjs";
 
-const dirs = ["automation/client", ".github/workflows"];
+// The template has both folders; a generated store only has .github/workflows (this test is synced into clients too).
+const dirs = ["automation/client", ".github/workflows"].filter((d) => fs.existsSync(path.join(ROOT, d)));
 for (const dir of dirs) {
   for (const f of fs.readdirSync(path.join(ROOT, dir)).filter((x) => x.endsWith(".yml"))) {
     test(`${dir}/${f} is a well-formed workflow`, () => {
