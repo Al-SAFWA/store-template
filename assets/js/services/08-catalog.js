@@ -35,7 +35,7 @@ export function install(ctx) {
       ctx.state.settings = ctx.state.settings || {};
       ctx.state.settings.coupons = coupons;
     }
-    ctx.writeJSON(ctx.LS_STATE, ctx.state);
+    // persisted by applyCatalogTables after hydration (and only when something really changed)
   }
   function stripCatalog(candidate) {
     const out = ctx.clone(candidate);

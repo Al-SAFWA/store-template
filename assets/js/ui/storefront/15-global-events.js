@@ -33,11 +33,21 @@ export function install(ctx) {
     { passive: true }
   );
 
-  window.addEventListener("restore:changed", () => {
+  // Content changed (publish, remote sync, other tab…): reload so every section repaints. Guarded against loops:
+  // never more than one reload per 15 s per tab, and the reason is logged so a loop can be diagnosed from the console.
+  const RELOAD_GUARD_KEY = "restore_last_reload_v1";
+  window.addEventListener("restore:changed", (event) => {
     if (document.body?.dataset.page === "dashboard") return;
-    if (!document.querySelector("input:focus, textarea:focus, select:focus")) {
-      setTimeout(() => location.reload(), 250);
+    if (document.querySelector("input:focus, textarea:focus, select:focus")) return;
+    const source = /** @type {CustomEvent} */ (event).detail?.source || "?";
+    const last = Number(sessionStorage.getItem(RELOAD_GUARD_KEY) || 0);
+    if (Date.now() - last < 15_000) {
+      console.warn(`Restore: reload suppressed (source=${source}, last reload ${Date.now() - last} ms ago)`);
+      return;
     }
+    console.info(`Restore: reloading storefront (source=${source})`);
+    sessionStorage.setItem(RELOAD_GUARD_KEY, String(Date.now()));
+    setTimeout(() => location.reload(), 250);
   });
 
   window.addEventListener("restore:customer", () => {
