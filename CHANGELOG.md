@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.3
+
+- CI: language-toggle e2e test waits for the reload instead of a fixed 400 ms (flaky on slow runners).
+
 ## 1.9.2
 
 - DB migration 0006: every sale bumps `restore_catalog_meta.version`, so dashboard and storefront show the decremented stock within one poll. Existing projects: run `supabase/migrations/0006_stock_bumps_catalog.sql` once.
