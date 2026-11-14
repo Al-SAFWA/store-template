@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.4
+
+- Catalog load failures (ad blocker / Brave Shields / offline) are retried every poll, and the dashboard shows a warning banner instead of silently displaying stale stock.
+
 ## 1.9.3
 
 - CI: language-toggle e2e test waits for the reload instead of a fixed 400 ms (flaky on slow runners).
