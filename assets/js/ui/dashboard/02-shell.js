@@ -239,6 +239,33 @@ export function install(ctx) {
       </div>`;
     renderRoute();
     ctx.updateCounts();
+    startOrderPolling();
+  }
+
+  /** Orders are written by customers' phones straight into Supabase; the merchant's browser must PULL them.
+      Hooked on renderShell() because every login path (page load with session, fresh login, password change) ends
+      here. Idempotent: a second renderShell() never starts a second timer. Lost once in 1.8.5 (stale 24-boot.js
+      shipped over 1.8.3/1.8.4) — keep it here, not in boot(). */
+  let orderPollStarted = false;
+  function startOrderPolling() {
+    if (orderPollStarted || !ctx.R.remote || typeof ctx.R.refreshOrders !== "function") return;
+    orderPollStarted = true;
+    const INTERVAL_MS = 30_000;
+    const pull = () => {
+      if (document.hidden || !ctx.session) return;
+      ctx.R.refreshOrders()
+        .then(() => {
+          // saveOrders() broadcasts restore:orders → badge, toast and sound; the list itself re-renders here,
+          // but never over an open dialog or unsaved edits.
+          if (ctx.route === "orders" && !ctx.dirty && !document.body.classList.contains("no-scroll")) renderRoute();
+        })
+        .catch(() => {});
+    };
+    pull();
+    setInterval(pull, INTERVAL_MS);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) pull();
+    });
   }
 
   const VIEWS = {

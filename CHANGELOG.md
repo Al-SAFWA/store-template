@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1
+
+- Dashboard pulls orders from Supabase again (on open, every 30 s, on tab focus). The poll was lost in 1.8.5 when a stale 24-boot.js overwrote the 1.8.3/1.8.4 fix; it now lives in renderShell() and is idempotent.
+
 ## 1.9.0
 
 - Storefront never reloads itself: content updates are repainted in place (checkout and focused fields untouched). Ends the reload loop for good and stops orders being lost mid-submission.
