@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.8.5
+
+- Storefront reload loop after publishing fixed: the browser now adopts the server's updated_at stamp after publish and after sync.
+- Dashboard order polling hooked on renderShell so it starts after login, not only at page load.
+
 ## 1.8.4
 
 - **Dashboard order polling actually starts.** 1.8.3 started it in `boot()`, but after a page load the merchant is not
