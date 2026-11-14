@@ -15,15 +15,20 @@ export function install(ctx) {
   async function pushPublishedState(next) {
     if (!ctx.REMOTE) return;
     if (!(await ctx.remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
-    await ctx.supa(
-      `/rest/v1/${ctx.CFG.stateTable}`,
+    const rows = await ctx.supa(
+      `/rest/v1/${ctx.CFG.stateTable}?select=updated_at`,
       {
         method: "POST",
         body: JSON.stringify({ id: "main", data: next, updated_at: next.updatedAt }),
-        headers: { Prefer: "resolution=merge-duplicates,return=minimal" }
+        headers: { Prefer: "resolution=merge-duplicates,return=representation" }
       },
       true
     );
+    // The DB trigger restore_set_updated_at replaces updated_at with the server clock. Return that stamp so the
+    // caller stores it locally; otherwise the next poll sees "remote newer than local" forever (demo1 reload loop).
+    const stamp = Array.isArray(rows) ? rows[0]?.updated_at : null;
+    if (stamp) next.updatedAt = stamp;
+    return stamp || null;
   }
   async function publish(next = ctx.state) {
     const candidate = ctx.hydrate(ctx.clone(next));
@@ -32,7 +37,10 @@ export function install(ctx) {
     if (ctx.REMOTE) {
       if (!(await ctx.remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
       // Catalog entities live in relational tables; never write them into restore_state.data.
-      await pushPublishedState(ctx.catalogInfo.source === "tables" ? ctx.stripCatalog(candidate) : candidate);
+      const stamp = await pushPublishedState(
+        ctx.catalogInfo.source === "tables" ? ctx.stripCatalog(candidate) : candidate
+      );
+      if (stamp) candidate.updatedAt = stamp;
     }
     if (ctx.catalogInfo.source === "tables") {
       // keep the in-memory/published copy consistent with the tables, not with the draft
@@ -99,6 +107,9 @@ export function install(ctx) {
       const localStamp = Date.parse(ctx.state.updatedAt || 0) || 0;
       if (remoteStamp <= localStamp) return false;
       ctx.state = ctx.hydrate(remote.data);
+      // Adopt the SERVER stamp: data.updatedAt is the publishing browser's clock and is always older than the
+      // trigger-set updated_at, so keeping it would make this branch fire on every poll.
+      if (remote.updated_at) ctx.state.updatedAt = remote.updated_at;
       ctx.writeJSON(ctx.LS_STATE, ctx.state);
       if (ctx.catalogInfo.source !== "state")
         await ctx.loadCatalog({ staff: ctx.session?.mode === "supabase", silent: true });

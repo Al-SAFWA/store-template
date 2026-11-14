@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.9
+
+- Fix storefront reload loop: adopt the server `updated_at` after remote sync and publish (DB trigger overrides the browser stamp).
+
 ## 1.8.8
 
 - Storefront: at most one reload per 15 s per tab, and the reload reason is logged to the console.
