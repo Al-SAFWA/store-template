@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.6
+
+- Storefront reload loop root cause: the catalog overlay signature is now persisted; the storefront reloads only when the tables actually changed.
+
 ## 1.8.5
 
 - Storefront reload loop after publishing fixed: the browser now adopts the server's updated_at stamp after publish and after sync.

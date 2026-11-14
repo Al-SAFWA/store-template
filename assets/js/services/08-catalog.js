@@ -89,7 +89,21 @@ export function install(ctx) {
     catalogInfo.version = Number(meta?.version || 0);
     catalogInfo.loadedAt = Date.now();
     catalogInfo.error = "";
-    if (before !== after && !silent)
+    // Only announce a change the visitor has not seen yet. `before` is recomputed from the locally hydrated state,
+    // which can legitimately differ from the table overlay on every page load (normalisation, missing stock/updatedAt);
+    // announcing on that difference made the storefront reload itself forever (demo1, 1.8.4). The signature that
+    // was last applied is persisted, so a reload can only happen when the TABLES changed.
+    const SIG_KEY = "restore_catalog_sig_v1";
+    let seen = "";
+    try {
+      seen = localStorage.getItem(SIG_KEY) || "";
+      localStorage.setItem(SIG_KEY, after);
+    } catch {
+      /* storage unavailable → behave like before */
+      seen = before;
+    }
+    if (!silent && after !== before && after !== seen)
+      // first visit: at most ONE reload, then the signature is known
       window.dispatchEvent(new CustomEvent("restore:changed", { detail: { source: "catalog" } }));
     return true;
   }

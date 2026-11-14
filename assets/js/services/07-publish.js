@@ -15,18 +15,15 @@ export function install(ctx) {
   async function pushPublishedState(next) {
     if (!ctx.REMOTE) return;
     if (!(await ctx.remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
-    const rows = await ctx.supa(
-      `/rest/v1/${ctx.CFG.stateTable}?select=updated_at`,
+    await ctx.supa(
+      `/rest/v1/${ctx.CFG.stateTable}`,
       {
         method: "POST",
         body: JSON.stringify({ id: "main", data: next, updated_at: next.updatedAt }),
-        headers: { Prefer: "resolution=merge-duplicates,return=representation" }
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" }
       },
       true
     );
-    // The DB trigger stamps updated_at with SERVER time; keep that stamp locally so the pollers agree.
-    const serverStamp = Array.isArray(rows) ? rows[0]?.updated_at : null;
-    return serverStamp ? new Date(serverStamp).toISOString() : null;
   }
   async function publish(next = ctx.state) {
     const candidate = ctx.hydrate(ctx.clone(next));
@@ -35,10 +32,7 @@ export function install(ctx) {
     if (ctx.REMOTE) {
       if (!(await ctx.remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
       // Catalog entities live in relational tables; never write them into restore_state.data.
-      const serverStamp = await pushPublishedState(
-        ctx.catalogInfo.source === "tables" ? ctx.stripCatalog(candidate) : candidate
-      );
-      if (serverStamp) candidate.updatedAt = serverStamp;
+      await pushPublishedState(ctx.catalogInfo.source === "tables" ? ctx.stripCatalog(candidate) : candidate);
     }
     if (ctx.catalogInfo.source === "tables") {
       // keep the in-memory/published copy consistent with the tables, not with the draft
@@ -105,9 +99,6 @@ export function install(ctx) {
       const localStamp = Date.parse(ctx.state.updatedAt || 0) || 0;
       if (remoteStamp <= localStamp) return false;
       ctx.state = ctx.hydrate(remote.data);
-      // Adopt the SERVER stamp: the DB trigger rewrites updated_at with server time, so a browser clock that is a few
-      // seconds behind would see "remote is newer" on every poll and reload the storefront forever (seen on demo1).
-      ctx.state.updatedAt = new Date(remoteStamp).toISOString();
       ctx.writeJSON(ctx.LS_STATE, ctx.state);
       if (ctx.catalogInfo.source !== "state")
         await ctx.loadCatalog({ staff: ctx.session?.mode === "supabase", silent: true });
