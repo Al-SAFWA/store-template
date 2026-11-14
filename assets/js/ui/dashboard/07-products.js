@@ -22,7 +22,15 @@ export function install(ctx) {
       if (ctx.productStock === "out" && Number(product.stock) > 0) return false;
       if (!needle) return true;
       return ctx.R.normalizeText(
-        [product.title, product.handle, product.vendor, product.type, product.sku].join(" ")
+        [
+          ctx.lng(product.title),
+          product.title?.ar,
+          product.title?.fr,
+          product.handle,
+          product.vendor,
+          product.type,
+          product.sku
+        ].join(" ")
       ).includes(needle);
     });
   }
@@ -133,7 +141,7 @@ export function install(ctx) {
     const productIndex = ctx.model.products.indexOf(product);
     const isLow = Number(product.stock) <= Number(ctx.model.settings.lowStockThreshold || 2);
     return `<tr>
-              <td><div class="cell-main"><img src="${ctx.esc(product.image)}" alt=""><div><strong>${ctx.esc(product.title)}</strong><small>${ctx.esc(product.type || "")} · ${ctx.esc(product.condition || "")}</small></div></div></td>
+              <td><div class="cell-main"><img src="${ctx.esc(product.image)}" alt=""><div><strong>${ctx.esc(ctx.lng(product.title))}</strong><small>${ctx.esc(product.type || "")} · ${ctx.esc(product.condition || "")}</small></div></div></td>
               <td class="u-ltr">${ctx.esc(product.sku || product.handle)}</td>
               <td>${ctx.esc(productCategoryLabel(product))}</td>
               <td class="price">${ctx.money(product.price)}${productCompareLabel(product)}</td>

@@ -34,7 +34,7 @@ export function install(ctx) {
           <td><strong>${ctx.esc(item.name || ctx.dt("زائر", "Visiteur"))}</strong></td>
           <td dir="ltr">${ctx.esc(item.phone || "—")}</td>
           <td>${ctx.esc(item.city || "—")}</td>
-          <td>${(item.items || []).map((product) => `${ctx.esc(product.title)} ×${product.qty}`).join("<br>") || "—"}</td>
+          <td>${(item.items || []).map((product) => `${ctx.esc(ctx.lng(product.title))} ×${product.qty}`).join("<br>") || "—"}</td>
           <td class="price">${ctx.money(item.subtotal || 0)}</td>
           <td>${ctx.esc(ctx.fmtDateTime(item.updatedAt || item.createdAt))}</td>
           <td><span class="badge-soft">${ctx.esc(item.status || "open")}</span></td>

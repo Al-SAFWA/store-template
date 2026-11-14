@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.2
+
+- DB migration 0006: every sale bumps `restore_catalog_meta.version`, so dashboard and storefront show the decremented stock within one poll. Existing projects: run `supabase/migrations/0006_stock_bumps_catalog.sql` once.
+- Dashboard: bilingual product titles rendered as `[object Object]` in products, orders, abandoned carts, reviews and reports.
+
 ## 1.9.1
 
 - Dashboard pulls orders from Supabase again (on open, every 30 s, on tab focus). The poll was lost in 1.8.5 when a stale 24-boot.js overwrote the 1.8.3/1.8.4 fix; it now lives in renderShell() and is idempotent.

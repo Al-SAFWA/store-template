@@ -1,4 +1,4 @@
-/* Database integration test — runs ALL migrations (0001..0005) on a real PostgreSQL 16 (PGlite, in-process)
+/* Database integration test — runs ALL migrations (0001..0006) on a real PostgreSQL 16 (PGlite, in-process)
    with a stubbed Supabase `auth`/`storage` schema, then exercises the RPCs, RLS grants and the audit trigger.
    Run: npm run test:db   (needs devDependency @electric-sql/pglite; no Supabase project required) */
 // Integration test of migrations 0001..0004 on real PostgreSQL 16 (PGlite), with a stubbed Supabase auth schema.
@@ -72,7 +72,8 @@ for (const f of [
   "migrations/0002_relational.sql",
   "migrations/0003_catalog_source_of_truth.sql",
   "migrations/0004_catalog_atomic.sql",
-  "migrations/0005_fix_create_order_v2.sql"
+  "migrations/0005_fix_create_order_v2.sql",
+  "migrations/0006_stock_bumps_catalog.sql"
 ]) {
   await run(
     "apply " + f,
@@ -268,6 +269,7 @@ await q(
   "insert into restore_coupons(code,type,value,min_total,active) values ('RESTORE10','percent',10,0,true) on conflict (code) do nothing"
 );
 await setJwt(null);
+const metaBefore = Number((await q("select version from restore_catalog_meta where id='main'")).rows[0].version);
 const order = await q("select public.restore_create_order_v2($1::jsonb) o", [
   JSON.stringify({
     items: [{ handle: "iphone-13", qty: 1 }],
@@ -278,6 +280,10 @@ const order = await q("select public.restore_create_order_v2($1::jsonb) o", [
 ]);
 console.log("     order_v2 result:", JSON.stringify(order.rows[0].o).slice(0, 200));
 console.log("     stock after order:", (await q("select stock from restore_products where id='iphone-13'")).rows[0]);
+const metaAfter = Number((await q("select version from restore_catalog_meta where id='main'")).rows[0].version);
+if (!(metaAfter > metaBefore))
+  throw new Error(`0006: a sale must bump restore_catalog_meta.version (${metaBefore} → ${metaAfter})`);
+console.log("     catalog version bumped by the sale:", metaBefore, "→", metaAfter);
 console.log(
   "     order audited:",
   (

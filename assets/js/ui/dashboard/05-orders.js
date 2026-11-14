@@ -105,7 +105,7 @@ export function install(ctx) {
     return (order.items || [])
       .map(
         (item) =>
-          `<tr><td>${ctx.esc(item.title)}<br><small>${ctx.esc(item.variantTitle || "")} ${ctx.esc(item.specsText || "")}</small></td><td>${item.qty}</td><td>${ctx.money(item.price)}</td><td>${ctx.money(item.line)}</td></tr>`
+          `<tr><td>${ctx.esc(ctx.lng(item.title))}<br><small>${ctx.esc(item.variantTitle || "")} ${ctx.esc(item.specsText || "")}</small></td><td>${item.qty}</td><td>${ctx.money(item.price)}</td><td>${ctx.money(item.line)}</td></tr>`
       )
       .join("");
   }
@@ -187,7 +187,7 @@ export function install(ctx) {
 
   function orderItemRow(item) {
     const specs = item.specsText ? `· ${ctx.esc(item.specsText)}` : "";
-    return `<div class="order-item-row"><img src="${ctx.esc(item.image || "assets/img/favicon.svg")}" alt=""><div class="grow"><strong>${ctx.esc(item.title)}</strong><small>${ctx.esc(item.variantTitle || "")} ${specs}</small></div><span>×${item.qty}</span><strong>${ctx.money(item.line)}</strong></div>`;
+    return `<div class="order-item-row"><img src="${ctx.esc(item.image || "assets/img/favicon.svg")}" alt=""><div class="grow"><strong>${ctx.esc(ctx.lng(item.title))}</strong><small>${ctx.esc(item.variantTitle || "")} ${specs}</small></div><span>×${item.qty}</span><strong>${ctx.money(item.line)}</strong></div>`;
   }
 
   function orderTotalsHTML(order) {
