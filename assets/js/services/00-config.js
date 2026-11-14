@@ -98,7 +98,12 @@ export function install(ctx) {
   }
   function writeJSON(key, value) {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      const serialized = JSON.stringify(value);
+      // Skip no-op writes: a changed value fires a `storage` event in every other tab of this origin, and the
+      // storefront reloads on restore_state changes. Rewriting an identical state on every page load made two open
+      // tabs reload each other forever (demo1, 1.8.5).
+      if (localStorage.getItem(key) === serialized) return true;
+      localStorage.setItem(key, serialized);
       return true;
     } catch (err) {
       console.warn("Restore: storage write failed", err);

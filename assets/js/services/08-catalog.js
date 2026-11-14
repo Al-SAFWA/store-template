@@ -83,7 +83,6 @@ export function install(ctx) {
     const before = catalogSignature(ctx.state.products, ctx.state.collections, ctx.state.settings?.coupons);
     catalogOverlay(products, collections, coupons);
     ctx.state = ctx.hydrate(ctx.state); // normalise exactly like a fresh page load
-    ctx.writeJSON(ctx.LS_STATE, ctx.state);
     const after = catalogSignature(ctx.state.products, ctx.state.collections, ctx.state.settings?.coupons);
     catalogInfo.source = "tables";
     catalogInfo.version = Number(meta?.version || 0);
@@ -102,6 +101,7 @@ export function install(ctx) {
       /* storage unavailable → behave like before */
       seen = before;
     }
+    if (after !== seen || after !== before) ctx.writeJSON(ctx.LS_STATE, ctx.state); // persist only real changes
     if (!silent && after !== before && after !== seen)
       // first visit: at most ONE reload, then the signature is known
       window.dispatchEvent(new CustomEvent("restore:changed", { detail: { source: "catalog" } }));

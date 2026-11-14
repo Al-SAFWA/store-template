@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.7
+
+- Two open tabs no longer reload each other: identical values are not rewritten to storage, so no spurious storage events.
+
 ## 1.8.6
 
 - Storefront reload loop root cause: the catalog overlay signature is now persisted; the storefront reloads only when the tables actually changed.
