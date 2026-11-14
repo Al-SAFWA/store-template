@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.0
+
+- Storefront never reloads itself: content updates are repainted in place (checkout and focused fields untouched). Ends the reload loop for good and stops orders being lost mid-submission.
+
 ## 1.8.9
 
 - Fix storefront reload loop: adopt the server `updated_at` after remote sync and publish (DB trigger overrides the browser stamp).

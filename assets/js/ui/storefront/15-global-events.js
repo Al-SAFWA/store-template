@@ -33,21 +33,27 @@ export function install(ctx) {
     { passive: true }
   );
 
-  // Content changed (publish, remote sync, other tab…): reload so every section repaints. Guarded against loops:
-  // never more than one reload per 15 s per tab, and the reason is logged so a loop can be diagnosed from the console.
-  const RELOAD_GUARD_KEY = "restore_last_reload_v1";
+  // Content changed (publish, remote sync, other tab…): repaint IN PLACE. The storefront never reloads itself any
+  // more — a full reload was the engine of every reload loop (demo1, 1.8.4 → 1.8.9) and it also killed in-flight
+  // order submissions. The checkout page and any focused field are left untouched; they pick up the new content
+  // on the next navigation.
+  let repaintTimer = 0;
   window.addEventListener("restore:changed", (event) => {
     if (document.body?.dataset.page === "dashboard") return;
-    if (document.querySelector("input:focus, textarea:focus, select:focus")) return;
     const source = /** @type {CustomEvent} */ (event).detail?.source || "?";
-    const last = Number(sessionStorage.getItem(RELOAD_GUARD_KEY) || 0);
-    if (Date.now() - last < 15_000) {
-      console.warn(`Restore: reload suppressed (source=${source}, last reload ${Date.now() - last} ms ago)`);
-      return;
-    }
-    console.info(`Restore: reloading storefront (source=${source})`);
-    sessionStorage.setItem(RELOAD_GUARD_KEY, String(Date.now()));
-    setTimeout(() => location.reload(), 250);
+    if (document.body?.dataset.page === "checkout") return;
+    if (document.querySelector("input:focus, textarea:focus, select:focus")) return;
+    clearTimeout(repaintTimer);
+    repaintTimer = window.setTimeout(() => {
+      console.info(`Restore: content updated in place (source=${source})`);
+      try {
+        ctx.renderHeader();
+        ctx.renderFooter();
+        ctx.renderPageContent();
+      } catch (error) {
+        console.warn("Restore: in-place repaint failed", error);
+      }
+    }, 300);
   });
 
   window.addEventListener("restore:customer", () => {

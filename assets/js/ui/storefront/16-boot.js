@@ -4,17 +4,9 @@
 
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
-  Object.assign(ctx, { boot });
-  function boot() {
-    ctx.applySeo();
-    ctx.renderHeader();
-    ctx.renderCustomerAccount();
-    ctx.renderFooter();
-    ctx.mountCart();
-    ctx.syncBadges();
-    ctx.hydrateIcons();
-    ctx.injectPixels();
-    ctx.renderCustomerAccount();
+  Object.assign(ctx, { boot, renderPageContent });
+  /** Repaints the current page from ctx.state without a navigation (used by boot and by live content updates). */
+  function renderPageContent() {
     const page = document.body.dataset.page;
     if (page === "home") ctx.renderHome();
     else if (page === "collection") ctx.renderCollection();
@@ -27,6 +19,18 @@ export function install(ctx) {
     else if (page === "post") ctx.renderBlogPost();
     ctx.renderCart();
     ctx.hydrateIcons();
+  }
+  function boot() {
+    ctx.applySeo();
+    ctx.renderHeader();
+    ctx.renderCustomerAccount();
+    ctx.renderFooter();
+    ctx.mountCart();
+    ctx.syncBadges();
+    ctx.hydrateIcons();
+    ctx.injectPixels();
+    ctx.renderCustomerAccount();
+    renderPageContent();
     if (ctx.SET.pwa && "serviceWorker" in navigator && location.protocol !== "file:") {
       navigator.serviceWorker.register("sw.js").catch(() => {});
     }
