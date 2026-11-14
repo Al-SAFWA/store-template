@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.8.4
+
+- **Dashboard order polling actually starts.** 1.8.3 started it in `boot()`, but after a page load the merchant is not
+  logged in yet (Supabase tokens are never persisted), so the login screen returned early and the post-login path
+  never started the poll. Now hooked on `renderShell()`, which every login path goes through.
+
 ## 1.8.3
 
 - **Dashboard now pulls orders from Supabase** (on open, every 30 s while visible, and when the tab regains focus).
