@@ -112,6 +112,10 @@ export function productToRow(p) {
 }
 
 /** Inverse of productToRow. @param {Record<string, any>} row @param {Record<string, any>[]} [variants] @param {string[] | null} [collectionHandles] */
+/** Stock shown everywhere: the sum of the variant rows when there are any, else the product row. */
+const liveStock = (product) =>
+  product.variants.length ? product.variants.reduce((sum, v) => sum + v.stock, 0) : product.stock;
+
 export function rowToProduct(row, variants = [], collectionHandles = null) {
   const extra = obj(row.extra);
   const images = arr(row.images).map(String);
@@ -147,6 +151,10 @@ export function rowToProduct(row, variants = [], collectionHandles = null) {
     updatedAt: row.updated_at || null,
     _source: "restore_products"
   };
+  // With variants, the sale decrements the VARIANT row (restore_create_order_v2); the parent row.stock is only the
+  // initial value and never moves. Dashboard list, low-stock filter, storefront availability and reports all read
+  // product.stock, so expose the live total here (demo1: 3 phones sold, list still showed 13).
+  product.stock = liveStock(product);
   return product;
 }
 

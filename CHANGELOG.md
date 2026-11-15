@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.5
+
+- Products with variants show the live total of variant stock everywhere (sales decrement the variant row; the parent row never moved, so the list showed the old number).
+
 ## 1.9.4
 
 - Catalog load failures (ad blocker / Brave Shields / offline) are retried every poll, and the dashboard shows a warning banner instead of silently displaying stale stock.

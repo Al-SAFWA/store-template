@@ -137,3 +137,18 @@ test("bulkAdjustPrice rounds to nearest 5", () => {
   assert.equal(bulkAdjustPrice(1003, 10, "down"), 905);
   assert.equal(bulkAdjustPrice(100, 200, "down"), 0);
 });
+
+test("rowToProduct: with variants, product.stock is the live sum of variant stocks (sales decrement variants)", () => {
+  const row = { id: "p", handle: "p", title: { ar: "x", fr: "x" }, price: 100, stock: 13, active: true };
+  const withVariants = rowToProduct(
+    row,
+    [
+      { id: "v1", stock: 5 },
+      { id: "v2", stock: 2 }
+    ],
+    []
+  );
+  assert.equal(withVariants.stock, 7);
+  const noVariants = rowToProduct(row, [], []);
+  assert.equal(noVariants.stock, 13);
+});
