@@ -58,8 +58,30 @@ export function install(ctx) {
     throw new Error(message);
   }
 
+  /** Order items as the customer should read them: the SQL function returns the product title as {ar,fr} and drops
+      the display-only fields (variant label, chosen specs, image). Prices and quantities stay the server's. */
+  function readableItems(items, draftItems = []) {
+    const pick = (...values) => values.find((value) => value != null && value !== "");
+    const sameLine = (d, item) =>
+      d.handle === item.handle && String(d.variantId || "") === String(item.variantId || "");
+    return (items || []).map((item, index) => {
+      const draft = draftItems.find((d) => sameLine(d, item)) || draftItems[index] || {};
+      const title = item.title && typeof item.title === "object" ? ctx.L(item.title) : item.title;
+      return {
+        ...item,
+        title: pick(title, draft.title, item.handle),
+        variantTitle: pick(item.variantTitle, draft.variantTitle, ""),
+        specsText: pick(item.specsText, draft.specsText, ""),
+        specs: pick(item.specs, draft.specs),
+        image: pick(item.image, draft.image, ""),
+        price: pick(item.price, item.unitPrice, draft.price)
+      };
+    });
+  }
+
   /** Stores a server-validated order and returns it. */
-  function storeValidatedOrder(remoteOrder) {
+  function storeValidatedOrder(remoteOrder, draft) {
+    remoteOrder = { ...remoteOrder, items: readableItems(remoteOrder.items, draft?.items) };
     const next =
       normalizeRemoteOrder({
         id: remoteOrder.id,
@@ -83,7 +105,7 @@ export function install(ctx) {
     if (!order) throw new Error("طلب غير صالح");
     if (ctx.REMOTE && ctx.CFG.createOrderFunction) {
       try {
-        return storeValidatedOrder(await secureOrder(order));
+        return storeValidatedOrder(await secureOrder(order), order);
       } catch (error) {
         if (ctx.CFG.requireServerOrders !== false) {
           throw new Error(
@@ -181,6 +203,7 @@ export function install(ctx) {
     const data = row.data && typeof row.data === "object" ? ctx.clone(row.data) : {};
     return {
       ...data,
+      items: readableItems(data.items),
       id: data.id || row.id,
       status: firstValue(data.status, row.status, "new"),
       createdAt: firstValue(data.createdAt, row.created_at, ctx.nowISO()),

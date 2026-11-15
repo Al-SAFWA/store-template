@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.6
+
+- WhatsApp message, success screen, dashboard and invoice show the product name, variant and specs again for server-validated orders (titles came back as `{ar,fr}` objects → `[object Object]`).
+
 ## 1.9.5
 
 - Products with variants show the live total of variant stock everywhere (sales decrement the variant row; the parent row never moved, so the list showed the old number).
