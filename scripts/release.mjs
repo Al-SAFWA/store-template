@@ -18,6 +18,13 @@ lock.version = version;
 if (lock.packages?.[""]) lock.packages[""].version = version;
 fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
 fs.writeFileSync("package-lock.json", JSON.stringify(lock, null, 2) + "\n");
+// The dashboard shows this so a merchant (or support) can tell which template version a store runs.
+fs.writeFileSync(
+  "assets/js/version.js",
+  fs
+    .readFileSync("assets/js/version.js", "utf8")
+    .replace(/TEMPLATE_VERSION = "[^"]*"/, `TEMPLATE_VERSION = "${version}"`)
+);
 if (!fs.readFileSync("CHANGELOG.md", "utf8").includes(`## ${version}`)) {
   console.error(`CHANGELOG.md has no "## ${version}" section — write it first`);
   process.exit(1);

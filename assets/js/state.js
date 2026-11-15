@@ -141,6 +141,7 @@ if (!RAW) {
     submitOrder: ctx.submitOrder,
     updateOrder: ctx.updateOrder,
     refreshOrders: ctx.refreshOrders,
+    normalizeRemoteOrder: ctx.normalizeRemoteOrder,
     submitReview: ctx.submitReview,
     moderateReview: ctx.moderateReview,
     deleteCustomerReview: ctx.deleteCustomerReview,

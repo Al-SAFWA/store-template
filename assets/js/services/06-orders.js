@@ -61,7 +61,14 @@ export function install(ctx) {
   /** Order items as the customer should read them: the SQL function returns the product title as {ar,fr} and drops
       the display-only fields (variant label, chosen specs, image). Prices and quantities stay the server's. */
   function readableItems(items, draftItems = []) {
-    const pick = (...values) => values.find((value) => value != null && value !== "");
+    const pick = (...values) => values.find((value) => value != null && value !== "") ?? values[values.length - 1];
+    // server rows carry unitPrice + line (no price); a 0 price means "missing", never a free item
+    const unitPrice = (item, draft) =>
+      Number(item.price) ||
+      Number(item.unitPrice) ||
+      (Number(item.line) && Number(item.qty) ? Math.round(Number(item.line) / Number(item.qty)) : 0) ||
+      Number(draft.price) ||
+      0;
     const sameLine = (d, item) =>
       d.handle === item.handle && String(d.variantId || "") === String(item.variantId || "");
     return (items || []).map((item, index) => {
@@ -74,7 +81,7 @@ export function install(ctx) {
         specsText: pick(item.specsText, draft.specsText, ""),
         specs: pick(item.specs, draft.specs),
         image: pick(item.image, draft.image, ""),
-        price: pick(item.price, item.unitPrice, draft.price)
+        price: unitPrice(item, draft)
       };
     });
   }

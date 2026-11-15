@@ -2,6 +2,8 @@
 /* dashboard.js → Application shell
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see dashboard.js). */
 
+import { TEMPLATE_VERSION } from "../../version.js";
+
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { renderShell, renderRoute });
@@ -187,6 +189,7 @@ export function install(ctx) {
             ${NAV_GROUPS.map(navGroupHTML).join("")}
           </nav>
           ${sidebarUserHTML()}
+          <div class="dash-version" title="${ctx.dt("إصدار القالب", "Version du modèle")}">v${ctx.esc(TEMPLATE_VERSION)}</div>
         </aside>`;
   }
 
@@ -239,33 +242,6 @@ export function install(ctx) {
       </div>`;
     renderRoute();
     ctx.updateCounts();
-    startOrderPolling();
-  }
-
-  /** Orders are written by customers' phones straight into Supabase; the merchant's browser must PULL them.
-      Hooked on renderShell() because every login path (page load with session, fresh login, password change) ends
-      here. Idempotent: a second renderShell() never starts a second timer. Lost once in 1.8.5 (stale 24-boot.js
-      shipped over 1.8.3/1.8.4) — keep it here, not in boot(). */
-  let orderPollStarted = false;
-  function startOrderPolling() {
-    if (orderPollStarted || !ctx.R.remote || typeof ctx.R.refreshOrders !== "function") return;
-    orderPollStarted = true;
-    const INTERVAL_MS = 30_000;
-    const pull = () => {
-      if (document.hidden || !ctx.session) return;
-      ctx.R.refreshOrders()
-        .then(() => {
-          // saveOrders() broadcasts restore:orders → badge, toast and sound; the list itself re-renders here,
-          // but never over an open dialog or unsaved edits.
-          if (ctx.route === "orders" && !ctx.dirty && !document.body.classList.contains("no-scroll")) renderRoute();
-        })
-        .catch(() => {});
-    };
-    pull();
-    setInterval(pull, INTERVAL_MS);
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) pull();
-    });
   }
 
   const VIEWS = {
@@ -333,6 +309,15 @@ export function install(ctx) {
     ctx.updateCounts();
   }
 
+  /** A local (browser-only) account on a Supabase store cannot read orders, write the catalog or publish. */
+  function localAccountWarningHTML() {
+    if (!ctx.R.remote || ctx.session?.mode !== "local") return "";
+    return `<div class="notice warn u-mb-12">${ctx.dt(
+      "أنت داخل بحساب محلي (محفوظ في هذا المتصفح فقط). هذا الحساب لا يرى الطلبات ولا يحفظ المنتجات ولا ينشر. سجّل الخروج وادخل ببريد Supabase وكلمة مروره.",
+      "Vous êtes connecté avec un compte local (ce navigateur seulement) : il ne voit pas les commandes, n’enregistre pas les produits et ne publie pas. Déconnectez-vous et entrez avec l’e-mail Supabase."
+    )}</div>`;
+  }
+
   function renderRoute() {
     if (!guardRoute()) return;
     const view = ctx.$("#dash-view");
@@ -340,7 +325,7 @@ export function install(ctx) {
       renderShell();
       return;
     }
-    view.innerHTML = routeView();
+    view.innerHTML = localAccountWarningHTML() + routeView();
     syncRouteChrome();
     if (ctx.route === "orders" || ctx.route === "reports")
       setTimeout(() => localStorage.setItem("restore_orders_seen_v1", String(ctx.newOrdersCount())), 800);

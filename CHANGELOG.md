@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.10.0
+
+- **Invoice / order details**: unit price was 0 for server-validated orders (the server field is `unitPrice`; a 0 is
+  never trusted as "free" — falls back to line ÷ qty).
+- **Dashboard** shows the template version at the bottom of the sidebar (`assets/js/version.js`, rewritten by
+  `npm run release`), and a warning banner when the merchant is signed in with a browser-only local account on a
+  Supabase store (such an account cannot read orders, write the catalog or publish).
+- **Storefront**: the language switch keeps its `AR`/`FR` label on phones (a lone flag was not recognised as a switch).
+- **Client automation**: `keepalive.yml` needs `contents: read` — with `permissions: {}` the checkout of a private
+  client repo failed with "repository not found".
+- **Release gate = CI**: `release.yml` now also runs the Playwright e2e suite before touching any client (GitHub does
+  not enforce branch protection on private repos of a free account; 1.9.2 passed `check` but failed e2e).
+- **Docs**: `docs/MERCHANT-GUIDE.md` (AR + FR, hand it to the merchant) and three new FAQ boxes in `guide.html`
+  (ad blocker / Brave Shields, local account, variant stock).
+- **Tests**: DB test asserts a variant sale decrements the variant row and that item titles come back bilingual;
+  runtime test asserts remote order rows are localised with a real unit price.
+- Hero slides: drop `assets/img/hero-1.jpg` / `hero-2.jpg` in the repo and point the slides at them from the
+  dashboard (Homepage → Slides).
+
+
+
+
 ## 1.9.6
 
 - WhatsApp message, success screen, dashboard and invoice show the product name, variant and specs again for server-validated orders (titles came back as `{ar,fr}` objects → `[object Object]`).

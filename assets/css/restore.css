@@ -718,10 +718,10 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
   .announcement { display: block; font-size: 9px; padding: 6px 8px; }
   .header-top { gap: 8px; }
   .logo img { width: 104px; }
-  .lang-current span,
+  /* keep the language code visible on phones: a lone 19px flag was not recognised as a switch (demo1 feedback) */
   .lang-current > svg:last-child { display: none; }
-  .lang-current { padding: 0 6px; min-height: 30px; }
-  .lang-current img { width: 19px; height: 13px; }
+  .lang-current { padding: 0 8px; min-height: 30px; gap: 5px; border: 1px solid var(--line, #e5e7eb); border-radius: 999px; font-weight: 700; font-size: 11px; }
+  .lang-current img { width: 17px; height: 12px; }
   .header-actions .icon-btn { width: 30px; height: 30px; }
   .header-actions .icon-btn svg { width: 20px; height: 20px; }
   .hero-banner .hero-inner { padding-top: 27px; padding-bottom: 38px; }

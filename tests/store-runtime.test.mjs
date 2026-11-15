@@ -111,3 +111,30 @@ test("isStoreOpen honours closed/maintenance flags", () => {
   assert.equal(R.isStoreOpen(), false);
   R.state.settings.hours = saved;
 });
+
+test("remote order rows: bilingual item titles are localised and unitPrice becomes price (WhatsApp / invoice)", () => {
+  const order = R.normalizeRemoteOrder({
+    id: "RS-TEST-1",
+    status: "new",
+    created_at: "2026-11-15T00:00:00Z",
+    data: {
+      id: "RS-TEST-1",
+      items: [
+        {
+          handle: "iphone-13",
+          variantId: "1001",
+          title: { ar: "هاتف", fr: "Téléphone" },
+          unitPrice: 51940,
+          qty: 3,
+          line: 155820
+        }
+      ]
+    }
+  });
+  const item = order.items[0];
+  assert.equal(typeof item.title, "string");
+  assert.notEqual(item.title, "[object Object]");
+  assert.ok(["هاتف", "Téléphone"].includes(item.title));
+  assert.equal(item.price, 51940);
+  assert.equal(item.variantTitle, "");
+});

@@ -12,7 +12,7 @@ npm run new-client          # asks name / phone / e-mail / colour / domain → .
 ```
 Then follow `../clients/<key>/CLIENT.md` (merchant's own free Supabase project + free Cloudflare/GitHub Pages).
 Brand lives only in `assets/js/brand.config.js` (`npm run brand` re-renders titles/manifest/sitemap/logos).
-Merchant manual: `guide.html`. **Handover / تسليم المتجر: `docs/HANDOVER.md`** (what to edit, how to deploy, how to
+Merchant manual: `guide.html` (printable) and `docs/MERCHANT-GUIDE.md` (AR + FR, hand it to the merchant). **Handover / تسليم المتجر: `docs/HANDOVER.md`** (what to edit, how to deploy, how to
 back up and restore, what to do when something breaks). Pushing fixes to existing merchants: `docs/UPDATING.md`.
 
 ## Code layout
