@@ -26,7 +26,10 @@ export function install(ctx) {
   }
   function getOrders() {
     const list = ctx.readJSON(ctx.LS_ORDERS, []);
-    return Array.isArray(list) ? list : [];
+    if (!Array.isArray(list)) return [];
+    // Orders cached by an older version keep {ar,fr} titles / missing unit prices; repair them on read so the
+    // dashboard, invoice and account page are right without clearing the browser.
+    return list.map((order) => (Array.isArray(order?.items) ? { ...order, items: readableItems(order.items) } : order));
   }
   function saveOrders(orders, broadcast = true) {
     ctx.writeJSON(ctx.LS_ORDERS, Array.isArray(orders) ? orders : []);

@@ -25,6 +25,7 @@ export const fr = {
   discover: "Découvrir",
   addToCart: "Ajouter au panier",
   buyNow: "Acheter maintenant",
+  onlyLeft: "Seulement {n} disponible(s)",
   soldOut: "Épuisé",
   continueShopping: "Continuer mes achats",
   quickView: "Aperçu",

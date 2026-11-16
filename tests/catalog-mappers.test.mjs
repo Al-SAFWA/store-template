@@ -152,3 +152,33 @@ test("rowToProduct: with variants, product.stock is the live sum of variant stoc
   const noVariants = rowToProduct(row, [], []);
   assert.equal(noVariants.stock, 13);
 });
+
+test("rowToProduct: options and o1/o2 are derived from variant rows so the product page can price each choice", () => {
+  const row = {
+    id: "t",
+    handle: "t",
+    title: { ar: "x", fr: "x" },
+    price: 7900,
+    stock: 0,
+    active: true,
+    extra: { colors: [{ name: "Silver", hex: "#ccc" }] }
+  };
+  const p = rowToProduct(
+    row,
+    [
+      { id: "v1", color: "Silver", storage: "64 GB", price_delta: 0, stock: 5 },
+      { id: "v2", color: "Silver", storage: "256 GB", price_delta: 5000, stock: 3 }
+    ],
+    []
+  );
+  assert.deepEqual(
+    p.options.map((o) => o.name),
+    ["Color", "Storage"]
+  );
+  assert.deepEqual(p.options[1].values, ["64 GB", "256 GB"]);
+  const big = p.variants.find((v) => v.o2 === "256 GB");
+  assert.equal(big.o1, "Silver");
+  assert.equal(big.price, 12900);
+  assert.equal(big.title, "Silver / 256 GB");
+  assert.equal(p.stock, 8);
+});

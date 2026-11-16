@@ -199,13 +199,16 @@ export function install(ctx) {
         <div class="form-grid">
           ${ctx.imageEditor(ctx.dt("الصورة الرئيسية", "Image principale"), "image", buffer.image)}
           <div class="field span-2"><label>${ctx.dt("صور إضافية (رابط في كل سطر)", "Images supplémentaires (une URL par ligne)")}</label><textarea data-edit-path="images" rows="4" data-json="array">${ctx.esc((buffer.images || []).join("\n"))}</textarea></div>
-          <div class="field"><label>${ctx.dt("ألوان (اسم:لون:#hex)", "Couleurs (nom:couleur:#hex)")}</label><textarea data-edit-path="colors" rows="4" data-colors>${ctx.esc((buffer.colors || []).map((color) => `${color.name}:${color.hex}`).join("\n"))}</textarea></div>
+          <div class="field"><label>${ctx.dt("الألوان (سطر لكل لون: الاسم:#hex)", "Couleurs (une par ligne : nom:#hex)")}</label><textarea data-edit-path="colors" rows="4" data-colors>${ctx.esc((buffer.colors || []).map((color) => `${color.name}:${color.hex}`).join("\n"))}</textarea></div>
           <div class="field"><label>${ctx.dt("صور الألوان (اسم:رابط)", "Images couleurs (nom:URL)")}</label><textarea data-edit-path="colorImages" rows="4" data-colormap>${ctx.esc(
             Object.entries(buffer.colorImages || {})
               .map(([key, value]) => `${key}:${value}`)
               .join("\n")
           )}</textarea></div>
-          <div class="field span-2"><label>${ctx.dt("المتغيرات (JSON متقدم)", "Variantes (JSON avancé)")}</label><textarea data-edit-path="variants" rows="5" data-json="raw">${ctx.esc(JSON.stringify(buffer.variants || [], null, 2))}</textarea></div>
+          <div class="field"><label>${ctx.dt("اسم الخيار الثاني", "Nom du second choix")}</label><select data-edit-path="optionName">${selectedOptions(OPTION_NAMES, buffer.optionName || firstNonColorOption(buffer) || "Storage")}</select></div>
+          <div class="field"><label>${ctx.dt("قيم الخيار (سطر لكل قيمة: القيمة:السعر الإضافي:المخزون)", "Valeurs (une par ligne : valeur:supplément:stock)")}</label><textarea rows="4" data-simple-variants placeholder="64 GB:0:5&#10;256 GB:5000:3">${ctx.esc(simpleVariantsText(buffer))}</textarea></div>
+          <p class="form-note span-2">${ctx.dt("الألوان أعلاه × هذه القيم = الخيارات التي يراها الزبون، ولكل تركيبة مخزونها. اتركها فارغة لمنتج بلا خيارات.", "Couleurs ci-dessus × ces valeurs = les choix du client, chaque combinaison avec son stock. Laissez vide pour un produit sans variantes.")}</p>
+          <details class="span-2"><summary>${ctx.dt("المتغيرات (JSON متقدم)", "Variantes (JSON avancé)")}</summary><textarea data-edit-path="variants" rows="5" data-json="raw">${ctx.esc(JSON.stringify(buffer.variants || [], null, 2))}</textarea></details>
         </div>
       </div>
       <div class="dash-panel" data-product-panel="specs">
@@ -240,13 +243,68 @@ export function install(ctx) {
 
   /* ---------- product editor: structured text fields ---------- */
 
+  const OPTION_NAMES = ["Storage", "Size", "RAM", "Model", "Capacity"];
+  const isColorName = (name) => /color|colour|couleur|لون/i.test(String(name || ""));
+  function firstNonColorOption(buffer) {
+    return (buffer.options || []).find((o) => !isColorName(o.name))?.name || "";
+  }
+  /** Current variants → "value:extra:stock" lines (one per distinct second-axis value). */
+  function simpleVariantsText(buffer) {
+    const seen = new Map();
+    for (const v of buffer.variants || []) {
+      const key = v.storage || v.o2 || (v.color ? "" : v.o1) || "";
+      if (!key || seen.has(key)) continue;
+      const delta = v.price_delta != null ? Number(v.price_delta) : Number(v.price || 0) - Number(buffer.price || 0);
+      seen.set(key, `${key}:${Math.round(delta) || 0}:${Number(v.stock || 0)}`);
+    }
+    return [...seen.values()].join("\n");
+  }
+  /** One generated variant for a colour × value cell. */
+  function simpleVariant(item, color, value, delta, stock, hasColors) {
+    const n = (x) => Number(x) || 0;
+    return {
+      id: `${item.handle}_${[color, value].filter(Boolean).join("_")}`.replace(/\s+/g, "-").toLowerCase(),
+      title: [color, value].filter(Boolean).join(" / "),
+      o1: hasColors ? color : value,
+      o2: hasColors ? value : null,
+      color: color || null,
+      storage: value,
+      price_delta: n(delta),
+      price: n(item.price) + n(delta),
+      stock: n(stock),
+      available: n(stock) > 0
+    };
+  }
+  /** "value:extra:stock" lines × colours → variants + options. Empty text keeps whatever the JSON field holds. */
+  function applySimpleVariants(item, text) {
+    const lines = String(text || "")
+      .split("\n")
+      .map((line) => line.split(":").map((part) => part.trim()))
+      .filter((parts) => parts[0]);
+    if (!lines.length) return;
+    const colors = (item.colors || []).map((c) => c.name).filter(Boolean);
+    const hasColors = colors.length > 0;
+    const variants = lines.flatMap(([value, delta, stock]) =>
+      (hasColors ? colors : [""]).map((color) => simpleVariant(item, color, value, delta, stock, hasColors))
+    );
+    item.variants = variants;
+    item.options = [
+      ...(hasColors ? [{ name: "Color", values: colors }] : []),
+      { name: item.optionName || "Storage", values: lines.map((parts) => parts[0]) }
+    ];
+    item.stock = variants.reduce((sum, v) => sum + v.stock, 0);
+  }
+
   function parseColors(text) {
     return text
       .split("\n")
       .map((line) => {
+        // "Silver:#c0c0c0" or "Silver:فضي:#c0c0c0" (the label promised a middle Arabic name) — the hex is
+        // whichever part looks like one, so a merchant following the label no longer gets "#فضي".
         const parts = line.split(":").map((part) => part.trim());
         if (!parts[0]) return null;
-        return { name: parts[0], hex: parts[1]?.startsWith("#") ? parts[1] : `#${parts[1] || "999999"}` };
+        const hex = parts.slice(1).find((part) => /^#?[0-9a-f]{3,8}$/i.test(part));
+        return { name: parts[0], hex: hex ? (hex.startsWith("#") ? hex : `#${hex}`) : "#999999" };
       })
       .filter(Boolean);
   }
@@ -296,6 +354,7 @@ export function install(ctx) {
       if (node.dataset.editPath === "images") return applyImagesField(item, node);
       applyJsonField(ctx, item, node);
     });
+    modal?.querySelectorAll("[data-simple-variants]").forEach((node) => applySimpleVariants(item, node.value));
   }
 
   /** Numeric fields and the default `active` flag. */

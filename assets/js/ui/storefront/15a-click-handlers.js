@@ -246,7 +246,11 @@ function pickOption(ctx, e, el) {
 }
 
 function changeQty(ctx, e, el) {
-  ctx.PDP.qty = Math.max(1, Math.min(ctx.MAX_QTY, ctx.PDP.qty + Number(el.dataset.qty)));
+  const variant = ctx.pdpVariant();
+  const cap = Math.max(1, ctx.maxOrderable(ctx.PDP.p?.handle, variant?.id));
+  const wanted = ctx.PDP.qty + Number(el.dataset.qty);
+  if (wanted > cap) ctx.toast(ctx.t("onlyLeft").replace("{n}", String(cap)));
+  ctx.PDP.qty = Math.max(1, Math.min(cap, wanted));
   const span = document.getElementById("qty-val");
   if (span) span.textContent = ctx.PDP.qty;
 }

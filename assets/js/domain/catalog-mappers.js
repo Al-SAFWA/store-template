@@ -73,13 +73,14 @@ function productExtra(p, images) {
   return extra;
 }
 function variantToRow(v, i, id, basePrice, stock) {
+  const delta = v.price_delta != null ? num(v.price_delta, 0) : num(v.price, basePrice) - basePrice;
   return {
     id: String(v.id || `${id}_v${i + 1}`),
     product_id: id,
     sku: v.sku ? String(v.sku) : null,
     color: v.color || v.label || null,
     storage: v.storage || null,
-    price_delta: Math.round(num(v.price, basePrice) - basePrice),
+    price_delta: Math.round(delta),
     stock: int(v.stock ?? stock)
   };
 }
@@ -112,6 +113,45 @@ export function productToRow(p) {
 }
 
 /** Inverse of productToRow. @param {Record<string, any>} row @param {Record<string, any>[]} [variants] @param {string[] | null} [collectionHandles] */
+/** One `restore_product_variants` row → storefront variant (price absolute, availability from stock). */
+function variantFromRow(v, base) {
+  return {
+    id: v.id,
+    sku: v.sku || "",
+    color: v.color || "",
+    label: v.color || "",
+    storage: v.storage || "",
+    price: Math.max(0, base + num(v.price_delta, 0)),
+    price_delta: num(v.price_delta, 0),
+    stock: int(v.stock),
+    available: int(v.stock) > 0
+  };
+}
+const isColorName = (name) => /color|colour|couleur|لون/i.test(String(name || ""));
+/** The choice buttons shown on the product page. Stored `extra.options` win; otherwise they are derived from the
+ * variant rows (colour axis from `color`, second axis from `storage`) and from the colour palette, so a product
+ * edited with the simple dashboard fields — or imported from a spreadsheet — always offers its choices. */
+function optionsFor(product) {
+  const stored = arr(product.options).filter((o) => o && o.name && arr(o.values).length);
+  const uniq = (list) => [...new Set(list.filter(Boolean))];
+  const colors = uniq([...arr(product.colors).map((c) => c.name), ...product.variants.map((v) => v.color)]);
+  const storages = uniq(product.variants.map((v) => v.storage));
+  const options = stored.slice();
+  if (colors.length && !options.some((o) => isColorName(o.name))) options.unshift({ name: "Color", values: colors });
+  if (storages.length && !options.some((o) => !isColorName(o.name)))
+    options.push({ name: product.optionName || "Storage", values: storages });
+  return options;
+}
+/** o1/o2/title for a variant row so the product page can match the shopper's selection. */
+function variantAxes(v, options) {
+  const axes = options.map((o) => (isColorName(o.name) ? v.color : v.storage));
+  const out = { title: axes.filter(Boolean).join(" / ") || v.label || "" };
+  axes.forEach((value, i) => {
+    out["o" + (i + 1)] = value || null;
+  });
+  return out;
+}
+
 /** Stock shown everywhere: the sum of the variant rows when there are any, else the product row. */
 const liveStock = (product) =>
   product.variants.length ? product.variants.reduce((sum, v) => sum + v.stock, 0) : product.stock;
@@ -138,16 +178,7 @@ export function rowToProduct(row, variants = [], collectionHandles = null) {
     sku: row.sku || "",
     sortOrder: int(row.sort_order, 0),
     collections: Array.isArray(collectionHandles) ? collectionHandles.map(String) : arr(extra.collections).map(String),
-    variants: arr(variants).map((v) => ({
-      id: v.id,
-      sku: v.sku || "",
-      color: v.color || "",
-      label: v.color || "",
-      storage: v.storage || "",
-      price: Math.max(0, base + num(v.price_delta, 0)),
-      stock: int(v.stock),
-      available: int(v.stock) > 0
-    })),
+    variants: arr(variants).map((v) => variantFromRow(v, base)),
     updatedAt: row.updated_at || null,
     _source: "restore_products"
   };
@@ -155,6 +186,8 @@ export function rowToProduct(row, variants = [], collectionHandles = null) {
   // initial value and never moves. Dashboard list, low-stock filter, storefront availability and reports all read
   // product.stock, so expose the live total here (demo1: 3 phones sold, list still showed 13).
   product.stock = liveStock(product);
+  product.options = optionsFor(product);
+  product.variants.forEach((v) => Object.assign(v, variantAxes(v, product.options)));
   return product;
 }
 

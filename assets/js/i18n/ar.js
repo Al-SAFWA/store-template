@@ -25,6 +25,7 @@ export const ar = {
   discover: "اكتشف",
   addToCart: "أضف إلى السلة",
   buyNow: "اشترِ الآن",
+  onlyLeft: "المتوفر {n} فقط",
   soldOut: "نفدت الكمية",
   continueShopping: "متابعة التسوق",
   quickView: "نظرة سريعة",

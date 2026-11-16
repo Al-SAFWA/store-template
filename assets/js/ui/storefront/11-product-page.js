@@ -145,6 +145,22 @@ export function install(ctx) {
     </div>`;
   }
 
+  /** Variants saved by the dashboard carry {color, storage}; the page matches the shopper's picks on o1/o2 — fill
+   * those in from the option order when they are missing so every product, local or remote, is selectable. */
+  function withVariantAxes(p) {
+    const options = p.options || [];
+    if (!options.length) return p;
+    (p.variants || []).forEach((v) => {
+      if (v.o1 != null) return;
+      const axes = options.map((o) => (isColorOption(o.name) ? v.color : v.storage));
+      axes.forEach((value, i) => {
+        v["o" + (i + 1)] = value || null;
+      });
+      if (!v.title) v.title = axes.filter(Boolean).join(" / ") || v.label || "";
+    });
+    return p;
+  }
+
   function pdpVariant() {
     const p = PDP.p;
     if (!p) return null;
@@ -263,7 +279,11 @@ export function install(ctx) {
     const price = Number(v?.price ?? p.price);
     const compare = v?.compare ?? p.compare;
     const rating = productRating(p);
-    const soldOut = Number(p.stock) <= 0 || !p.available || !v?.available;
+    // `available` is only present on the legacy sample catalog; products created in the dashboard or loaded from the
+    // tables carry stock instead — an absent flag must not read as "sold out" (it did: add-to-cart was disabled on
+    // every dashboard-created product).
+    const variantSoldOut = v ? v.available === false || (v.stock != null && Number(v.stock) <= 0) : false;
+    const soldOut = Number(p.stock) <= 0 || p.available === false || variantSoldOut;
     const options = (p.options || []).map(optionRowHTML).join("");
     return `
       <div class="product-info" id="product-info">
@@ -396,7 +416,7 @@ export function install(ctx) {
 
   /** Resets PDP state for a freshly loaded product. */
   function seedPdp(p) {
-    PDP.p = p;
+    PDP.p = withVariantAxes(p);
     PDP.qty = 1;
     PDP.sel = {};
     PDP.specs = {};

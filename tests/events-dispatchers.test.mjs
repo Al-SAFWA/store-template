@@ -36,6 +36,7 @@ function fakeCtx(extra = {}) {
     SET: { country: { name: "MR", currencyName: "MRU" } },
     PDP: { p: { handle: "phone-x", options: [], variants: [] }, qty: 1, specs: {}, sel: {} },
     MAX_QTY: 10,
+    maxOrderable: () => 10,
     ICON: { sun: "<i-sun>", moon: "<i-moon>" },
     t: (key) => `t:${key}`,
     L: (value) => String(value),
@@ -151,6 +152,16 @@ test("click table: quantity stepper clamps to 1..MAX_QTY and repaints the value"
   ctx.dispatchClick(ctx.clickHandlers, click(document, '[data-qty="1"]').event);
   assert.equal(ctx.PDP.qty, 10);
   assert.equal(document.getElementById("qty-val").textContent, "10");
+});
+
+test("click table: quantity stepper stops at the variant's stock and says how many are left", () => {
+  const document = bootDom('<body><button data-qty="1">+</button><span id="qty-val">1</span></body>');
+  const ctx = fakeCtx({ maxOrderable: () => 2 });
+  installClicks(ctx);
+  ctx.dispatchClick(ctx.clickHandlers, click(document, '[data-qty="1"]').event);
+  ctx.dispatchClick(ctx.clickHandlers, click(document, '[data-qty="1"]').event);
+  assert.equal(ctx.PDP.qty, 2, "capped at stock");
+  assert.deepEqual(ctx.calls.at(-1), ["toast", "t:onlyLeft"]);
 });
 
 test("click table: add-to-cart opens the cart with the chosen variant", () => {

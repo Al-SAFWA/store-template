@@ -42,15 +42,23 @@ function pickImage(remote, local) {
  */
 export function mapRepoVariants(row, local) {
   if (!Array.isArray(row.restore_product_variants)) return local?.variants || [];
-  return row.restore_product_variants.map((v) => ({
-    id: v.id,
-    sku: v.sku,
-    color: v.color,
-    storage: v.storage,
-    price: Math.max(0, Number(row.price || 0) + Number(v.price_delta || 0)),
-    stock: Number(v.stock || 0),
-    available: Number(v.stock || 0) > 0
-  }));
+  const known = new Map((local?.variants || []).map((v) => [String(v.id), v]));
+  return row.restore_product_variants.map((v) => {
+    const axes = known.get(String(v.id)) || {};
+    return {
+      // o1/o2/title come from the hydrated catalog (domain mapper) — the page matches the shopper's choice on them
+      title: axes.title || [v.color, v.storage].filter(Boolean).join(" / "),
+      o1: axes.o1 ?? v.color ?? v.storage ?? null,
+      o2: axes.o2 ?? (v.color ? v.storage : null) ?? null,
+      id: v.id,
+      sku: v.sku,
+      color: v.color,
+      storage: v.storage,
+      price: Math.max(0, Number(row.price || 0) + Number(v.price_delta || 0)),
+      stock: Number(v.stock || 0),
+      available: Number(v.stock || 0) > 0
+    };
+  });
 }
 
 /**
@@ -58,8 +66,20 @@ export function mapRepoVariants(row, local) {
  * @param {any} row Remote `restore_products` row.
  * @param {any} local Locally hydrated product (may be null).
  */
+/** Choice rows derived from variant rows when the hydrated catalog has none (product not in local state yet). */
+function optionsFromVariants(variants, base) {
+  const uniq = (list) => [...new Set(list.filter(Boolean))];
+  const colors = uniq([...(base.colors || []).map((c) => c.name), ...variants.map((v) => v.color)]);
+  const storages = uniq(variants.map((v) => v.storage));
+  const options = [];
+  if (colors.length) options.push({ name: "Color", values: colors });
+  if (storages.length) options.push({ name: base.optionName || "Storage", values: storages });
+  return options;
+}
+
 export function mapRepoProduct(row, local) {
   const base = local || {};
+  const variants = mapRepoVariants(row, local);
   return {
     ...base,
     handle: row.handle,
@@ -72,8 +92,8 @@ export function mapRepoProduct(row, local) {
     specs: pickSpecs(row.specs, base.specs),
     images: pickImages(row.images, base.images),
     image: pickImage(row.images, base.image),
-    variants: mapRepoVariants(row, local),
-    options: base.options || [],
+    variants,
+    options: base.options?.length ? base.options : optionsFromVariants(variants, base),
     collections: base.collections || [],
     description: base.description || row.title,
     active: row.active !== false,

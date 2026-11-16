@@ -198,7 +198,7 @@ body[data-page="dashboard"] {
 .list-row .drag { color: var(--soft-muted); font-size: 11px; cursor: grab; }
 .list-row .row-actions { display: flex; gap: 3px; margin-inline-start: auto; }
 
-.toggle { position: relative; width: 34px; height: 19px; flex: 0 0 34px; }
+.toggle { position: relative; display: inline-block; vertical-align: middle; width: 34px; height: 19px; flex: 0 0 34px; } /* inline-block: inside a table cell an inline label ignores width → only the knob showed (products list) */
 .toggle input { position: absolute; opacity: 0; }
 .toggle span { position: absolute; inset: 0; border-radius: 99px; background: var(--surface-3); transition: .18s; }
 .toggle span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 15px; height: 15px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.18); transition: .18s; }
@@ -350,6 +350,3 @@ body[data-page="dashboard"] {
 .notice { padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.6; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; border: 1px solid transparent; }
 .notice.good { background: rgba(39, 174, 96, .10); border-color: rgba(39, 174, 96, .35); color: #1e8449; }
 .notice.warn { background: rgba(243, 156, 18, .12); border-color: rgba(243, 156, 18, .4); color: #9a6400; }
-
-/* template version, bottom of the sidebar */
-.dash-version { padding: 6px 18px 10px; font-size: 11px; color: rgba(255,255,255,.38); letter-spacing: .02em; }

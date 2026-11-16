@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.10.1
+
+- **Product page — variants**: the price, stock and WhatsApp text now follow the shopper's colour/storage pick for
+  products saved from the dashboard or loaded from the tables (variants carried `{color, storage}` while the page
+  matched on `o1/o2`; options are now derived from the variant rows and the colour palette in `rowToProduct`,
+  `mapRepoProduct` and on page load).
+- **Product page — add to cart was disabled on every dashboard-created product**: a missing legacy `available` flag
+  was read as "sold out". Only an explicit `false` or zero stock disables the button now.
+- **Product page / cart — quantity respects stock**: the stepper and the drawer stop at the variant's (or product's)
+  stock with "المتوفر N فقط / Seulement N disponible(s)" instead of letting the server reject the order.
+- **Dashboard — simple options editor** (Images & colours tab): option name (Storage/Size/RAM/Model) + one line per
+  value `value:extra price:stock`; colours × values generate the variants. The JSON field is kept under "advanced".
+- **Dashboard — colours field**: `name:#hex` (the old label promised `name:colour:#hex` but the parser produced
+  `#فضي`); the hex is now picked up wherever it is on the line.
+- **Dashboard — products list**: the per-row active/hidden switch showed only its knob inside the table.
+- **Orders**: orders cached by an older version are repaired on read (readable titles, real unit price).
+- **Product page — thumbnails** no longer spill out of their 78 px frame on mobile Chrome.
+- **Tests**: unit test for derived options/axes; stepper cap test; two new Playwright specs (variants end-to-end
+  dashboard → storefront → cart in AR and FR; product-page/products-list audit).
+- **Docs**: `docs/MERCHANT-GUIDE.md` §3 — four steps for a product with colours and storages.
+
 ## 1.10.0
 
 - **Invoice / order details**: unit price was 0 for server-validated orders (the server field is `unitPrice`; a 0 is
@@ -19,58 +40,11 @@
 - Hero slides: drop `assets/img/hero-1.jpg` / `hero-2.jpg` in the repo and point the slides at them from the
   dashboard (Homepage → Slides).
 
-
-
-
-## 1.9.6
-
-- WhatsApp message, success screen, dashboard and invoice show the product name, variant and specs again for server-validated orders (titles came back as `{ar,fr}` objects → `[object Object]`).
-
-## 1.9.5
-
-- Products with variants show the live total of variant stock everywhere (sales decrement the variant row; the parent row never moved, so the list showed the old number).
-
-## 1.9.4
-
-- Catalog load failures (ad blocker / Brave Shields / offline) are retried every poll, and the dashboard shows a warning banner instead of silently displaying stale stock.
-
-## 1.9.3
-
-- CI: language-toggle e2e test waits for the reload instead of a fixed 400 ms (flaky on slow runners).
-
-## 1.9.2
-
-- DB migration 0006: every sale bumps `restore_catalog_meta.version`, so dashboard and storefront show the decremented stock within one poll. Existing projects: run `supabase/migrations/0006_stock_bumps_catalog.sql` once.
-- Dashboard: bilingual product titles rendered as `[object Object]` in products, orders, abandoned carts, reviews and reports.
-
-## 1.9.1
-
-- Dashboard pulls orders from Supabase again (on open, every 30 s, on tab focus). The poll was lost in 1.8.5 when a stale 24-boot.js overwrote the 1.8.3/1.8.4 fix; it now lives in renderShell() and is idempotent.
-
-## 1.9.0
-
-- Storefront never reloads itself: content updates are repainted in place (checkout and focused fields untouched). Ends the reload loop for good and stops orders being lost mid-submission.
-
-## 1.8.9
-
-- Fix storefront reload loop: adopt the server `updated_at` after remote sync and publish (DB trigger overrides the browser stamp).
-
-## 1.8.8
-
-- Storefront: at most one reload per 15 s per tab, and the reload reason is logged to the console.
-
-## 1.8.7
-
-- Two open tabs no longer reload each other: identical values are not rewritten to storage, so no spurious storage events.
-
 ## 1.8.6
 
-- Storefront reload loop root cause: the catalog overlay signature is now persisted; the storefront reloads only when the tables actually changed.
-
-## 1.8.5
-
-- Storefront reload loop after publishing fixed: the browser now adopts the server's updated_at stamp after publish and after sync.
-- Dashboard order polling hooked on renderShell so it starts after login, not only at page load.
+- **Storefront reload loop, root cause.** With the catalog in tables, the overlay signature differed from the locally
+  hydrated state on every page load, and the storefront reloaded on each difference. The last applied signature is
+  now persisted; a reload happens only when the tables actually changed (at most one on first visit).
 
 ## 1.8.4
 
