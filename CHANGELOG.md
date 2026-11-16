@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.10.3
+
+- **Product page — positional variant axes were order-dependent**: PostgREST returns embedded variant rows in no
+  guaranteed order (demo1 returned 1024 before 1023), so 1.10.2 labelled the 256 GB row "64 GB". Rows are now
+  sorted by natural id before the fallback, in the domain mapper and the product-page mapper.
+- **Tests**: new remote-mode e2e (`e2e/08-remote-variants.spec.mjs`) runs the storefront against a mocked Supabase
+  with the exact demo1 rows (no color/storage columns, reversed order, stale `restore_state`) and asserts the price
+  per storage; unit test for the reversed order.
+
 ## 1.10.2
 
 - **Product page — price did not follow the pick on seeded stores**: variant rows written by the early seed (and any

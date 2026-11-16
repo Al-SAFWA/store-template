@@ -43,7 +43,10 @@ function pickImage(remote, local) {
 export function mapRepoVariants(row, local) {
   if (!Array.isArray(row.restore_product_variants)) return local?.variants || [];
   const known = new Map((local?.variants || []).map((v) => [String(v.id), v]));
-  return row.restore_product_variants.map((v) => {
+  const ordered = row.restore_product_variants
+    .slice()
+    .sort((a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true }));
+  return ordered.map((v) => {
     const axes = known.get(String(v.id)) || {};
     return {
       // o1/o2/title come from the hydrated catalog (domain mapper) — the page matches the shopper's choice on them

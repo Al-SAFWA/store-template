@@ -250,3 +250,30 @@ test("productToRow: legacy o1/o2 variants are written into the color/storage col
   assert.equal(back.variants[1].o1, "16 GB");
   assert.equal(back.variants[1].o2, "512 GB");
 });
+
+test("rowToProduct: positional axes do not depend on the order PostgREST returns the rows (demo1 tablet-10)", () => {
+  const row = {
+    id: "tablet-10",
+    handle: "tablet-10",
+    title: { ar: "t", fr: "t" },
+    price: 83740,
+    stock: 13,
+    active: true,
+    extra: { options: [{ name: "Storage", values: ["64 GB", "256 GB"] }] }
+  };
+  const p = rowToProduct(
+    row,
+    [
+      { id: "1024", color: null, storage: null, price_delta: 10050, stock: 8 },
+      { id: "1023", color: null, storage: null, price_delta: 0, stock: 5 }
+    ],
+    []
+  );
+  assert.deepEqual(
+    p.variants.map((v) => [v.id, v.o1, v.price]),
+    [
+      ["1023", "64 GB", 83740],
+      ["1024", "256 GB", 93790]
+    ]
+  );
+});

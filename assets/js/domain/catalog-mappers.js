@@ -208,7 +208,12 @@ export function rowToProduct(row, variants = [], collectionHandles = null) {
     sku: row.sku || "",
     sortOrder: int(row.sort_order, 0),
     collections: Array.isArray(collectionHandles) ? collectionHandles.map(String) : arr(extra.collections).map(String),
-    variants: arr(variants).map((v) => variantFromRow(v, base)),
+    // PostgREST returns embedded rows in no guaranteed order; natural id order = the order variants were created in
+    // (seed 1023 → 64 GB, 1024 → 256 GB), which the positional axis fallback relies on.
+    variants: arr(variants)
+      .slice()
+      .sort((a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true }))
+      .map((v) => variantFromRow(v, base)),
     updatedAt: row.updated_at || null,
     _source: "restore_products"
   };
