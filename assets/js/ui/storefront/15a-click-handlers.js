@@ -193,7 +193,9 @@ const SPEC_KEYS = (product) => (product?.options || []).map((option) => option.n
 
 function variantForSpecs(product, selected) {
   const keys = SPEC_KEYS(product);
-  return (product.variants || []).find((x) => keys.every((key, i) => x[`o${i + 1}`] === selected[key]));
+  return (product.variants || []).find((x) =>
+    keys.every((key, i) => x[`o${i + 1}`] == null || x[`o${i + 1}`] === selected[key])
+  );
 }
 
 function fallbackVariant(product, name, value) {

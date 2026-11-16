@@ -83,10 +83,9 @@ test("staff: products list — search box filters, row switch hides from the sto
   // Search narrows the table.
   const firstTitle = (await rows.first().locator("strong").first().innerText()).trim();
   await page.fill("#product-search", firstTitle.slice(0, 6));
-  await page.waitForTimeout(300);
-  expect(await page.locator("table tbody tr").count()).toBeLessThan(total);
+  await expect.poll(() => page.locator("table tbody tr").count(), { timeout: 4000 }).toBeLessThan(total);
   await page.fill("#product-search", "");
-  await page.waitForTimeout(300);
+  await expect.poll(() => page.locator("table tbody tr").count(), { timeout: 4000 }).toBe(total);
 
   // The per-row switch is a real, visible switch (track + knob) and flips the product to hidden after publish.
   const toggle = page.locator("[data-product-active]").first();

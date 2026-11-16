@@ -182,3 +182,71 @@ test("rowToProduct: options and o1/o2 are derived from variant rows so the produ
   assert.equal(big.title, "Silver / 256 GB");
   assert.equal(p.stock, 8);
 });
+
+test("rowToProduct: early-seed variant rows (no color/storage columns) get their axes back by position", () => {
+  const row = {
+    id: "tablet-10",
+    handle: "tablet-10",
+    title: { ar: "t", fr: "t" },
+    price: 83740,
+    stock: 16,
+    active: true,
+    extra: { options: [{ name: "Storage", values: ["64 GB", "256 GB"] }], colors: [{ name: "Black", hex: "#111827" }] }
+  };
+  const p = rowToProduct(
+    row,
+    [
+      { id: "1023", color: null, storage: null, price_delta: 0, stock: 8 },
+      { id: "1024", color: null, storage: null, price_delta: 10050, stock: 8 }
+    ],
+    []
+  );
+  assert.deepEqual(
+    p.options.map((o) => o.name),
+    ["Color", "Storage"]
+  );
+  const big = p.variants[1];
+  assert.equal(big.o1, null, "no colour on the row → any colour");
+  assert.equal(big.o2, "256 GB");
+  assert.equal(big.price, 93790);
+  assert.equal(p.variants[0].o2, "64 GB");
+});
+
+test("productToRow: legacy o1/o2 variants are written into the color/storage columns (two non-colour axes join)", () => {
+  const { variants } = productToRow({
+    handle: "laptop",
+    title: { ar: "l", fr: "l" },
+    price: 15900,
+    stock: 4,
+    options: [
+      { name: "RAM", values: ["8 GB", "16 GB"] },
+      { name: "SSD", values: ["256 GB", "512 GB"] }
+    ],
+    variants: [
+      { id: 1015, o1: "8 GB", o2: "256 GB", price: 15900 },
+      { id: 1018, o1: "16 GB", o2: "512 GB", price: 19716 }
+    ]
+  });
+  assert.equal(variants[0].storage, "8 GB / 256 GB");
+  assert.equal(variants[0].color, null);
+  assert.equal(variants[1].price_delta, 3816);
+  const back = rowToProduct(
+    {
+      id: "laptop",
+      handle: "laptop",
+      title: { ar: "l", fr: "l" },
+      price: 15900,
+      stock: 4,
+      extra: {
+        options: [
+          { name: "RAM", values: ["8 GB", "16 GB"] },
+          { name: "SSD", values: ["256 GB", "512 GB"] }
+        ]
+      }
+    },
+    variants,
+    []
+  );
+  assert.equal(back.variants[1].o1, "16 GB");
+  assert.equal(back.variants[1].o2, "512 GB");
+});

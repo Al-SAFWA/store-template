@@ -48,8 +48,8 @@ export function mapRepoVariants(row, local) {
     return {
       // o1/o2/title come from the hydrated catalog (domain mapper) — the page matches the shopper's choice on them
       title: axes.title || [v.color, v.storage].filter(Boolean).join(" / "),
-      o1: axes.o1 ?? v.color ?? v.storage ?? null,
-      o2: axes.o2 ?? (v.color ? v.storage : null) ?? null,
+      o1: "o1" in axes ? axes.o1 : (v.color ?? v.storage ?? null),
+      o2: "o1" in axes ? (axes.o2 ?? null) : v.color ? (v.storage ?? null) : null,
       id: v.id,
       sku: v.sku,
       color: v.color,

@@ -295,16 +295,54 @@ export function install(ctx) {
     item.stock = variants.reduce((sum, v) => sum + v.stock, 0);
   }
 
+  /** @type {Array<[string, number, number, number]>} */
+  const NAMED_COLORS = [
+    ["Black", 17, 24, 39],
+    ["White", 255, 255, 255],
+    ["Silver", 203, 213, 225],
+    ["Gray", 107, 114, 128],
+    ["Blue", 37, 99, 235],
+    ["Navy", 30, 41, 59],
+    ["Green", 5, 150, 105],
+    ["Red", 220, 38, 38],
+    ["Pink", 219, 39, 119],
+    ["Purple", 124, 58, 237],
+    ["Gold", 212, 175, 55],
+    ["Orange", 234, 88, 12],
+    ["Yellow", 250, 204, 21],
+    ["Brown", 120, 72, 36]
+  ];
+  const HEX_RE = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
+  /** Nearest everyday colour name for a hex, used when the merchant typed only "#111827". */
+  function nameForHex(hex) {
+    let h = hex.replace("#", "");
+    if (h.length === 3) h = [...h].map((c) => c + c).join("");
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+    let best = NAMED_COLORS[0];
+    let bestDist = Infinity;
+    for (const c of NAMED_COLORS) {
+      const d = (c[1] - r) ** 2 + (c[2] - g) ** 2 + (c[3] - b) ** 2;
+      if (d < bestDist) {
+        bestDist = d;
+        best = c;
+      }
+    }
+    return best[0];
+  }
   function parseColors(text) {
     return text
       .split("\n")
       .map((line) => {
-        // "Silver:#c0c0c0" or "Silver:فضي:#c0c0c0" (the label promised a middle Arabic name) — the hex is
-        // whichever part looks like one, so a merchant following the label no longer gets "#فضي".
-        const parts = line.split(":").map((part) => part.trim());
-        if (!parts[0]) return null;
-        const hex = parts.slice(1).find((part) => /^#?[0-9a-f]{3,8}$/i.test(part));
-        return { name: parts[0], hex: hex ? (hex.startsWith("#") ? hex : `#${hex}`) : "#999999" };
+        // Accepts "Silver:#c0c0c0", "#c0c0c0:Silver", "#c0c0c0" (named automatically) or "Silver" (grey dot).
+        const parts = line
+          .split(":")
+          .map((part) => part.trim())
+          .filter(Boolean);
+        if (!parts.length) return null;
+        const rawHex = parts.find((part) => HEX_RE.test(part));
+        const hex = rawHex ? (rawHex.startsWith("#") ? rawHex : `#${rawHex}`).toLowerCase() : "#999999";
+        const name = parts.find((part) => !HEX_RE.test(part)) || nameForHex(hex);
+        return { name, hex };
       })
       .filter(Boolean);
   }

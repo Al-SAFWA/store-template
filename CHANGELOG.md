@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.10.2
+
+- **Product page — price did not follow the pick on seeded stores**: variant rows written by the early seed (and any
+  1.8–1.10.0 import) have empty `color`/`storage` columns, so no choice could ever match them. Axes are now restored
+  by position when the variant count equals the option grid; `productToRow` writes `color`/`storage` from legacy
+  `o1/o2` (two non-colour axes join as "8 GB / 512 GB"); the seed is regenerated with the columns filled.
+- **Colour palette on a colourless product** (merchant adds colours to a product whose variants have none): the
+  colour axis is `null` on the variants = "any colour", so storage/condition picks still price correctly.
+- **Colour names**: the dashboard accepts `Silver:#c0c0c0`, `#c0c0c0:Silver` or just `#c0c0c0` (named automatically
+  from a 14-colour palette); the storefront shows أسود / Noir instead of the English key or a hex.
+- **Tests**: positional-axes and legacy round-trip unit tests; e2e covers hex-only colours and Arabic colour labels.
+
 ## 1.10.1
 
 - **Product page — variants**: the price, stock and WhatsApp text now follow the shopper's colour/storage pick for

@@ -36,7 +36,29 @@ export function install(ctx) {
     "strap color": { ar: "لون السوار", fr: "Couleur du bracelet" }
   };
   const optLabel = (name) => OPT_LABELS[String(name).toLowerCase()]?.[ctx.R.lang] || name;
-  const optValue = (name, value) => (/condition|état/i.test(name) ? ctx.conditionLabel(value) : value);
+  const COLOR_NAMES = {
+    black: { ar: "أسود", fr: "Noir" },
+    white: { ar: "أبيض", fr: "Blanc" },
+    silver: { ar: "فضي", fr: "Argent" },
+    gray: { ar: "رمادي", fr: "Gris" },
+    grey: { ar: "رمادي", fr: "Gris" },
+    graphite: { ar: "غرافيت", fr: "Graphite" },
+    blue: { ar: "أزرق", fr: "Bleu" },
+    navy: { ar: "كحلي", fr: "Bleu marine" },
+    green: { ar: "أخضر", fr: "Vert" },
+    red: { ar: "أحمر", fr: "Rouge" },
+    pink: { ar: "وردي", fr: "Rose" },
+    purple: { ar: "بنفسجي", fr: "Violet" },
+    gold: { ar: "ذهبي", fr: "Or" },
+    orange: { ar: "برتقالي", fr: "Orange" },
+    yellow: { ar: "أصفر", fr: "Jaune" },
+    brown: { ar: "بني", fr: "Marron" }
+  };
+  const optValue = (name, value) => {
+    if (/condition|état/i.test(name)) return ctx.conditionLabel(value);
+    if (/color|colour|couleur|لون/i.test(name)) return COLOR_NAMES[String(value).toLowerCase()]?.[ctx.R.lang] || value;
+    return value;
+  };
 
   function productSeed(p) {
     let h = 0;
@@ -165,7 +187,9 @@ export function install(ctx) {
     const p = PDP.p;
     if (!p) return null;
     const keys = (p.options || []).map((o) => o.name);
-    let v = (p.variants || []).find((x) => keys.every((k, i) => x["o" + (i + 1)] === PDP.sel[k]));
+    const axis = (x, i) => x["o" + (i + 1)];
+    // null on an axis means "any value" (e.g. a colour palette added to a product whose variants have no colour)
+    let v = (p.variants || []).find((x) => keys.every((k, i) => axis(x, i) == null || axis(x, i) === PDP.sel[k]));
     if (!v) v = (p.variants || []).find((x) => x.available) || p.variants?.[0];
     return v;
   }
@@ -174,7 +198,7 @@ export function install(ctx) {
 
   function colorButtonHTML(ctx, p, o, val, active) {
     const c = (p.colors || []).find((x) => x.name === val);
-    return `<button class="opt-btn color-opt ${active ? "active" : ""}" type="button" data-opt="${ctx.esc(o.name)}" data-value="${ctx.esc(val)}" data-color-hex="${ctx.esc(c?.hex || "")}"><span class="color-dot u-tint" data-sv="bg:${c ? c.hex : "#ccc"}"></span>${ctx.esc(val)}</button>`;
+    return `<button class="opt-btn color-opt ${active ? "active" : ""}" type="button" data-opt="${ctx.esc(o.name)}" data-value="${ctx.esc(val)}" data-color-hex="${ctx.esc(c?.hex || "")}"><span class="color-dot u-tint" data-sv="bg:${c ? c.hex : "#ccc"}"></span>${ctx.esc(optValue(o.name, val))}</button>`;
   }
 
   function optionButtonHTML(ctx, o, val, active) {

@@ -31,7 +31,8 @@ test("variants: dashboard simple editor → storefront price, stock, cart line, 
   await set('[data-edit-path="price"]', 7900);
   await set('[data-edit-path="stock"]', 1);
   await modal.locator('[data-product-tab="media"]').click();
-  await set("[data-colors]", "Silver:فضي:#c0c0c0\nBlack:أسود:#111111");
+  // one line with a name, one with the hex only (named "Black" automatically)
+  await set("[data-colors]", "Silver:#c0c0c0\n#111827");
   await modal.locator('[data-edit-path="optionName"]').selectOption("Storage");
   await set("[data-simple-variants]", "64 GB:0:5\n256 GB:5000:3\n512 GB:9000:0");
   await page.click('[data-action="save-editor"]');
@@ -58,6 +59,9 @@ test("variants: dashboard simple editor → storefront price, stock, cart line, 
   await expect(colorBtns).toHaveCount(2);
   await expect(storageBtns).toHaveCount(3);
   await expect(colorBtns.first()).toHaveAttribute("data-color-hex", "#c0c0c0");
+  await expect(colorBtns.first()).toHaveText("فضي");
+  await expect(colorBtns.nth(1)).toHaveAttribute("data-value", "Black");
+  await expect(colorBtns.nth(1)).toHaveText("أسود");
   const priceNow = () => info.locator(".price-now").first().innerText().then(money);
   expect(await priceNow()).toBe(7900);
 

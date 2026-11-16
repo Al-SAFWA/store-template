@@ -72,6 +72,16 @@ function productExtra(p, images) {
   extra.image = p.image || images[0] || "";
   return extra;
 }
+/** Legacy variants carry their choice only as o1/o2 (+ the option list); copy it into the color/storage columns so
+ * the row stays matchable after a round trip through the tables. Non-colour axes are joined with " / ". */
+function withColumnsFromAxes(v, options) {
+  if ((v.color && v.storage) || !options.length || v.o1 == null) return v;
+  const axes = options.map((o, i) => v["o" + (i + 1)]);
+  const colorIdx = options.findIndex((o) => isColorName(o.name));
+  const color = v.color || (colorIdx >= 0 ? axes[colorIdx] : null) || null;
+  const storage = v.storage || axes.filter((value, i) => i !== colorIdx && value).join(" / ") || null;
+  return { ...v, color, storage };
+}
 function variantToRow(v, i, id, basePrice, stock) {
   const delta = v.price_delta != null ? num(v.price_delta, 0) : num(v.price, basePrice) - basePrice;
   return {
@@ -108,7 +118,9 @@ export function productToRow(p) {
     sort_order: int(p.sortOrder, 0),
     extra
   };
-  const variants = arr(p.variants).map((v, i) => variantToRow(v, i, id, row.price, row.stock));
+  const variants = arr(p.variants).map((v, i) =>
+    variantToRow(withColumnsFromAxes(v, arr(p.options)), i, id, row.price, row.stock)
+  );
   return { row, variants, collectionHandles: extra.collections };
 }
 
@@ -142,14 +154,32 @@ function optionsFor(product) {
     options.push({ name: product.optionName || "Storage", values: storages });
   return options;
 }
-/** o1/o2/title for a variant row so the product page can match the shopper's selection. */
-function variantAxes(v, options) {
-  const axes = options.map((o) => (isColorName(o.name) ? v.color : v.storage));
+/** o1/o2/title for a variant row so the product page can match the shopper's selection. A variant without a colour
+ * under a palette-only Color axis gets `null` there (= any colour). Rows whose axes were lost (early seeds stored
+ * neither column) are assigned by position when the variant count equals the option grid. */
+function variantAxes(v, options, index, total) {
+  if (v.o1 != null) return { title: v.title || v.label || "" };
+  const nonColor = options.filter((o) => !isColorName(o.name));
+  const grid = nonColor.reduce((n, o) => n * o.values.length, 1);
+  const parts = String(v.storage || "").split(" / ");
+  const byPosition = !v.storage && grid === total && grid > 0 ? positional(nonColor, index) : null;
+  let k = 0;
+  const axes = options.map((o) => (isColorName(o.name) ? v.color || null : byPosition ? byPosition[k++] : parts[k++]));
   const out = { title: axes.filter(Boolean).join(" / ") || v.label || "" };
   axes.forEach((value, i) => {
     out["o" + (i + 1)] = value || null;
   });
   return out;
+}
+function positional(options, index) {
+  const values = [];
+  let rest = index;
+  for (let i = options.length - 1; i >= 0; i--) {
+    const n = options[i].values.length;
+    values.unshift(options[i].values[rest % n]);
+    rest = Math.floor(rest / n);
+  }
+  return values;
 }
 
 /** Stock shown everywhere: the sum of the variant rows when there are any, else the product row. */
@@ -187,7 +217,7 @@ export function rowToProduct(row, variants = [], collectionHandles = null) {
   // product.stock, so expose the live total here (demo1: 3 phones sold, list still showed 13).
   product.stock = liveStock(product);
   product.options = optionsFor(product);
-  product.variants.forEach((v) => Object.assign(v, variantAxes(v, product.options)));
+  product.variants.forEach((v, i, all) => Object.assign(v, variantAxes(v, product.options, i, all.length)));
   return product;
 }
 
