@@ -404,3 +404,51 @@ body[data-page="dashboard"] {
 .pe input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 .pe input[type="number"]::-webkit-inner-spin-button, .pe input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 @media (max-width: 480px) { .pe-two { grid-template-columns: 1fr; } }
+/* 1.12 — orders: three groups, phone cards with one next-step button */
+.orders-tabs button { font-size: 13px; padding: 8px 14px; }
+.oc-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--surface-3); font-size: 11px; font-weight: 800; margin-inline-start: 4px; }
+.oc-count.urgent { background: #dc2626; color: #fff; }
+.dash-more { position: relative; }
+.dash-more > summary { list-style: none; cursor: pointer; width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 10px; font-weight: 800; font-size: 18px; line-height: 1; }
+.dash-more > summary::-webkit-details-marker { display: none; }
+.dash-more-menu { position: absolute; inset-inline-end: 0; top: 42px; z-index: 5; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px; box-shadow: 0 10px 30px rgba(0,0,0,.12); display: grid; gap: 6px; min-width: 160px; }
+.orders-phone { display: none; }
+.order-cards { display: grid; gap: 12px; }
+.order-card { background: var(--surface); border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); padding: 14px; display: grid; gap: 10px; cursor: pointer; }
+.oc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.oc-who { display: grid; gap: 2px; min-width: 0; }
+.oc-who strong { font-size: 16px; }
+.oc-who small { font-size: 12px; color: var(--muted); }
+.oc-items { display: flex; align-items: center; gap: 10px; }
+.oc-thumb { width: 44px; height: 44px; border-radius: 10px; background: var(--surface-2); display: grid; place-items: center; overflow: hidden; flex: 0 0 44px; }
+.oc-thumb img { width: 100%; height: 100%; object-fit: contain; }
+.oc-thumb svg { width: 20px; height: 20px; opacity: .5; }
+.oc-item-text { display: grid; gap: 2px; min-width: 0; }
+.oc-item-text strong { font-size: 13px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.oc-item-text small { font-size: 11px; color: var(--muted); }
+.oc-total { margin-inline-start: auto; font-size: 16px; white-space: nowrap; }
+.oc-actions { display: flex; gap: 8px; align-items: center; }
+.oc-actions .btn { height: 44px; border-radius: 12px; font-size: 13px; white-space: nowrap; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.oc-actions .btn > svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.oc-next { flex: 1; background: #2563eb; color: #fff; border: 0; min-width: 0; }
+.oc-next-confirmed { background: #7c3aed; }
+.oc-next-preparing { background: #d97706; }
+.oc-next-shipped { background: #059669; }
+.oc-wa { flex: 0 0 42px; padding: 0; background: #dcfce7; color: #166534; border: 0; }
+.oc-call { flex: 0 0 42px; padding: 0; background: var(--surface-3); color: var(--ink); border: 0; }
+.oc-cancel { background: none; border: 0; color: var(--soft-muted); font-size: 12px; font-weight: 600; cursor: pointer; padding: 0 6px; height: 44px; }
+.oc-final { flex: 1; text-align: center; color: var(--muted); font-weight: 700; font-size: 13px; }
+.oc-meta { font-size: 11px; color: var(--soft-muted); }
+.order-step h4 { display: flex; align-items: center; gap: 8px; }
+.order-more > summary { cursor: pointer; font-size: 12px; font-weight: 700; color: var(--purple); }
+@media (max-width: 760px) {
+  .orders-phone { display: block; }
+  .orders-desk { display: none; }
+  .orders-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
+  .orders-toolbar .spacer { display: none; }
+  .orders-tabs { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .orders-tabs button { justify-content: center; }
+  .orders-toolbar .field { min-width: 0; }
+  .order-detail { grid-template-columns: 1fr; }
+  .order-detail > div:first-child { order: 2; }
+}

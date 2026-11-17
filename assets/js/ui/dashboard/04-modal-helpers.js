@@ -18,7 +18,7 @@ export function install(ctx) {
     statusOptions
   });
   ctx.editBuffer = null;
-  ctx.orderFilter = "all";
+  ctx.orderFilter = "new";
   ctx.productSearch = "";
   ctx.productCategory = "all";
   ctx.productStock = "all";

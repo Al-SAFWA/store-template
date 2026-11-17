@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.12.0 — 2026-10-29
+
+Orders screen for merchants on a phone (dashboard only; order/stock/WhatsApp logic unchanged).
+
+- New `assets/js/ui/dashboard/05b-orders-cards.js`: one card per order (customer, phone, city/address, first item with thumbnail, payment, total, relative time) and a single **next-step button** per status: new → "تأكيد الطلب" → "جاهز للشحن" → "خرج للتوصيل" → "تم التسليم". WhatsApp button prefilled with the template that matches the status (confirm / shipped / delivered), call button, discreet "إلغاء" with confirmation.
+- Three tabs replace the seven status tabs: **جديد** (red counter) · **جارٍ** (confirmed/preparing/shipped) · **منتهٍ** (delivered/cancelled/returned). Default tab is "جديد". Export CSV moved under a "⋯" menu.
+- Cards show on screens ≤ 760 px; the desktop table is unchanged above that.
+- Order detail modal: next-step bar on top, customer block, then "المزيد" (collapsed) with the manual status select, internal note, invoice and shipping label. Stacks in one column on phones.
+- New actions `order-next` / `order-cancel` in `22c-actions-forms.js`; icons `phone`, `truck`, `box` added to the dashboard icon set.
+- New e2e `e2e/09-orders-phone.spec.mjs`: places real storefront orders at 390 px, walks one through all four steps from the cards, checks the WhatsApp link content, the groups, the modal and the cancel flow. `e2e/helpers.mjs` waits for the dashboard shell as attached (the sidebar is off-screen on phones).
+
 ## 1.11.0 — 2026-10-29
 
 Product editor rebuilt for merchants on a phone (dashboard only; no storefront, DB or SQL change). Includes the unshipped 1.10.4 fixes.

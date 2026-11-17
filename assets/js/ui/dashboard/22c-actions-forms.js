@@ -113,6 +113,25 @@ function orderActions(ctx) {
       ctx.closeModal();
       ctx.renderRoute();
     },
+    "order-next": ({ id }) => {
+      const order = findOrder(id);
+      const next = order && ctx.orderNextStep(order.status);
+      if (!next) return;
+      ctx.R.updateOrder(id, { status: next.status });
+      ctx.R.addAudit(`${ctx.dt("تحديث حالة طلب", "Statut commande")} ${id}: ${next.status}`);
+      ctx.toast(`${ctx.dt(next.ar, next.fr)} ✓`, "good");
+      if (ctx.modalRoot.firstElementChild) ctx.closeModal();
+      ctx.renderRoute();
+    },
+    "order-cancel": ({ id }) => {
+      const order = findOrder(id);
+      if (!order || !ask(ctx, `إلغاء الطلب ${id}؟`, `Annuler la commande ${id} ?`)) return;
+      ctx.R.updateOrder(id, { status: "cancelled" });
+      ctx.R.addAudit(`${ctx.dt("إلغاء طلب", "Commande annulée")} ${id}`);
+      ctx.toast(ctx.dt("تم إلغاء الطلب", "Commande annulée"));
+      if (ctx.modalRoot.firstElementChild) ctx.closeModal();
+      ctx.renderRoute();
+    },
     "print-invoice": ({ id }) => ctx.printOrder(findOrder(id), "invoice"),
     "print-label": ({ id }) => ctx.printOrder(findOrder(id), "label"),
     "export-orders": () => ctx.exportOrdersCsv(),

@@ -16,7 +16,7 @@ export function install(ctx) {
   function filteredOrders() {
     const needle = ctx.R.normalizeText(ctx.searchTerm);
     return ctx.orderList().filter((order) => {
-      if (ctx.orderFilter !== "all" && order.status !== ctx.orderFilter) return false;
+      if (ctx.orderFilter !== "all" && ctx.orderGroupOf(order.status) !== ctx.orderFilter) return false;
       if (!needle) return true;
       const haystack = ctx.R.normalizeText(
         [
@@ -68,25 +68,23 @@ export function install(ctx) {
 
   function viewOrders() {
     const orders = filteredOrders();
-    const tabs = [
-      { id: "all", label: ctx.dt("الكل", "Toutes"), count: ctx.orderList().length },
-      ...ctx.R.statuses.map((status) => ({
-        id: status,
-        label: ctx.lng(ctx.R.statusMeta(status).label),
-        count: ctx.orderStatusCount(status)
-      }))
-    ];
+    const tabs = ctx.orderGroups();
+    const tabHTML = (tab) =>
+      `<button type="button" data-order-filter="${tab.id}" class="${ctx.orderFilter === tab.id ? "active" : ""}">${ctx.esc(tab.label)}${
+        tab.count ? ` <span class="oc-count${tab.urgent ? " urgent" : ""}">${tab.count}</span>` : ""
+      }</button>`;
     return `
       <div class="dash-view-head">
         <div><h2>${ctx.dt("الطلبات", "Commandes")}</h2><p>${ctx.dt("كل طلب يصل من المتجر يظهر هنا فورًا.", "Chaque commande de la boutique apparaît ici en direct.")}</p></div>
-        <div class="dash-view-actions"><button class="btn btn-soft" type="button" data-action="export-orders">${ctx.icon("download")} ${ctx.dt("تصدير CSV", "Exporter CSV")}</button></div>
+        <div class="dash-view-actions"><details class="dash-more"><summary aria-label="${ctx.dt("المزيد", "Plus")}">⋯</summary><div class="dash-more-menu"><button class="btn btn-soft btn-sm" type="button" data-action="export-orders">${ctx.icon("download")} ${ctx.dt("تصدير CSV", "Exporter CSV")}</button></div></details></div>
       </div>
-      <div class="dash-toolbar">
-        <div class="segmented u-wrap">${tabs.map((tab) => `<button type="button" data-order-filter="${tab.id}" class="${ctx.orderFilter === tab.id ? "active" : ""}">${ctx.esc(tab.label)} ${tab.count ? `(${tab.count})` : ""}</button>`).join("")}</div>
+      <div class="dash-toolbar orders-toolbar">
+        <div class="segmented orders-tabs">${tabs.map(tabHTML).join("")}</div>
         <div class="spacer"></div>
-        <label class="field u-min-210"><input id="order-search" placeholder="${ctx.dt("بحث بالرقم، الاسم أو الهاتف", "N°, nom ou téléphone")}" value="${ctx.esc(ctx.searchTerm)}"></label>
+        <label class="field u-min-210"><input id="order-search" placeholder="${ctx.dt("بحث بالاسم أو الهاتف", "Nom ou téléphone")}" value="${ctx.esc(ctx.searchTerm)}"></label>
       </div>
-      <div class="dash-card">${ordersTable(orders)}</div>`;
+      <div class="orders-phone">${ctx.orderCardsHTML(orders)}</div>
+      <div class="dash-card orders-desk">${ordersTable(orders)}</div>`;
   }
 
   function orderMessage(order, type = "confirm") {
@@ -215,26 +213,20 @@ export function install(ctx) {
   function orderManagementSection(order) {
     const payment = ctx.esc(order.payment?.name || "");
     const source = ctx.esc(order.source || "whatsapp");
-    return `<div class="order-detail-section u-mt-10">
-            <h4>${ctx.dt("إدارة الطلب", "Gestion")}</h4>
-            <div class="field"><label>${ctx.dt("الحالة", "Statut")}</label><select data-order-status="${ctx.esc(order.id)}">${ctx.statusOptions(order.status)}</select></div>
-            <div class="field u-mt-8"><label>${ctx.dt("ملاحظة داخلية", "Note interne")}</label><textarea rows="3" data-order-note="${ctx.esc(order.id)}">${ctx.esc(order.internalNote || "")}</textarea></div>
-            <p class="form-note u-mt-8">${ctx.dt("الدفع", "Paiement")}: <strong>${payment}</strong> · ${ctx.dt("المصدر", "Source")}: ${source}</p>
-          </div>`;
-  }
-
-  function orderDocumentsSection(order, statusColor) {
     const printIcon = ctx.icon("print");
-    const label = ctx.esc(ctx.lng(ctx.R.statusMeta(order.status).label));
-    return `<div class="order-detail-section u-mt-10">
-            <h4>${ctx.dt("المستندات", "Documents")}</h4>
-            <div class="u-flex u-gap-5 u-wrap"><button class="btn btn-sm btn-soft" data-action="print-invoice" data-id="${ctx.esc(order.id)}">${printIcon} ${ctx.dt("فاتورة", "Facture")}</button><button class="btn btn-sm btn-soft" data-action="print-label" data-id="${ctx.esc(order.id)}">${ctx.dt("ملصق شحن", "Étiquette")}</button></div>
-            <div class="u-mt-12"><span class="status-pill" data-sv="status:${ctx.esc(statusColor)}">${label}</span></div>
-          </div>`;
+    const id = ctx.esc(order.id);
+    return `<details class="order-detail-section order-more u-mt-10"><summary>${ctx.dt("المزيد: الحالة يدوياً، ملاحظة داخلية، فاتورة وملصق", "Plus : statut manuel, note interne, facture et étiquette")}</summary>
+            <div class="field u-mt-8"><label>${ctx.dt("الحالة", "Statut")}</label><select data-order-status="${id}">${ctx.statusOptions(order.status)}</select></div>
+            <div class="field u-mt-8"><label>${ctx.dt("ملاحظة داخلية", "Note interne")}</label><textarea rows="3" data-order-note="${id}">${ctx.esc(order.internalNote || "")}</textarea></div>
+            <div class="u-flex u-gap-5 u-wrap u-mt-8"><button class="btn btn-sm btn-soft" data-action="print-invoice" data-id="${id}">${printIcon} ${ctx.dt("فاتورة", "Facture")}</button><button class="btn btn-sm btn-soft" data-action="print-label" data-id="${id}">${printIcon} ${ctx.dt("ملصق شحن", "Étiquette")}</button></div>
+            <p class="form-note u-mt-8">${ctx.dt("الدفع", "Paiement")}: <strong>${payment}</strong> · ${ctx.dt("المصدر", "Source")}: ${source}</p>
+          </details>`;
   }
 
   function orderCustomerHTML(order, wa, statusColor) {
-    return `${orderContactSection(order, wa)}${orderManagementSection(order)}${orderDocumentsSection(order, statusColor)}`;
+    const label = ctx.esc(ctx.lng(ctx.R.statusMeta(order.status).label));
+    return `<div class="order-detail-section order-step"><h4>${ctx.dt("الخطوة التالية", "Prochaine étape")} · <span class="status-pill" data-sv="status:${ctx.esc(statusColor)}">${label}</span></h4>${ctx.orderActionBar(order)}</div>
+      <div class="u-mt-10">${orderContactSection(order, wa)}</div>${orderManagementSection(order)}`;
   }
 
   function viewOrderModal(id) {
@@ -242,7 +234,7 @@ export function install(ctx) {
     if (!order) return;
     const status = ctx.R.statusMeta(order.status);
     const statusColor = status.color;
-    const wa = `https://wa.me/${ctx.digits(order.customer?.phone)}?text=${encodeURIComponent(orderMessage(order, "confirm"))}`;
+    const wa = ctx.orderWhatsAppLink(order);
     const items = (order.items || []).map(orderItemRow).join("");
     const footer = `<button class="btn btn-soft btn-sm" data-action="close-modal">${ctx.dt("إغلاق", "Fermer")}</button><button class="btn btn-primary btn-sm" data-action="save-order" data-id="${ctx.esc(order.id)}">${ctx.icon("check")} ${ctx.dt("حفظ التغييرات", "Enregistrer")}</button>`;
     ctx.openModal(

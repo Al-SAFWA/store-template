@@ -14,6 +14,7 @@ import { install as s2 } from "./ui/dashboard/02-shell.js";
 import { install as s3 } from "./ui/dashboard/03-overview.js";
 import { install as s4 } from "./ui/dashboard/04-modal-helpers.js";
 import { install as s5 } from "./ui/dashboard/05-orders.js";
+import { install as s5b } from "./ui/dashboard/05b-orders-cards.js";
 import { install as s6 } from "./ui/dashboard/06-abandoned.js";
 import { install as s7 } from "./ui/dashboard/07-products.js";
 import { install as s7b } from "./ui/dashboard/07b-product-editor.js";
@@ -49,6 +50,7 @@ const _initDashboard = () => {
   s3(ctx); // Overview
   s4(ctx); // Shared modal / field helpers
   s5(ctx); // Orders
+  s5b(ctx); // Orders — phone cards and next-step actions
   s6(ctx); // Abandoned checkout
   s7b(ctx); // Product editor (markup + behaviour)
   s7(ctx); // Products

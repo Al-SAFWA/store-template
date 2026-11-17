@@ -38,7 +38,7 @@ export async function loginDashboard(page) {
     if (await wa.count()) await wa.fill("22246000000");
     await pw.locator('button[type="submit"]').click();
   }
-  await page.waitForSelector("#dash-sidebar, [data-route]", { timeout: 10_000 });
+  await page.waitForSelector("#dash-sidebar, [data-route]", { timeout: 10_000, state: "attached" });
 }
 export const DASHBOARD_ROUTES = [
   "overview",
