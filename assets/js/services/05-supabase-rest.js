@@ -192,6 +192,19 @@ export function install(ctx) {
   const MEDIA_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif" };
 
   /** Validated extension of the uploaded blob. */
+  /** data: URL → Blob without `fetch()` — the dashboard CSP (`connect-src`) does not allow `data:` requests,
+      which made every upload fail with "Failed to fetch" on remote stores (1.13.1). */
+  function dataUrlToBlob(dataUrl) {
+    const match = /^data:([^;,]+)?(;base64)?,(.*)$/s.exec(String(dataUrl || ""));
+    if (!match) throw new Error("صورة غير صالحة");
+    const type = match[1] || "application/octet-stream";
+    if (!match[2]) return new Blob([decodeURIComponent(match[3])], { type });
+    const binary = atob(match[3]);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return new Blob([bytes], { type });
+  }
+
   function mediaExtension(blob) {
     const extension = MEDIA_TYPES[blob.type];
     if (!extension) throw new Error("صيغة الصورة غير مدعومة. استخدم PNG أو JPG أو WebP أو GIF.");
@@ -218,7 +231,7 @@ export function install(ctx) {
   async function uploadMedia(dataUrl, folder = "uploads") {
     if (!ctx.REMOTE) return null;
     if (!(await remoteSessionValid())) throw new Error(sessionLostMessage());
-    const blob = await (await fetch(dataUrl)).blob();
+    const blob = dataUrlToBlob(dataUrl);
     const extension = mediaExtension(blob);
     const objectPath = objectPathFor(folder, extension);
     const res = await fetch(storageUrl("", objectPath), {

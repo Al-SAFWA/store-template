@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.13.1 — 2026-10-29
+
+- Fix: image upload on remote stores always failed with "Failed to fetch". `uploadMedia` turned the resized data: URL into a Blob with `fetch(dataUrl)`, which the dashboard CSP (`connect-src` has no `data:`) blocks before any request reaches Supabase. The data URL is now decoded with `atob` → `Blob`. Affects hero slides, product photos, avatars.
+
 ## 1.13.0 — 2026-10-29
 
 Hero slides for merchants on a phone + session guard (dashboard only; data shape of `settings.heroSlides` unchanged, no SQL).
