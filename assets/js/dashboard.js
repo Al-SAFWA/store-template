@@ -16,6 +16,7 @@ import { install as s4 } from "./ui/dashboard/04-modal-helpers.js";
 import { install as s5 } from "./ui/dashboard/05-orders.js";
 import { install as s6 } from "./ui/dashboard/06-abandoned.js";
 import { install as s7 } from "./ui/dashboard/07-products.js";
+import { install as s7b } from "./ui/dashboard/07b-product-editor.js";
 import { install as s8 } from "./ui/dashboard/08-categories.js";
 import { install as s9 } from "./ui/dashboard/09-content-nav.js";
 import { install as s10 } from "./ui/dashboard/10-homepage.js";
@@ -49,6 +50,7 @@ const _initDashboard = () => {
   s4(ctx); // Shared modal / field helpers
   s5(ctx); // Orders
   s6(ctx); // Abandoned checkout
+  s7b(ctx); // Product editor (markup + behaviour)
   s7(ctx); // Products
   s8(ctx); // Categories
   s9(ctx); // Storefront content and navigation

@@ -86,9 +86,28 @@ export function install(ctx) {
       toast(label, "good");
       return true;
     } catch (error) {
-      toast(dt("فشل الحفظ في قاعدة البيانات: ", "Échec de l'enregistrement : ") + (error?.message || error), "error");
+      toast(dt("فشل الحفظ في قاعدة البيانات: ", "Échec de l'enregistrement : ") + humanError(error), "error");
       return false;
     }
+  }
+  const ERROR_TEXT = {
+    handle_invalid: [
+      "المعرّف يجب أن يكون بأحرف لاتينية صغيرة وأرقام وشرطات",
+      "Identifiant : lettres minuscules, chiffres, tirets"
+    ],
+    title_required: ["اكتب اسم المنتج", "Le nom du produit est requis"],
+    price_invalid: ["السعر غير صحيح", "Prix invalide"],
+    stock_invalid: ["المخزون غير صحيح", "Stock invalide"],
+    forbidden: ["ليست لديك صلاحية؛ سجّل الدخول بحساب موظف", "Accès refusé : connectez-vous avec un compte staff"]
+  };
+  /** validation codes / PostgREST messages → one sentence the merchant can act on. */
+  function humanError(error) {
+    const raw = String(error?.message || error || "");
+    const codes = raw.replace(/^validation:\s*/, "").split(/,\s*/);
+    const known = codes.map((code) => ERROR_TEXT[code.trim()]).filter(Boolean);
+    if (known.length) return known.map(([ar, fr]) => dt(ar, fr)).join(" · ");
+    if (/forbidden|42501/.test(raw)) return dt(...ERROR_TEXT.forbidden);
+    return raw;
   }
   function catalogBanner() {
     if (!CAT || !CAT.enabled) return "";

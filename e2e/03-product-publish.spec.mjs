@@ -11,16 +11,18 @@ test("staff: create a product in the dashboard, publish, and see it on the store
   await page.click('[data-action="add-product"]');
   const modal = page.locator(".dash-modal");
   await expect(modal).toBeVisible();
-  const handle = "e2e-produit-" + Date.now().toString(36);
+  const stamp = Date.now().toString(36);
+  const handle = "e2e-produit-" + stamp;
   const set = async (path, value) => {
     const el = modal.locator(`[data-edit-path="${path}"]`).first();
     await el.fill(String(value));
     await el.dispatchEvent("input");
     await el.dispatchEvent("change");
   };
-  await set("handle", handle);
+  // No handle field any more: the URL slug comes from the French name ("E2E Produit <stamp>" → "e2e-produit-<stamp>").
   await set("title.ar", "منتج اختبار");
-  await set("title.fr", "Produit E2E");
+  await modal.locator(".pe-more > summary").click();
+  await set("title.fr", "E2E Produit " + stamp);
   await set("price", 12345);
   await set("stock", 7);
   await page.click('[data-action="save-editor"]');
@@ -35,7 +37,7 @@ test("staff: create a product in the dashboard, publish, and see it on the store
   expect(live.stock).toBe(7);
   await page.goto(`/product.html?handle=${handle}`);
   const h1 = page.locator("h1").first();
-  await expect(h1).toContainText(/Produit E2E|منتج اختبار/);
+  await expect(h1).toContainText(/E2E Produit|منتج اختبار/);
   await expect(h1).not.toContainText("[object Object]");
   await expect(page.locator("[data-add-cart]")).toBeVisible();
   expect(errors, errors.join("\n")).toEqual([]);

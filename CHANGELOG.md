@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.11.0 — 2026-10-29
+
+Product editor rebuilt for merchants on a phone (dashboard only; no storefront, DB or SQL change). Includes the unshipped 1.10.4 fixes.
+
+- New `assets/js/ui/dashboard/07b-product-editor.js`: name, category, price, photos, colours, choices/stock, visibility — everything else under "تفاصيل أكثر". No handle field: the URL slug is generated from the name (French/Latin name first, else `p-<id>`), unique and lowercase, so `handle_invalid` cannot happen from the dashboard any more.
+- Photos: one "أضف صوراً" button (phone gallery, multiple files, resized + uploaded to Supabase when remote), thumbnails, tap a thumbnail to make it the main picture, × to remove. A product saved without photos keeps its previous picture (or a neutral placeholder).
+- Colours: tap preset swatches (black, white, silver, grey, gold, blue, green, red, pink, purple) or "+ لون آخر" with a colour picker; nothing to type in `Name:#hex` format.
+- Choices: switch "له سعات أو مقاسات مختلفة", pick the axis (capacity/size/RAM/model), rows [value][+price][stock], "أضف خياراً"; a colour × value stock grid appears automatically and is the source of the variant stock. The grid follows the row totals while typing and is never rebuilt on blur (a tap on a cell right after typing is kept).
+- Draft products start with an empty name; saving with no name shows "اكتب اسم المنتج أولاً". French name defaults to the Arabic name.
+- Readable save errors (from 1.10.4): `handle_invalid`, `price_invalid`, `stock_invalid`, `title_missing` are translated instead of shown raw (`ERROR_TEXT` / `humanError` in `00-context.js`); technical fields (SKU, JSON, image maps) are `dir="ltr"` so `64 GB:0:5` no longer scrambles in RTL.
+- Removed from `07-products.js`: the 3-tab form, the `Name:#hex` colour parser (`parseColors`/`nameForHex`), `value:extra:stock` text parser (`applySimpleVariants`), images textarea. JSON specs/includes and colour→image map remain under "للمبرمج (JSON)".
+- e2e `03` and `06` rewritten for the new editor (tap colours, add rows, split stock per colour in the grid, slug from the French name); all 13 e2e + `npm run check` green.
+
 ## 1.10.3
 
 - **Product page — positional variant axes were order-dependent**: PostgREST returns embedded variant rows in no

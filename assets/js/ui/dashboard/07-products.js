@@ -68,8 +68,8 @@ export function install(ctx) {
   /** Blank product used when the editor opens for a new item. */
   function newProductBuffer() {
     return {
-      handle: `restore-${Date.now().toString(36)}`,
-      title: { ar: "منتج جديد", fr: "Nouveau produit" },
+      handle: `p-${Date.now().toString(36)}`,
+      title: { ar: "", fr: "" },
       vendor: "",
       type: "Smartphone",
       condition: "Good",
@@ -78,8 +78,8 @@ export function install(ctx) {
       stock: 1,
       battery: 90,
       active: true,
-      image: "assets/products/smartphone-pro-128.svg",
-      images: ["assets/products/smartphone-pro-128.svg"],
+      image: "",
+      images: [],
       description: { ar: "", fr: "" },
       includes: [],
       specs: {},
@@ -90,14 +90,6 @@ export function install(ctx) {
       sku: "",
       warrantyMonths: 12
     };
-  }
-
-  const PRODUCT_TYPES = ["Smartphone", "Macbook", "Laptop", "Tablets", "Apple Watch", "Playstation", "Accessories"];
-  const PRODUCT_CONDITIONS = ["Like New", "Excellent", "Very Good", "Good", "Fair", "New"];
-
-  /** `<option>` list with the current value selected. */
-  function selectedOptions(values, current) {
-    return values.map((value) => `<option ${current === value ? "selected" : ""}>${value}</option>`).join("");
   }
 
   function categoryOptionsHTML(buffer) {
@@ -157,11 +149,6 @@ export function install(ctx) {
     return buffer.title?.ar || buffer.title;
   }
 
-  function newProductReadonly(isNew) {
-    if (isNew) return "";
-    return "readonly";
-  }
-
   function productEditorBuffer(index) {
     if (index == null) return newProductBuffer();
     return ctx.clone(ctx.model.products[index]);
@@ -171,181 +158,18 @@ export function install(ctx) {
     const isNew = index == null;
     const buffer = productEditorBuffer(index);
     ctx.editBuffer = buffer;
-    const categoryOptions = categoryOptionsHTML(buffer);
-    const readonlyAttr = newProductReadonly(isNew);
-    ctx.openModal(
-      productEditorTitle(buffer, isNew),
-      `
-      <div class="dash-tabs"><button class="active" type="button">${ctx.dt("المعلومات", "Informations")}</button><button type="button" data-product-tab="media">${ctx.dt("الصور والألوان", "Images & couleurs")}</button><button type="button" data-product-tab="specs">${ctx.dt("المواصفات", "Spécifications")}</button></div>
-      <div class="dash-panel active" data-product-panel="main">
-        <div class="form-grid">
-          ${ctx.editBi(ctx.dt("اسم المنتج", "Nom du produit"), "title", buffer.title)}
-          <div class="field"><label>${ctx.dt("المعرف", "Identifiant")}</label><input data-edit-path="handle" value="${ctx.esc(buffer.handle)}" dir="ltr" ${readonlyAttr}></div>
-          <div class="field"><label>${ctx.dt("الفئة", "Catégorie")}</label><select data-edit-path="collections.0"><option value="">—</option>${categoryOptions}</select></div>
-          <div class="field"><label>Vendor</label><input data-edit-path="vendor" value="${ctx.esc(buffer.vendor)}"></div>
-          <div class="field"><label>${ctx.dt("النوع", "Type")}</label><select data-edit-path="type">${selectedOptions(PRODUCT_TYPES, buffer.type)}</select></div>
-          <div class="field"><label>${ctx.dt("الحالة", "État")}</label><select data-edit-path="condition">${selectedOptions(PRODUCT_CONDITIONS, buffer.condition)}</select></div>
-          <div class="field"><label>${ctx.dt("السعر (MRU)", "Prix (MRU)")}</label><input type="number" data-edit-path="price" value="${ctx.esc(buffer.price)}"></div>
-          <div class="field"><label>${ctx.dt("السعر قبل الخصم", "Prix barré")}</label><input type="number" data-edit-path="compare" value="${ctx.esc(buffer.compare)}"></div>
-          <div class="field"><label>${ctx.dt("المخزون", "Stock")}</label><input type="number" data-edit-path="stock" value="${ctx.esc(buffer.stock)}"></div>
-          <div class="field"><label>${ctx.dt("صحة البطارية %", "Santé batterie %")}</label><input type="number" data-edit-path="battery" value="${ctx.esc(buffer.battery)}"></div>
-          <div class="field"><label>${ctx.dt("الضمان (أشهر)", "Garantie (mois)")}</label><input type="number" data-edit-path="warrantyMonths" value="${ctx.esc(buffer.warrantyMonths || 12)}"></div>
-          <div class="field"><label>SKU</label><input data-edit-path="sku" value="${ctx.esc(buffer.sku || "")}"></div>
-          ${ctx.editBi(ctx.dt("الوصف", "Description"), "description", buffer.description, { type: "textarea", rows: 4 })}
-          <div class="span-2">${ctx.editToggle(ctx.dt("إظهار المنتج في المتجر", "Afficher dans la boutique"), "active", buffer.active !== false)}</div>
-        </div>
-      </div>
-      <div class="dash-panel" data-product-panel="media">
-        <div class="form-grid">
-          ${ctx.imageEditor(ctx.dt("الصورة الرئيسية", "Image principale"), "image", buffer.image)}
-          <div class="field span-2"><label>${ctx.dt("صور إضافية (رابط في كل سطر)", "Images supplémentaires (une URL par ligne)")}</label><textarea data-edit-path="images" rows="4" data-json="array">${ctx.esc((buffer.images || []).join("\n"))}</textarea></div>
-          <div class="field"><label>${ctx.dt("الألوان (سطر لكل لون: الاسم:#hex)", "Couleurs (une par ligne : nom:#hex)")}</label><textarea data-edit-path="colors" rows="4" data-colors>${ctx.esc((buffer.colors || []).map((color) => `${color.name}:${color.hex}`).join("\n"))}</textarea></div>
-          <div class="field"><label>${ctx.dt("صور الألوان (اسم:رابط)", "Images couleurs (nom:URL)")}</label><textarea data-edit-path="colorImages" rows="4" data-colormap>${ctx.esc(
-            Object.entries(buffer.colorImages || {})
-              .map(([key, value]) => `${key}:${value}`)
-              .join("\n")
-          )}</textarea></div>
-          <div class="field"><label>${ctx.dt("اسم الخيار الثاني", "Nom du second choix")}</label><select data-edit-path="optionName">${selectedOptions(OPTION_NAMES, buffer.optionName || firstNonColorOption(buffer) || "Storage")}</select></div>
-          <div class="field"><label>${ctx.dt("قيم الخيار (سطر لكل قيمة: القيمة:السعر الإضافي:المخزون)", "Valeurs (une par ligne : valeur:supplément:stock)")}</label><textarea rows="4" data-simple-variants placeholder="64 GB:0:5&#10;256 GB:5000:3">${ctx.esc(simpleVariantsText(buffer))}</textarea></div>
-          <p class="form-note span-2">${ctx.dt("الألوان أعلاه × هذه القيم = الخيارات التي يراها الزبون، ولكل تركيبة مخزونها. اتركها فارغة لمنتج بلا خيارات.", "Couleurs ci-dessus × ces valeurs = les choix du client, chaque combinaison avec son stock. Laissez vide pour un produit sans variantes.")}</p>
-          <details class="span-2"><summary>${ctx.dt("المتغيرات (JSON متقدم)", "Variantes (JSON avancé)")}</summary><textarea data-edit-path="variants" rows="5" data-json="raw">${ctx.esc(JSON.stringify(buffer.variants || [], null, 2))}</textarea></details>
-        </div>
-      </div>
-      <div class="dash-panel" data-product-panel="specs">
-        <div class="form-grid">
-          <div class="field span-2"><label>${ctx.dt("المواصفات (JSON)", "Spécifications (JSON)")}</label><textarea data-edit-path="specs" rows="14" data-json="raw">${ctx.esc(JSON.stringify(buffer.specs || {}, null, 2))}</textarea><p class="form-note">${ctx.dt("أمثلة: cpu, ram, storage, screen, condition, keyboard, battery. كل قيمة تحتوي label و value و choices.", "Exemples : cpu, ram, storage, screen, condition, keyboard, battery. Chaque valeur contient label, value et choices.")}</p></div>
-          <div class="field span-2"><label>${ctx.dt("ماذا يوجد في العلبة (JSON)", "Contenu de la boîte (JSON)")}</label><textarea data-edit-path="includes" rows="7" data-json="raw">${ctx.esc(JSON.stringify(buffer.includes || [], null, 2))}</textarea></div>
-        </div>
-      </div>`,
-      {
-        wide: true,
-        footer: ctx.editorFooter(!isNew, "delete-product-buffer"),
-        onMount: (root) => {
-          root.querySelectorAll("[data-product-tab]").forEach((node) => {
-            const tab = /** @type {HTMLElement} */ (node);
-            tab.addEventListener("click", () => {
-              root
-                .querySelectorAll("[data-product-tab]")
-                .forEach((item) => /** @type {HTMLElement} */ (item).classList.toggle("active", item === tab));
-              root.querySelectorAll("[data-product-panel]").forEach((node) => {
-                const panel = /** @type {HTMLElement} */ (node);
-                panel.classList.toggle("active", panel.dataset.productPanel === tab.dataset.productTab);
-              });
-            });
-          });
-        }
+    ctx.openModal(productEditorTitle(buffer, isNew), ctx.productEditorMarkup(buffer, categoryOptionsHTML(buffer)), {
+      footer: ctx.editorFooter(!isNew, "delete-product-buffer"),
+      onMount: (root) => {
+        root.querySelector(".dash-modal-foot")?.classList.add("pe-foot");
+        ctx.mountProductEditor(root);
       }
-    );
-    // Attach save specifically through the shared action, while preserving the newly created index.
+    });
     ctx.pendingProductIndex = isNew ? null : index;
   }
   ctx.pendingProductIndex = null;
 
-  /* ---------- product editor: structured text fields ---------- */
-
-  const OPTION_NAMES = ["Storage", "Size", "RAM", "Model", "Capacity"];
-  const isColorName = (name) => /color|colour|couleur|لون/i.test(String(name || ""));
-  function firstNonColorOption(buffer) {
-    return (buffer.options || []).find((o) => !isColorName(o.name))?.name || "";
-  }
-  /** Current variants → "value:extra:stock" lines (one per distinct second-axis value). */
-  function simpleVariantsText(buffer) {
-    const seen = new Map();
-    for (const v of buffer.variants || []) {
-      const key = v.storage || v.o2 || (v.color ? "" : v.o1) || "";
-      if (!key || seen.has(key)) continue;
-      const delta = v.price_delta != null ? Number(v.price_delta) : Number(v.price || 0) - Number(buffer.price || 0);
-      seen.set(key, `${key}:${Math.round(delta) || 0}:${Number(v.stock || 0)}`);
-    }
-    return [...seen.values()].join("\n");
-  }
-  /** One generated variant for a colour × value cell. */
-  function simpleVariant(item, color, value, delta, stock, hasColors) {
-    const n = (x) => Number(x) || 0;
-    return {
-      id: `${item.handle}_${[color, value].filter(Boolean).join("_")}`.replace(/\s+/g, "-").toLowerCase(),
-      title: [color, value].filter(Boolean).join(" / "),
-      o1: hasColors ? color : value,
-      o2: hasColors ? value : null,
-      color: color || null,
-      storage: value,
-      price_delta: n(delta),
-      price: n(item.price) + n(delta),
-      stock: n(stock),
-      available: n(stock) > 0
-    };
-  }
-  /** "value:extra:stock" lines × colours → variants + options. Empty text keeps whatever the JSON field holds. */
-  function applySimpleVariants(item, text) {
-    const lines = String(text || "")
-      .split("\n")
-      .map((line) => line.split(":").map((part) => part.trim()))
-      .filter((parts) => parts[0]);
-    if (!lines.length) return;
-    const colors = (item.colors || []).map((c) => c.name).filter(Boolean);
-    const hasColors = colors.length > 0;
-    const variants = lines.flatMap(([value, delta, stock]) =>
-      (hasColors ? colors : [""]).map((color) => simpleVariant(item, color, value, delta, stock, hasColors))
-    );
-    item.variants = variants;
-    item.options = [
-      ...(hasColors ? [{ name: "Color", values: colors }] : []),
-      { name: item.optionName || "Storage", values: lines.map((parts) => parts[0]) }
-    ];
-    item.stock = variants.reduce((sum, v) => sum + v.stock, 0);
-  }
-
-  /** @type {Array<[string, number, number, number]>} */
-  const NAMED_COLORS = [
-    ["Black", 17, 24, 39],
-    ["White", 255, 255, 255],
-    ["Silver", 203, 213, 225],
-    ["Gray", 107, 114, 128],
-    ["Blue", 37, 99, 235],
-    ["Navy", 30, 41, 59],
-    ["Green", 5, 150, 105],
-    ["Red", 220, 38, 38],
-    ["Pink", 219, 39, 119],
-    ["Purple", 124, 58, 237],
-    ["Gold", 212, 175, 55],
-    ["Orange", 234, 88, 12],
-    ["Yellow", 250, 204, 21],
-    ["Brown", 120, 72, 36]
-  ];
-  const HEX_RE = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i;
-  /** Nearest everyday colour name for a hex, used when the merchant typed only "#111827". */
-  function nameForHex(hex) {
-    let h = hex.replace("#", "");
-    if (h.length === 3) h = [...h].map((c) => c + c).join("");
-    const [r, g, b] = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
-    let best = NAMED_COLORS[0];
-    let bestDist = Infinity;
-    for (const c of NAMED_COLORS) {
-      const d = (c[1] - r) ** 2 + (c[2] - g) ** 2 + (c[3] - b) ** 2;
-      if (d < bestDist) {
-        bestDist = d;
-        best = c;
-      }
-    }
-    return best[0];
-  }
-  function parseColors(text) {
-    return text
-      .split("\n")
-      .map((line) => {
-        // Accepts "Silver:#c0c0c0", "#c0c0c0:Silver", "#c0c0c0" (named automatically) or "Silver" (grey dot).
-        const parts = line
-          .split(":")
-          .map((part) => part.trim())
-          .filter(Boolean);
-        if (!parts.length) return null;
-        const rawHex = parts.find((part) => HEX_RE.test(part));
-        const hex = rawHex ? (rawHex.startsWith("#") ? rawHex : `#${rawHex}`).toLowerCase() : "#999999";
-        const name = parts.find((part) => !HEX_RE.test(part)) || nameForHex(hex);
-        return { name, hex };
-      })
-      .filter(Boolean);
-  }
+  /* ---------- product editor: read back ---------- */
 
   function parseColorMap(text) {
     return Object.fromEntries(
@@ -355,15 +179,6 @@ export function install(ctx) {
         .filter((parts) => parts.length >= 2)
         .map((parts) => [parts[0].trim(), parts.slice(1).join(":").trim()])
     );
-  }
-
-  /** The `images` textarea: one URL per line; the first image becomes the primary one. */
-  function applyImagesField(item, node) {
-    item.images = node.value
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-    if (item.images[0]) item.image = item.images[0];
   }
 
   function applyJsonField(ctx, item, node) {
@@ -379,20 +194,15 @@ export function install(ctx) {
     }
   }
 
-  /** Reads every helper textarea of the open editor into the edit buffer. */
+  /** Reads the editor (photos, colours, choices, advanced JSON) into the edit buffer. */
   function readStructuredFields(item) {
     const modal = ctx.$(".dash-modal");
-    modal?.querySelectorAll("[data-colors]").forEach((node) => {
-      item.colors = parseColors(node.value);
-    });
-    modal?.querySelectorAll("[data-colormap]").forEach((node) => {
+    if (!modal) return;
+    modal.querySelectorAll("[data-colormap]").forEach((node) => {
       item.colorImages = parseColorMap(node.value);
     });
-    modal?.querySelectorAll("[data-json]").forEach((node) => {
-      if (node.dataset.editPath === "images") return applyImagesField(item, node);
-      applyJsonField(ctx, item, node);
-    });
-    modal?.querySelectorAll("[data-simple-variants]").forEach((node) => applySimpleVariants(item, node.value));
+    modal.querySelectorAll("[data-json]").forEach((node) => applyJsonField(ctx, item, node));
+    ctx.readProductEditor(item, modal);
   }
 
   /** Numeric fields and the default `active` flag. */
@@ -436,11 +246,40 @@ export function install(ctx) {
     ctx.renderRoute();
   }
 
+  /** Handles must be lowercase latin (storefront URLs + DB rule). Clean what the merchant typed; generate when nothing usable remains. */
+  function normalizeHandle(value) {
+    const slug = String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_]+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+    return /^[a-z0-9][a-z0-9-]{1,118}$/.test(slug) ? slug : `p-${Date.now().toString(36)}`;
+  }
+  /** Title must be a {ar, fr} pair with at least one language; FR mirrors AR when empty. Returns false when both are blank. */
+  function normalizeTitle(item) {
+    if (!item.title || typeof item.title !== "object") item.title = { ar: String(item.title || ""), fr: "" };
+    item.title.ar = String(item.title.ar || "").trim();
+    item.title.fr = String(item.title.fr || "").trim() || item.title.ar;
+    return Boolean(item.title.ar || item.title.fr);
+  }
   function saveProductEditor() {
     const item = ctx.editBuffer;
     if (!item) return;
+    if (!normalizeTitle(item)) {
+      ctx.toast(ctx.dt("اكتب اسم المنتج أولاً", "Saisissez d’abord le nom du produit"), "error");
+      return;
+    }
+    // New product: the URL slug comes from the name (variant ids embed it, so this runs before the read-back).
+    if (ctx.pendingProductIndex == null) item.handle = ctx.handleFromTitle(item.title, ctx.model.products);
     readStructuredFields(item);
     normalizeNumericFields(item);
+    const cleaned = normalizeHandle(item.handle);
+    if (cleaned !== item.handle) {
+      item.handle = cleaned;
+      ctx.toast(ctx.dt("تم تصحيح المعرّف إلى ", "Identifiant corrigé en ") + cleaned);
+    }
     if (isDuplicateHandle(ctx, item)) {
       ctx.toast(ctx.dt("المعرف مستخدم مسبقًا", "Identifiant déjà utilisé"), "error");
       return;

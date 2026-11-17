@@ -18,23 +18,40 @@ test("variants: dashboard simple editor → storefront price, stock, cart line, 
   await page.click('[data-action="add-product"]');
   const modal = page.locator(".dash-modal");
   await expect(modal).toBeVisible();
-  const handle = "e2e-tablette-" + Date.now().toString(36);
+  const stamp = Date.now().toString(36);
+  const handle = "e2e-tablette-" + stamp;
   const set = async (sel, value) => {
     const el = modal.locator(sel).first();
     await el.fill(String(value));
     await el.dispatchEvent("input");
     await el.dispatchEvent("change");
   };
-  await set('[data-edit-path="handle"]', handle);
   await set('[data-edit-path="title.ar"]', "تابلت اختبار");
-  await set('[data-edit-path="title.fr"]', "Tablette E2E");
   await set('[data-edit-path="price"]', 7900);
-  await set('[data-edit-path="stock"]', 1);
-  await modal.locator('[data-product-tab="media"]').click();
-  // one line with a name, one with the hex only (named "Black" automatically)
-  await set("[data-colors]", "Silver:#c0c0c0\n#111827");
-  await modal.locator('[data-edit-path="optionName"]').selectOption("Storage");
-  await set("[data-simple-variants]", "64 GB:0:5\n256 GB:5000:3\n512 GB:9000:0");
+  await modal.locator(".pe-more > summary").click();
+  await set('[data-edit-path="title.fr"]', "E2E Tablette " + stamp);
+  // Colours are tapped, not typed.
+  await modal.locator('[data-pe-color="Silver"]').click();
+  await modal.locator('[data-pe-color="Black"]').click();
+  // Choices: switch on, then one row per capacity [value][+price][stock].
+  await modal.locator("[data-pe-has-choices]").check({ force: true });
+  const rows = [
+    ["64 GB", 0, 5],
+    ["256 GB", 5000, 4],
+    ["512 GB", 9000, 0]
+  ];
+  for (let i = 0; i < rows.length; i += 1) {
+    if (i > 0) await modal.locator("[data-pe-add-row]").click();
+    await set(`[data-pe-value="${i}"]`, rows[i][0]);
+    await set(`[data-pe-delta="${i}"]`, rows[i][1]);
+    await set(`[data-pe-stock="${i}"]`, rows[i][2]);
+  }
+  // Per-colour grid appeared (2 colours × 3 capacities); split the 5 of 64 GB as 3 + 2.
+  await expect(modal.locator("[data-pe-grid]")).toHaveCount(6);
+  await set('[data-pe-grid="Silver|64 GB"]', 3);
+  await set('[data-pe-grid="Black|64 GB"]', 2);
+  await set('[data-pe-grid="Silver|256 GB"]', 1);
+  await set('[data-pe-grid="Black|256 GB"]', 3);
   await page.click('[data-action="save-editor"]');
   await expect(modal).toHaveCount(0);
   await page.click('[data-action="publish"]');
@@ -42,12 +59,12 @@ test("variants: dashboard simple editor → storefront price, stock, cart line, 
   if (await confirm.isVisible({ timeout: 1500 }).catch(() => false)) await confirm.click();
   await page.waitForTimeout(400);
 
-  // The dashboard table shows the summed variant stock (2 colours × (5+3+0) = 16), not the typed "1".
+  // Stock is the sum of the grid (3+2 + 1+3 + 0+0 = 9); the merchant never typed a total.
   const live = await page.evaluate((h) => window.RESTORE.state.products.find((p) => p.handle === h), handle);
   expect(live, "published").toBeTruthy();
   expect(live.variants).toHaveLength(6);
   expect(live.options.map((o) => o.name)).toEqual(["Color", "Storage"]);
-  expect(live.stock).toBe(16);
+  expect(live.stock).toBe(9);
 
   // Storefront (Arabic is the default language).
   await page.goto(`/product.html?handle=${handle}`);
@@ -58,7 +75,7 @@ test("variants: dashboard simple editor → storefront price, stock, cart line, 
   const storageBtns = info.locator('[data-opt="Storage"]');
   await expect(colorBtns).toHaveCount(2);
   await expect(storageBtns).toHaveCount(3);
-  await expect(colorBtns.first()).toHaveAttribute("data-color-hex", "#c0c0c0");
+  await expect(colorBtns.first()).toHaveAttribute("data-color-hex", "#cbd5e1");
   await expect(colorBtns.first()).toHaveText("فضي");
   await expect(colorBtns.nth(1)).toHaveAttribute("data-value", "Black");
   await expect(colorBtns.nth(1)).toHaveText("أسود");
@@ -108,7 +125,7 @@ test("variants: dashboard simple editor → storefront price, stock, cart line, 
   await page.evaluate(() => localStorage.setItem("restore_lang_v1", "fr"));
   await page.goto(`/product.html?handle=${handle}`);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
-  await expect(page.locator("#product-info h1")).toHaveText("Tablette E2E");
+  await expect(page.locator("#product-info h1")).toHaveText("E2E Tablette " + stamp);
   await expect(page.locator('#product-info [data-opt="Storage"]')).toHaveCount(3);
   await page.locator('#product-info [data-opt="Storage"]').nth(1).click();
   expect(await page.locator("#product-info .price-now").first().innerText().then(money)).toBe(12900);
@@ -135,8 +152,10 @@ test("variants: reopening the editor shows the saved choices and keeps them on s
   await page.locator(`[data-action="edit-product"][data-index="${found.index}"]`).first().click();
   const modal = page.locator(".dash-modal");
   await expect(modal).toBeVisible();
-  const text = await modal.locator("[data-simple-variants]").inputValue();
-  expect(text.trim().length, "simple editor pre-filled from existing variants").toBeGreaterThan(0);
+  await expect(modal.locator("[data-pe-has-choices]")).toBeChecked();
+  expect(await modal.locator("[data-pe-row]").count(), "choice rows pre-filled from existing variants").toBeGreaterThan(
+    0
+  );
   const before = await page.evaluate(
     (h) => window.RESTORE.state.products.find((p) => p.handle === h).variants.length,
     handle
