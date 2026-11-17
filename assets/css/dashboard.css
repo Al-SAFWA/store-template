@@ -452,3 +452,11 @@ body[data-page="dashboard"] {
   .order-detail { grid-template-columns: 1fr; }
   .order-detail > div:first-child { order: 2; }
 }
+/* 1.12.1 — desktop table uses the same next-step bar */
+.oc-cell { white-space: nowrap; }
+.oc-cell .oc-actions { display: inline-flex; vertical-align: middle; margin-inline-end: 6px; }
+.oc-cell .oc-actions .btn { height: 32px; font-size: 11px; border-radius: 8px; padding: 0 10px; }
+.oc-cell .oc-next { flex: 0 0 auto; min-width: 120px; }
+.oc-cell .oc-wa, .oc-cell .oc-call { flex: 0 0 32px; }
+.oc-cell .oc-actions .btn > svg { width: 14px; height: 14px; flex: 0 0 14px; }
+.oc-cell .oc-final { flex: 0 0 auto; min-width: 120px; font-size: 11px; }

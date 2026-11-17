@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.12.1 — 2026-10-29
+
+- Desktop orders table: the status dropdown is replaced by a status pill plus the same next-step / WhatsApp / call bar as the phone cards (`orderActionBar(order, { compact: true })`), so confirming an order is one click on both devices. Manual status stays available in the detail modal under "المزيد".
+
 ## 1.12.0 — 2026-10-29
 
 Orders screen for merchants on a phone (dashboard only; order/stock/WhatsApp logic unchanged).

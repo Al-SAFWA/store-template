@@ -35,10 +35,7 @@ export function install(ctx) {
   /** `ctx.esc(value || "")` — the dominant pattern in this module. */
   const escOr = (value) => ctx.esc(value || "");
 
-  function orderStatusSelect(order, statusColor) {
-    return `<select class="dash-field u-min-95 u-h-28 u-px-2x6 u-fs-9 u-status-border" data-order-status="${ctx.esc(order.id)}" data-sv="fg:${ctx.esc(statusColor)}">${ctx.statusOptions(order.status)}</select>`;
-  }
-
+  /** Desktop row: status pill + the same next-step / WhatsApp / call bar as the phone cards (no status dropdown). */
   function orderRow(order) {
     const status = ctx.R.statusMeta(order.status);
     const itemCount = (order.items || []).reduce((sum, item) => sum + Number(item.qty || 1), 0);
@@ -49,11 +46,8 @@ export function install(ctx) {
           <td>${itemCount}</td>
           <td>${escOr(order.payment?.name)}</td>
           <td class="price">${ctx.money(order.total)}</td>
-          <td>${orderStatusSelect(order, status.color)}</td>
-          <td><div class="cell-actions">
-            <button class="btn btn-sm btn-soft" type="button" data-action="view-order" data-id="${ctx.esc(order.id)}">${ctx.dt("عرض", "Voir")}</button>
-            <a class="btn btn-sm btn-soft" href="https://wa.me/${ctx.digits(order.customer?.phone)}" target="_blank" rel="noopener" title="WhatsApp">${ctx.icon("whatsapp")}</a>
-          </div></td>
+          <td><span class="status-pill" data-sv="status:${ctx.esc(status.color)}">${ctx.esc(ctx.lng(status.label))}</span></td>
+          <td class="oc-cell">${ctx.orderActionBar(order, { compact: true })}<button class="btn btn-sm btn-soft" type="button" data-action="view-order" data-id="${ctx.esc(order.id)}">${ctx.dt("عرض", "Voir")}</button></td>
         </tr>`;
   }
 
@@ -61,7 +55,7 @@ export function install(ctx) {
     if (!orders.length)
       return `<div class="table-empty">${ctx.icon("orders")}<p>${ctx.dt("لا توجد طلبات مطابقة.", "Aucune commande correspondante.")}</p></div>`;
     return `<div class="dash-table-wrap"><table class="dash-table">
-      <thead><tr><th>${ctx.dt("الطلب", "Commande")}</th><th>${ctx.dt("العميل", "Client")}</th><th>${ctx.dt("المدينة", "Ville")}</th><th>${ctx.dt("المنتجات", "Articles")}</th><th>${ctx.dt("الدفع", "Paiement")}</th><th>${ctx.dt("المجموع", "Total")}</th><th>${ctx.dt("الحالة", "Statut")}</th><th></th></tr></thead>
+      <thead><tr><th>${ctx.dt("الطلب", "Commande")}</th><th>${ctx.dt("العميل", "Client")}</th><th>${ctx.dt("المدينة", "Ville")}</th><th>${ctx.dt("المنتجات", "Articles")}</th><th>${ctx.dt("الدفع", "Paiement")}</th><th>${ctx.dt("المجموع", "Total")}</th><th>${ctx.dt("الحالة", "Statut")}</th><th>${ctx.dt("الخطوة التالية", "Prochaine étape")}</th></tr></thead>
       <tbody>${orders.map(orderRow).join("")}</tbody>
     </table></div>`;
   }
