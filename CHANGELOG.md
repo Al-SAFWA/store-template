@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.13.3 — 2026-10-29
+
+- Hero photos look consistent whatever the merchant uploads. New `ui/dashboard/10c-hero-image.js`: on upload the near-white background connected to the picture's edges is flood-filled to transparent (white areas inside the product survive, 1px feathered edge), exported as WebP with alpha. If nothing could be removed (a real photo on a coloured background) the slide gets `imageStyle: "card"` and the storefront shows it as a rounded card with a shadow (`.hero-img-card`) instead of a bare rectangle. Editor preview mirrors the result; toast says which treatment was applied. e2e fixtures `e2e/fixtures/*.jpg`.
+
+## 1.13.2 — 2026-10-29
+
+- Fix: unsized inline SVG icons rendered at 300×150 — the arrow in the Bankily offer button on the storefront and the note icon in the dashboard "publish" dialog. `.btn svg` now has a default 16px size (storefront), and the dashboard modal/notice rows cap stray icons at 18px. The publish note uses a real "info" icon (the name was missing and fell back to the grid icon).
+
 ## 1.13.1 — 2026-10-29
 
 - Fix: image upload on remote stores always failed with "Failed to fetch". `uploadMedia` turned the resized data: URL into a Blob with `fetch(dataUrl)`, which the dashboard CSP (`connect-src` has no `data:`) blocks before any request reaches Supabase. The data URL is now decoded with `atob` → `Blob`. Affects hero slides, product photos, avatars.

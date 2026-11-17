@@ -496,3 +496,6 @@ body[data-page="dashboard"] {
 .login-remember input { width: 18px; height: 18px; margin: 0; accent-color: var(--blue, #1f4fe0); }
 .login-remember small { grid-column: 2; color: var(--muted); font-size: 11px; }
 @media (max-width: 480px) { .hs-preview { min-height: 130px; padding: 14px; } .hs-copy strong { font-size: 15px; } }
+/* 1.13.2 — safety net: icons dropped straight into a flex row (publish dialog note) must never render unsized */
+.dash-modal-body svg:not([width]), .dash-view .u-flex > svg, .dash-view .notice > svg { max-width: 18px; max-height: 18px; flex: 0 0 auto; }
+.hs-preview img.is-card { border-radius: 14px; box-shadow: 0 10px 24px rgba(0,0,0,.3); filter: none; }

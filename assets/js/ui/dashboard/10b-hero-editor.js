@@ -44,7 +44,7 @@ export function install(ctx) {
     const light = slide.dark === false;
     return `<div class="hs-preview ${light ? "is-light" : ""} ${small ? "is-small" : ""}" data-sv="bg:${ctx.esc(slide.bg || HERO_PRESETS[0].bg)}">
       <div class="hs-copy"><strong>${ctx.esc(ctx.lng(slide.title) || ctx.dt("عنوان الشريحة", "Titre"))}</strong><span>${ctx.esc(ctx.lng(slide.subtitle) || "")}</span>${slide.cta ? `<em>${ctx.esc(ctx.lng(slide.cta))}</em>` : ""}</div>
-      <img src="${ctx.esc(slide.image || DEFAULT_IMAGE)}" alt="">
+      <img class="${slide.imageStyle === "card" ? "is-card" : ""}" src="${ctx.esc(slide.image || DEFAULT_IMAGE)}" alt="">
     </div>`;
   }
 
@@ -228,6 +228,7 @@ export function install(ctx) {
       if (em) em.textContent = buffer.cta?.ar || "";
       const img = preview.querySelector("img");
       if (img && buffer.image && img.getAttribute("src") !== buffer.image) img.src = buffer.image;
+      img?.classList.toggle("is-card", buffer.imageStyle === "card");
     };
     root.querySelectorAll("[data-hero-live]").forEach((node) =>
       node.addEventListener("input", () => {
@@ -261,16 +262,39 @@ export function install(ctx) {
       if (hrefInput) hrefInput.value = value;
     });
     // The shared upload handler mirrors the new URL into the hidden input and the <img> inside `.image-field`.
-    root.querySelector(".hs-image-field input[type=file]")?.addEventListener("change", () => {
-      const poll = setInterval(() => {
-        if (buffer?.image && preview?.querySelector("img")?.getAttribute("src") === buffer.image) {
-          clearInterval(poll);
-          paint();
-        }
-      }, 300);
-      setTimeout(() => clearInterval(poll), 15000);
+    // Own upload pipeline (stops the shared handler): resize → white background knock-out → upload.
+    root.querySelector(".hs-image-field input[type=file]")?.addEventListener("change", (event) => {
+      event.stopPropagation();
+      uploadHeroImage(/** @type {HTMLInputElement} */ (event.currentTarget), buffer, paint);
     });
     paint();
+  }
+
+  async function uploadHeroImage(input, buffer, paint) {
+    const file = input.files?.[0];
+    if (!file || !buffer) return;
+    try {
+      ctx.toast(ctx.dt("جارٍ تجهيز الصورة…", "Préparation de la photo…"), "good");
+      const resized = await ctx.resizeImage(file);
+      const cleaned = await ctx.cleanHeroImage(resized);
+      let url = cleaned.dataUrl;
+      if (ctx.R.remote) url = (await ctx.R.uploadMedia(cleaned.dataUrl)) || cleaned.dataUrl;
+      buffer.image = url;
+      buffer.imageStyle = cleaned.style;
+      const hidden = input.closest(".image-field")?.querySelector("input[data-edit-path]");
+      if (hidden) hidden.value = url;
+      paint();
+      ctx.toast(
+        cleaned.style === "float"
+          ? ctx.dt("تم رفع الصورة وإزالة الخلفية البيضاء.", "Photo importée, fond blanc retiré.")
+          : ctx.dt("تم رفع الصورة (ستظهر كبطاقة).", "Photo importée (affichée en carte)."),
+        "good"
+      );
+    } catch (error) {
+      ctx.toast(`${ctx.dt("تعذر رفع الصورة", "Échec du téléversement")}: ${error.message}`, "error");
+    } finally {
+      input.value = "";
+    }
   }
 
   function saveHeroEditor() {

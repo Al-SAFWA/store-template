@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { fileURLToPath } from "node:url";
 import { demoMode, loginDashboard, watchConsole } from "./helpers.mjs";
 
 /** 1.13 — hero slides on a phone: visual list, 4-step editor (presets, destination list), live preview,
@@ -115,5 +116,56 @@ test("a lost session (idle / other tab) returns to the login screen and keeps th
   }
   await expect(page.locator(".dash-modal")).toBeVisible();
   await expect(page.locator('.dash-modal input[data-edit-path="title.ar"]')).toHaveValue("مسودة لم تُحفظ");
+  expect(errors, errors.join("\n")).toEqual([]);
+});
+
+test("hero photo clean-up: white studio background becomes transparent, a real photo becomes a card", async ({
+  page
+}) => {
+  await demoMode(page);
+  const errors = watchConsole(page);
+  await loginDashboard(page);
+  await openHeroTab(page);
+  const fixtures = new URL("./fixtures/", import.meta.url);
+
+  // Slide 1 ← product shot on white: background removed, floats on the gradient.
+  await page.locator(".hs-card").nth(0).locator(".hs-open").click();
+  await page
+    .locator('.hs-image-field input[type="file"]')
+    .setInputFiles(fileURLToPath(new URL("iphone-white-bg.jpg", fixtures)));
+  await expect(page.locator(".hs-image-field .hs-preview img:not(.is-card)")).toBeVisible();
+
+  const corner = await page.locator(".hs-image-field .hs-preview img").evaluate(async (img) => {
+    await img.decode();
+    const c = document.createElement("canvas");
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const x = c.getContext("2d");
+    x.drawImage(img, 0, 0);
+    return x.getImageData(1, 1, 1, 1).data[3];
+  });
+  expect(corner, "top-left pixel is transparent").toBe(0);
+  await page.locator('[data-action="save-editor"]').click();
+  let slides = await page.evaluate(() => window.RESTORE.useDraft().settings.heroSlides);
+  expect(slides[0].imageStyle).toBe("float");
+  expect(slides[0].image).toMatch(/^data:image\/(webp|png)/);
+
+  // Slide 2 ← a photo with a coloured background: kept as is, flagged as a card.
+  await page.locator(".hs-card").nth(1).locator(".hs-open").click();
+  await page
+    .locator('.hs-image-field input[type="file"]')
+    .setInputFiles(fileURLToPath(new URL("macbook-photo.jpg", fixtures)));
+  await expect(page.locator(".hs-image-field .hs-preview img.is-card")).toBeVisible();
+  await page.locator('[data-action="save-editor"]').click();
+  slides = await page.evaluate(() => window.RESTORE.useDraft().settings.heroSlides);
+  expect(slides[1].imageStyle).toBe("card");
+
+  // Publish, then the storefront renders the card class.
+  await page.click('[data-action="publish"]');
+  await page.locator('[data-action="confirm-publish"]').click();
+  await page.waitForTimeout(600);
+  await page.goto("/index.html");
+  await expect(page.locator(".hero-slide").nth(1).locator("img.hero-img-card")).toHaveCount(1);
+  await expect(page.locator(".hero-slide").nth(0).locator("img.hero-img-card")).toHaveCount(0);
   expect(errors, errors.join("\n")).toEqual([]);
 });

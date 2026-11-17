@@ -50,7 +50,7 @@ export function install(ctx) {
             </div>
             <div class="hero-visual">
               <div class="hero-glow"></div>
-              <img src="${ctx.esc(image)}" alt="${ctx.esc(ctx.L(slide.title))}" width="514" height="300" loading="${i === 0 ? "eager" : "lazy"}" decoding="async">
+              <img class="${slide.imageStyle === "card" ? "hero-img-card" : ""}" src="${ctx.esc(image)}" alt="${ctx.esc(ctx.L(slide.title))}" width="514" height="300" loading="${i === 0 ? "eager" : "lazy"}" decoding="async">
             </div>
           </div>
         </div>`;

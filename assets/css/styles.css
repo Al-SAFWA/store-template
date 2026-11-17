@@ -848,6 +848,8 @@ svg { display: block; }
   transition: filter .15s, background .15s;
 }
 .btn:hover { filter: brightness(.95); }
+/* 1.13.2 — any icon inside a button gets a size; an unsized inline SVG otherwise renders at 300×150 (offer banner). */
+.btn svg { width: 16px; height: 16px; flex: 0 0 16px; }
 .btn-primary { background: var(--orange); color: #fff; }
 .btn-dark { background: #121212; color: #fff; }
 .btn-block { width: 100%; }
