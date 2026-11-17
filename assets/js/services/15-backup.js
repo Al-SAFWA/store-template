@@ -57,7 +57,7 @@ export function install(ctx) {
     const merged = mergeImportedState(mode === "merge" ? ctx.state : {}, preview.preview.data);
     const candidate = ctx.hydrate(merged);
     if (ctx.REMOTE && !(await ctx.remoteSessionValid())) {
-      return { ok: false, error: { code: "session", message: "انتهت جلسة Supabase. أعد تسجيل الدخول." } };
+      return { ok: false, error: { code: "session", message: ctx.sessionLostMessage() } };
     }
     ctx.writeJSON(PREVIOUS_KEY, previous);
     try {

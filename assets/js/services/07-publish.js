@@ -14,7 +14,7 @@ export function install(ctx) {
   });
   async function pushPublishedState(next) {
     if (!ctx.REMOTE) return;
-    if (!(await ctx.remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
+    if (!(await ctx.remoteSessionValid())) throw new Error(ctx.sessionLostMessage());
     const rows = await ctx.supa(
       `/rest/v1/${ctx.CFG.stateTable}?select=updated_at`,
       {
@@ -35,7 +35,7 @@ export function install(ctx) {
     candidate.updatedAt = ctx.nowISO();
     candidate.version = Number(candidate.version || 0) + 1;
     if (ctx.REMOTE) {
-      if (!(await ctx.remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
+      if (!(await ctx.remoteSessionValid())) throw new Error(ctx.sessionLostMessage());
       // Catalog entities live in relational tables; never write them into restore_state.data.
       const stamp = await pushPublishedState(
         ctx.catalogInfo.source === "tables" ? ctx.stripCatalog(candidate) : candidate
@@ -84,6 +84,7 @@ export function install(ctx) {
       ctx.LS_ABANDONED,
       ctx.LS_AUDIT,
       ctx.LS_SESSION,
+      ctx.LS_REMEMBER,
       ctx.LS_CUSTOMERS,
       ctx.LS_REVIEWS,
       ctx.LS_CUSTOMER,

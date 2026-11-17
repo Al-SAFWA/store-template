@@ -21,6 +21,7 @@ import { install as s7b } from "./ui/dashboard/07b-product-editor.js";
 import { install as s8 } from "./ui/dashboard/08-categories.js";
 import { install as s9 } from "./ui/dashboard/09-content-nav.js";
 import { install as s10 } from "./ui/dashboard/10-homepage.js";
+import { install as s10b } from "./ui/dashboard/10b-hero-editor.js";
 import { install as s11 } from "./ui/dashboard/11-appearance.js";
 import { install as s12 } from "./ui/dashboard/12-marketing.js";
 import { install as s13 } from "./ui/dashboard/13-blog-pages.js";
@@ -57,6 +58,7 @@ const _initDashboard = () => {
   s8(ctx); // Categories
   s9(ctx); // Storefront content and navigation
   s10(ctx); // Homepage
+  s10b(ctx); // Hero slides — merchant editor (1.13)
   s11(ctx); // Appearance
   s12(ctx); // Marketing / coupons
   s13(ctx); // Blog and pages

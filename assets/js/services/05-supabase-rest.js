@@ -7,6 +7,7 @@ export function install(ctx) {
     remoteUrl,
     readErrorMessage,
     remoteSessionValid,
+    sessionLostMessage,
     supa,
     customerTokenExpiring,
     refreshCustomerToken,
@@ -32,7 +33,8 @@ export function install(ctx) {
     if (!ctx.session) return false;
     if (!ctx.session.accessToken) ctx.session.accessToken = ctx.tokenVault.accessToken;
     if (!ctx.session.refreshToken) ctx.session.refreshToken = ctx.tokenVault.refreshToken;
-    return Boolean(ctx.session.accessToken);
+    // A remembered device starts with a refresh token only (1.13).
+    return Boolean(ctx.session.accessToken || ctx.session.refreshToken);
   }
 
   /** True when the current access token is still far enough from expiry. */
@@ -44,7 +46,7 @@ export function install(ctx) {
   }
 
   /** Exchanges the refresh token for a new access token. */
-  async function refreshStaffToken(opts) {
+  async function refreshStaffToken() {
     try {
       const res = await fetch(remoteUrl("/auth/v1/token?grant_type=refresh_token"), {
         method: "POST",
@@ -52,9 +54,15 @@ export function install(ctx) {
         body: JSON.stringify({ refresh_token: ctx.session.refreshToken })
       });
       if (!res.ok) {
-        if (opts.force) ctx.logout();
+        // 4xx = the refresh token is dead (expired, revoked, or rotated by another tab): the session is over.
+        // Log out right away so the merchant sees the login screen instead of failing actions one by one.
+        if (res.status >= 400 && res.status < 500) {
+          ctx.sessionLost = "expired";
+          ctx.logout({ reason: "expired" });
+        } else ctx.sessionLost = "network";
         return false;
       }
+      ctx.sessionLost = "";
       const data = await res.json();
       ctx.persistSession({
         ...ctx.session,
@@ -64,17 +72,25 @@ export function install(ctx) {
       });
       return true;
     } catch {
-      if (opts.force) ctx.logout();
+      ctx.sessionLost = "network";
       return false;
     }
+  }
+  /** Human message for a failed `remoteSessionValid()`. */
+  function sessionLostMessage() {
+    if (ctx.sessionLost === "network") return "لا يوجد اتصال بالإنترنت. تحقق من الشبكة ثم أعد المحاولة.";
+    return "انتهت جلسة Supabase. أعد تسجيل الدخول.";
   }
 
   async function remoteSessionValid(opts = {}) {
     if (!ctx.REMOTE || ctx.session?.mode !== "supabase") return false;
-    if (!takeVaultTokens()) return false;
+    if (!takeVaultTokens()) {
+      ctx.sessionLost = "expired";
+      return false;
+    }
     if (sessionFreshEnough(opts.force)) return true;
     if (!ctx.session.refreshToken) return false;
-    return refreshStaffToken(opts);
+    return refreshStaffToken();
   }
 
   /**
@@ -87,7 +103,7 @@ export function install(ctx) {
   async function supaToken(auth) {
     if (auth === true) {
       if (await remoteSessionValid()) return ctx.session?.accessToken;
-      throw new Error("انتهت جلسة لوحة التحكم. سجّل الدخول مجددًا.");
+      throw new Error(sessionLostMessage());
     }
     if (auth && auth.token) return auth.token;
     return null;
@@ -201,7 +217,7 @@ export function install(ctx) {
 
   async function uploadMedia(dataUrl, folder = "uploads") {
     if (!ctx.REMOTE) return null;
-    if (!(await remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
+    if (!(await remoteSessionValid())) throw new Error(sessionLostMessage());
     const blob = await (await fetch(dataUrl)).blob();
     const extension = mediaExtension(blob);
     const objectPath = objectPathFor(folder, extension);

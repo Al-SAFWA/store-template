@@ -49,6 +49,8 @@ export function install(ctx) {
   const LS_ABANDONED = "restore_abandoned_v1";
   const LS_AUDIT = "restore_audit_v1";
   const LS_SESSION = "restore_session_v1";
+  const LS_REMEMBER = "restore_remember_v1"; // 1.13 — opt-in "remember this device" (refresh token + meta)
+  const SESSION_CHANNEL = "restore_session_v1"; // 1.13 — tabs share refreshed tokens / logout
   const LS_CUSTOMER = "restore_customer_v1";
   const LS_CUSTOMERS = "restore_customers_v1";
   const LS_CUSTOMER_SESSION = "restore_customer_session_v1";
@@ -159,7 +161,7 @@ export function install(ctx) {
       window.addEventListener(ev, touchActivity, { passive: true })
     );
     ctx.idleTimer = setInterval(() => {
-      if (ctx.session && Date.now() - ctx.lastActivity > DASHBOARD_IDLE_MS) ctx.logout();
+      if (ctx.session && Date.now() - ctx.lastActivity > DASHBOARD_IDLE_MS) ctx.logout({ reason: "idle" });
     }, 30000);
   }
   function isPlainObject(v) {
@@ -189,6 +191,8 @@ export function install(ctx) {
     LS_ABANDONED,
     LS_AUDIT,
     LS_SESSION,
+    LS_REMEMBER,
+    SESSION_CHANNEL,
     LS_CUSTOMER,
     LS_CUSTOMERS,
     LS_CUSTOMER_SESSION,

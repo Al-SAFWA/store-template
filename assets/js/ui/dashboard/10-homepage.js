@@ -49,10 +49,7 @@ export function install(ctx) {
         </div>
       </div>
       <div class="dash-panel" data-dash-panel="home-hero">
-        <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("شرائح السلايدر", "Diapositives")}</h3><button data-action="add-hero">${ctx.icon("plus")} ${ctx.dt("إضافة شريحة", "Ajouter")}</button></div><div class="dash-card-body">
-          <div class="list-editor">${(ctx.model.settings.heroSlides || []).map((slide, index) => `<div class="list-row"><span class="image-preview u-sq-44 u-basis-44"><img src="${ctx.esc(slide.image)}" alt=""></span><div class="grow"><strong>${ctx.esc(ctx.lng(slide.title))}</strong><small>${ctx.esc(slide.href)}</small></div>${ctx.directToggle("", `settings.heroSlides.${index}.visible`, slide.visible !== false)}<button class="btn btn-sm btn-soft" data-action="edit-hero" data-index="${index}">${ctx.icon("edit")}</button><button class="btn btn-sm btn-soft" data-action="delete-hero" data-index="${index}">${ctx.icon("trash")}</button></div>`).join("")}</div>
-          <p class="form-note u-mt-10">${ctx.dt("ضع صورة بخلفية شفافة للحصول على أفضل نتيجة. يمكن استخدام رابط أو رفع صورة.", "Utilisez une image à fond transparent. URL ou téléversement.")}</p>
-        </div></article>
+        ${ctx.heroPanelHTML()}
       </div>
       <div class="dash-panel" data-dash-panel="home-products">
         <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("أقسام المنتجات على الرئيسية", "Sections produits")}</h3></div><div class="dash-card-body">

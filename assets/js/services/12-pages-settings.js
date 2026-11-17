@@ -200,7 +200,7 @@ export function install(ctx) {
   async function persistOwnerSettings(next) {
     next.updatedAt = ctx.nowISO();
     if (ctx.REMOTE) {
-      if (!(await ctx.remoteSessionValid())) throw new Error("انتهت جلسة Supabase. أعد تسجيل الدخول.");
+      if (!(await ctx.remoteSessionValid())) throw new Error(ctx.sessionLostMessage());
       await ctx.pushPublishedState(next);
     }
     ctx.state = ctx.hydrate(next);

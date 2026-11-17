@@ -290,6 +290,16 @@ function contentActions(ctx) {
       ctx.editorKind = "hero";
       ctx.heroEditor(index);
     },
+    "hero-up": ({ index }) => {
+      ctx.moveInArray(ctx.model.settings.heroSlides, Number(index), -1);
+      ctx.saveDraftNow();
+      ctx.renderRoute();
+    },
+    "hero-down": ({ index }) => {
+      ctx.moveInArray(ctx.model.settings.heroSlides, Number(index), 1);
+      ctx.saveDraftNow();
+      ctx.renderRoute();
+    },
     "delete-hero": ({ index }) => {
       if (!ask(ctx, "حذف الشريحة؟", "Supprimer la diapositive ?")) return;
       ctx.model.settings.heroSlides.splice(index, 1);

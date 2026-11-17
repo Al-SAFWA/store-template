@@ -304,7 +304,7 @@ export function createDefaultState(ctx) {
           ),
           cta: ctx.txt("تسوق الآن", "Découvrir"),
           href: "collection.html?handle=all",
-          image: "assets/img/hero-iphone.svg",
+          image: "assets/img/hero-1.webp",
           bg: "linear-gradient(135deg,#1f1f2e 0%,#39255b 55%,#ff6400 130%)"
         },
         {
@@ -317,7 +317,7 @@ export function createDefaultState(ctx) {
           ),
           cta: ctx.txt("اكتشف ماك بوك", "Voir les MacBook"),
           href: "collection.html?handle=refurbished-macbooks",
-          image: "assets/img/hero-macbook.svg",
+          image: "assets/img/hero-2.webp",
           bg: "linear-gradient(135deg,#eef3ff 0%,#d9e5ff 45%,#f7c7ff 120%)",
           dark: false
         }

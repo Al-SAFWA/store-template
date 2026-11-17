@@ -22,13 +22,18 @@ export function install(ctx) {
     drawCollectionGrid,
     bindCollectionOnce
   });
+  // 1.13 — stores created before 1.13 still reference the placeholder SVGs; show the real photos instead.
+  const LEGACY_HERO = {
+    "assets/img/hero-iphone.svg": "assets/img/hero-1.webp",
+    "assets/img/hero-macbook.svg": "assets/img/hero-2.webp"
+  };
   function heroHTML() {
     const slides = (ctx.SET.heroSlides || []).filter((s) => s.visible !== false);
     if (!slides.length) return "";
     return `<section class="hero" id="hero" aria-label="${ctx.esc(ctx.L(ctx.SET.tagline))}">
       ${slides
         .map((slide, i) => {
-          const image = slide.image || "assets/products/smartphone-pro-128.svg";
+          const image = LEGACY_HERO[slide.image] || slide.image || "assets/products/smartphone-pro-128.svg";
           const light = slide.dark === false;
           return `<div class="hero-slide hero-banner ${light ? "hero-light" : "hero-dark"}${i === 0 ? " active" : ""} u-tint" data-sv="bg:${ctx.esc(slide.bg || "linear-gradient(135deg,#1f1f2e,#39255b)")}">
           <div class="container hero-inner">

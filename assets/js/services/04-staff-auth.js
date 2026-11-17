@@ -3,8 +3,10 @@
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see state.js). */
 
 import { managerName, normalizeWhatsapp, staffRowToManager } from "./04a-staff-rows.js";
+import { install as installSessionStore } from "./04b-session-store.js";
 
 export function install(ctx) {
+  installSessionStore(ctx);
   function demoAccount(owner) {
     return {
       id: owner ? "m_owner" : "m_manager",
@@ -31,12 +33,7 @@ export function install(ctx) {
     if (!ctx.managers.length) localStorage.removeItem(ctx.LS_MANAGERS);
     else ctx.writeJSON(ctx.LS_MANAGERS, ctx.managers);
   }
-  ctx.session = ctx.readSessionMeta();
-  // Supabase tokens are never persisted; after reload a remote session must re-authenticate.
-  if (ctx.session?.mode === "supabase") {
-    ctx.session = null;
-    ctx.writeSessionMeta(null);
-  }
+  ctx.restoreRememberedSession();
   if (ctx.session?.mode === "local" && !ctx.DEMO_ALLOWED && !ctx.REMOTE) {
     ctx.session = null;
     ctx.writeSessionMeta(null);
@@ -144,17 +141,26 @@ export function install(ctx) {
       expiresAt: Date.now() + 12 * 3600 * 1000
     };
   }
-  function persistSession(next) {
+  function persistSession(next, { silent = false } = {}) {
     if (next) {
       ctx.tokenVault.accessToken = next.accessToken || ctx.tokenVault.accessToken || "";
       ctx.tokenVault.refreshToken = next.refreshToken || ctx.tokenVault.refreshToken || "";
       ctx.session = { ...next, accessToken: ctx.tokenVault.accessToken, refreshToken: ctx.tokenVault.refreshToken };
       ctx.writeSessionMeta(ctx.sessionMetaOf(ctx.session));
+      ctx.writeRemembered(ctx.session);
+      if (!silent && ctx.session.mode === "supabase")
+        ctx.broadcastSession("tokens", {
+          accessToken: ctx.tokenVault.accessToken,
+          refreshToken: ctx.tokenVault.refreshToken,
+          expiresAt: ctx.session.expiresAt
+        });
     } else {
       ctx.tokenVault.accessToken = "";
       ctx.tokenVault.refreshToken = "";
       ctx.session = null;
+      ctx.rememberDevice = false;
       ctx.writeSessionMeta(null);
+      ctx.writeRemembered(null);
       ctx.clearSessionTimers();
     }
     ctx.scheduleSessionRefresh();
@@ -257,11 +263,12 @@ export function install(ctx) {
     );
   }
 
-  async function login(identifier, password) {
+  async function login(identifier, password, { remember = false } = {}) {
     const value = String(identifier || "").trim();
     if (!value || !password) throw new Error("أدخل البريد/اسم المستخدم وكلمة المرور");
     assertLoginMode();
     checkLoginLock(value);
+    ctx.rememberDevice = Boolean(remember);
     try {
       const result = ctx.REMOTE ? await remoteLogin(value, password) : await localLogin(value, password);
       clearLoginFailures(value);
@@ -280,9 +287,12 @@ export function install(ctx) {
     }
     return ctx.session;
   }
-  function logout() {
+  /** @param {{ reason?: string }} [opts] reason: "user" | "idle" | "expired" | "other-tab" */
+  function logout(opts = {}) {
+    const reason = opts.reason || "user";
     persistSession(null);
-    window.dispatchEvent(new CustomEvent("restore:logout"));
+    ctx.broadcastSession("logout", { reason });
+    window.dispatchEvent(new CustomEvent("restore:logout", { detail: { reason } }));
   }
 
   function normalizeStaffRow(row) {

@@ -34,6 +34,8 @@ export function install(ctx) {
     {
       match: (event) => /** @type {HTMLElement} */ (event.target).closest("[data-dash-tab]"),
       run: (event, tab) => {
+        ctx.dashTabs = ctx.dashTabs || {};
+        ctx.dashTabs[ctx.route] = tab.dataset.dashTab; // 1.13 — survives the re-render after a save
         const tabs = tab.parentElement;
         tabs.querySelectorAll("[data-dash-tab]").forEach((item) => item.classList.toggle("active", item === tab));
         tabs.parentElement

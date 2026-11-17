@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.13.0 — 2026-10-29
+
+Hero slides for merchants on a phone + session guard (dashboard only; data shape of `settings.heroSlides` unchanged, no SQL).
+
+- New `assets/js/ui/dashboard/10b-hero-editor.js`: the slides list shows each slide **as the store renders it** (background, photo, title, button) with show/hide, edit, up/down. The editor is four numbered steps — photo (live preview + upload), background (6 presets instead of a CSS string; text colour follows the preset; an old custom gradient stays as a 7th "custom" swatch), text (Arabic first, French folded and copied from Arabic when empty), button (text + destination picked from all products / a category / a product / a page / custom link). Title is required.
+- Default hero photos: `assets/img/hero-1.webp` (iPhone, transparent) and `hero-2.webp` (MacBook) replace the placeholder SVGs; stores created earlier that still reference `hero-iphone.svg` / `hero-macbook.svg` get the new photos through a legacy map in the storefront hero.
+- Session: when the Supabase refresh token is dead (expired, revoked or rotated by another tab) the dashboard now **logs out immediately** and shows the login screen with a clear notice, instead of looking logged-in while every upload/publish fails. A slide being edited is stashed and reopened after login. Network failures say "no connection" rather than "session expired". New `services/04b-session-store.js`: tabs share refreshed tokens / logout over a `BroadcastChannel`.
+- Login: opt-in **"تذكّرني على هذا الجهاز"** (unchecked by default, remote stores only) keeps the refresh token in localStorage so a reload or reopening the browser does not require a new login; logging out clears it.
+- Dashboard tabs (e.g. Homepage → Slider) stay selected after a save re-renders the view.
+- e2e `10-hero-editor.spec.mjs` (list, editor, presets, destination, reorder, lost-session restore). SW cache `restore-shell-v19`.
+
 ## 1.12.1 — 2026-10-29
 
 - Desktop orders table: the status dropdown is replaced by a status pill plus the same next-step / WhatsApp / call bar as the phone cards (`orderActionBar(order, { compact: true })`), so confirming an order is one click on both devices. Manual status stays available in the detail modal under "المزيد".

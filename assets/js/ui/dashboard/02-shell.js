@@ -318,6 +318,19 @@ export function install(ctx) {
     )}</div>`;
   }
 
+  /** Re-selects the tab the merchant was on before a re-render (1.13). */
+  function restoreDashTab(view) {
+    const wanted = ctx.dashTabs?.[ctx.route];
+    if (!wanted) return;
+    const tab = view.querySelector(`[data-dash-tab="${wanted}"]`);
+    const tabs = tab?.parentElement;
+    if (!tab || !tabs) return;
+    tabs.querySelectorAll("[data-dash-tab]").forEach((item) => item.classList.toggle("active", item === tab));
+    tabs.parentElement
+      ?.querySelectorAll("[data-dash-panel]")
+      .forEach((panel) => panel.classList.toggle("active", panel.dataset.dashPanel === wanted));
+  }
+
   function renderRoute() {
     if (!guardRoute()) return;
     const view = ctx.$("#dash-view");
@@ -326,6 +339,7 @@ export function install(ctx) {
       return;
     }
     view.innerHTML = localAccountWarningHTML() + routeView();
+    restoreDashTab(view);
     syncRouteChrome();
     if (ctx.route === "orders" || ctx.route === "reports")
       setTimeout(() => localStorage.setItem("restore_orders_seen_v1", String(ctx.newOrdersCount())), 800);
