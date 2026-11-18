@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
       - id: up
@@ -36,10 +36,8 @@ jobs:
         if: steps.up.outputs.updated == 'true' && steps.up.outputs.migrations != ''
         env:
           GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.up.outputs.version }}
+          MIGRATIONS: ${{ steps.up.outputs.migrations }}
         run: |
-          gh issue create --title "Run database migrations for template ${{ steps.up.outputs.version }}" \
-            --body "The store code is now on template ${{ steps.up.outputs.version }}. These SQL files are new and must be run once in Supabase → SQL Editor (in this order):
-
-${{ steps.up.outputs.migrations }}
-
-Each file is idempotent. Until this is done, features depending on the new schema may not work."
+          body="The store code is now on template ${VERSION}. These SQL files are new and must be run once in Supabase → SQL Editor, in this order: ${MIGRATIONS}. Each file is idempotent. Until this is done, features depending on the new schema may not work."
+          gh issue create --title "Run database migrations for template ${VERSION}" --body "$body"

@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-scripts/check-secrets.sh
+node scripts/check-secrets.mjs

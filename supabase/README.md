@@ -304,3 +304,8 @@ Atomic product write/delete RPCs (`restore_upsert_product`, `restore_delete_prod
 ## 0005_fix_create_order_v2.sql
 Critical fix: typed variables in `restore_create_order_v2` (orders without variants / without coupon crashed on 0002).
 Apply after 0004. Verified by `npm run test:db`.
+
+## 0006_stock_bumps_catalog.sql
+Every write to `restore_products` / `restore_product_variants` (including the stock decrement done by
+`restore_create_order_v2`) bumps `restore_catalog_meta.version`, so the dashboard and open storefront tabs re-read the
+catalog within one poll (≈5 s) after a sale. Apply after 0005. Existing projects: paste this file in the SQL Editor.
