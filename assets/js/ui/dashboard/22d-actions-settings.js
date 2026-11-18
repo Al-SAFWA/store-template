@@ -1,4 +1,5 @@
 // @ts-check
+import { finalizeCouponBuffer } from "./12-marketing.js";
 /* dashboard.js → `[data-action]` handlers for settings routes (extracted verbatim from 22b-events-settings.js)
    Marketing, payments, cities, team, blog/pages, FAQ, reviews, audit, profile and owner settings.
    The former 107-branch switch is an action → handler map; each handler receives `{ ctx, node, event, index, id }`.
@@ -15,6 +16,8 @@ function couponActions(ctx) {
     "add-coupon": () => ctx.couponEditor(null),
     "edit-coupon": ({ index }) => ctx.couponEditor(index),
     "delete-coupon": ({ index }) => {
+      if (!window.confirm(ctx.dt("حذف الكوبون؟", "Supprimer le coupon ?"))) return;
+      ctx.closeModal();
       if (ctx.tablesMode()) {
         const coupon = ctx.model.settings.coupons[index];
         if (coupon)
@@ -27,8 +30,9 @@ function couponActions(ctx) {
       ctx.saveDraftNow();
       ctx.renderRoute();
     },
+    "copy-text": ({ node }) => ctx.copyText(node.dataset.text || ""),
     "save-coupon": async ({ node }) => {
-      if (!ctx.editBuffer) return;
+      if (!finalizeCouponBuffer(ctx)) return;
       if (ctx.tablesMode()) {
         const prev = node.dataset.index === "" ? null : ctx.model.settings.coupons[Number(node.dataset.index)];
         const ok = await ctx.catalogWrite(

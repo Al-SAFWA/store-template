@@ -176,19 +176,11 @@ function catalogActions(ctx) {
       ctx.editorKind = "category";
       ctx.categoryEditor(index);
     },
-    "delete-category": ({ index }) => {
-      if (!ask(ctx, "حذف الفئة؟", "Supprimer la catégorie ?")) return;
-      ctx.model.theme.categories.splice(index, 1);
-      ctx.saveDraftNow();
-      ctx.renderRoute();
-    },
+    "delete-category": ({ index }) => ctx.deleteCategory(index),
     "delete-category-buffer": () => {
-      if (!ask(ctx, "حذف الفئة؟", "Supprimer la catégorie ?")) return;
-      ctx.model.theme.categories = ctx.model.theme.categories.filter((item) => item.handle !== ctx.editBuffer.handle);
-      ctx.saveDraftNow();
-      ctx.closeModal();
-      ctx.renderRoute();
+      if (ctx.categoryDraft?.index != null) ctx.deleteCategory(ctx.categoryDraft.index);
     },
+    "move-category": ({ index, node }) => ctx.moveCategory(index, Number(node.dataset.dir)),
     "edit-collection": ({ index }) => ctx.collectionEditor(index),
     "save-collection": ({ index }) => {
       if (ctx.editBuffer && ctx.tablesMode()) {

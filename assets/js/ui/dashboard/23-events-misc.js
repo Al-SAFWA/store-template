@@ -108,10 +108,20 @@ export function install(ctx) {
   document.addEventListener("click", (event) => {
     const day = /** @type {HTMLElement} */ (event.target).closest("[data-store-day]");
     if (day instanceof HTMLElement) ctx.toggleStoreDay(Number(day.dataset.storeDay));
+    const target = /** @type {HTMLElement} */ (event.target);
+    const pick = target.closest("[data-cat-image]");
+    if (pick instanceof HTMLElement) return ctx.setCategoryImage(pick.dataset.catImage);
+    const chip = target.closest("[data-cat-product]");
+    if (chip instanceof HTMLElement) return ctx.toggleCategoryProduct(chip.dataset.catProduct);
+    const flag = target.closest("[data-cat-flag]");
+    if (flag instanceof HTMLElement) return ctx.toggleCategoryFlag(flag.dataset.catFlag);
+    const type = target.closest("[data-coupon-type]");
+    if (type instanceof HTMLElement) ctx.setCouponType(type.dataset.couponType);
   });
   document.addEventListener("input", (event) => {
     const node = /** @type {HTMLInputElement} */ (event.target);
     if (node.matches?.("[data-city-fee]")) ctx.setCityFee(node.dataset.cityFee, node.value);
+    if (node.matches?.("[data-cat-filter]")) ctx.filterCategoryProducts(node.value);
   });
 
   const CHANGE_HANDLERS = [

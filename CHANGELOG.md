@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.16.0 — 2026-10-29
+
+- Dashboard "الفئات" rebuilt as one list of phone cards (image, product count, where it shows, on/off switch, ▲▼
+  order). Editor is 4 steps: name (FR folded) → image (pick from the category's product photos or upload) → products
+  (tap chips to add/remove, search when many) → show on home strip / top menu. `theme.categories` and
+  `settings.navigation` are synced from the editor so the merchant never edits three lists. Deleting a category keeps
+  the products.
+- Dashboard "الكوبونات والعروض" (was marketing tabs): coupon cards with big code, copy button and on/off switch;
+  4-step editor (code → percent/fixed value → minimum order → expiry + active) with a switch "show on the homepage
+  banner" that fills `settings.offers[0]` from the coupon. Homepage banner and announcement bar editable below.
+- Versions: 1.14 (categories+coupons) ships as 1.16.0 because 1.15.0 was already released; tags must stay increasing.
+
 ## 1.15.0 — 2026-10-29
 
 - Dashboard: new "بيانات متجري" (My store) page — 4 short steps: name/logo, contact (WhatsApp first), address + optional

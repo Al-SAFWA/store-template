@@ -31,7 +31,7 @@ export function install(ctx) {
         { id: "content", icon: "content", ar: "نصوص المتجر", fr: "Textes & contenu" },
         { id: "homepage", icon: "home", ar: "الصفحة الرئيسية", fr: "Page d’accueil" },
         { id: "appearance", icon: "palette", ar: "الهوية والألوان", fr: "Identité & couleurs" },
-        { id: "marketing", icon: "marketing", ar: "العروض والتسويق", fr: "Offres & marketing" },
+        { id: "marketing", icon: "marketing", ar: "الكوبونات والعروض", fr: "Coupons & offres" },
         { id: "blog", icon: "blog", ar: "المدونة", fr: "Blog" },
         { id: "pages", icon: "pages", ar: "الصفحات", fr: "Pages" }
       ]
