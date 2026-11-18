@@ -19,6 +19,7 @@ export function install(ctx) {
     {
       label: { ar: "المتجر", fr: "Boutique" },
       items: [
+        { id: "store-info", icon: "home", ar: "بيانات متجري", fr: "Ma boutique" },
         { id: "products", icon: "products", ar: "المنتجات", fr: "Produits" },
         { id: "categories", icon: "categories", ar: "الفئات", fr: "Catégories" },
         { id: "reviews", icon: "reviews", ar: "التقييمات", fr: "Avis" }
@@ -103,6 +104,11 @@ export function install(ctx) {
       ar: "الصفحات",
       fr: "Pages",
       sub: { ar: "الصفحات الثابتة والسياسات", fr: "Pages statiques et politiques" }
+    },
+    "store-info": {
+      ar: "بيانات متجري",
+      fr: "Ma boutique",
+      sub: { ar: "الاسم، واتساب، العنوان، أوقات العمل", fr: "Nom, WhatsApp, adresse, horaires" }
     },
     payments: {
       ar: "الدفع والتوصيل",
@@ -258,6 +264,7 @@ export function install(ctx) {
     blog: "viewBlog",
     pages: "viewPages",
     payments: "viewPayments",
+    "store-info": "viewStoreInfo",
     team: "viewTeam",
     reports: "viewReports",
     settings: "viewSettings",

@@ -1283,3 +1283,8 @@ main > .container > .breadcrumb:empty { min-height: 38px; }
 @media (min-width: 768px) and (max-width: 1023px) {
   .grid { min-height: 392px; }
 }
+
+/* 1.15 — account number of the chosen payment method at checkout */
+.pay-account { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 10px 0 4px; padding: 10px 12px; border: 1px dashed var(--border, #e5e7eb); border-radius: 12px; font-size: 13px; }
+.pay-account code { font-size: 17px; font-weight: 800; letter-spacing: .5px; background: #f3f4f6; padding: 4px 10px; border-radius: 8px; }
+.pay-account .btn { margin-inline-start: auto; }

@@ -92,6 +92,12 @@ export function install(ctx) {
       $("sum-shipping").textContent = calc.shipping ? ctx.money(calc.shipping) : ctx.t("free");
       $("sum-city").textContent = calc.city ? `· ${ctx.L(calc.city.name)}` : "";
       $("sum-payment-label").textContent = `${ctx.L(selectedPayment.name)} -${selectedPayment.discount || 0}%`;
+      const accountBox = $("pay-account");
+      if (accountBox) {
+        accountBox.hidden = !selectedPayment.account;
+        $("pay-account-name").textContent = ctx.L(selectedPayment.name);
+        $("pay-account-number").textContent = selectedPayment.account || "";
+      }
       $("sum-payment").textContent = `- ${ctx.money(calc.paymentDiscount)}`;
       $("sum-payment").closest(".sum-row").hidden = !calc.paymentDiscount;
       $("sum-coupon").textContent = `- ${ctx.money(calc.couponDiscount)}`;
@@ -140,6 +146,13 @@ export function install(ctx) {
           .forEach((card) => card.classList.toggle("active", !!card.querySelector("input:checked")));
         refresh();
       });
+    });
+    $("pay-account-copy")?.addEventListener("click", () => {
+      const number = selectedPayment.account || "";
+      navigator.clipboard?.writeText(number).then(
+        () => ctx.toast(ctx.R.lang === "ar" ? "تم نسخ الرقم" : "Numéro copié"),
+        () => ctx.toast(number)
+      );
     });
     $("apply-coupon")?.addEventListener("click", () => {
       const code = $("co-coupon").value.trim().toUpperCase();

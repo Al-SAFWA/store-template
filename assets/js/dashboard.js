@@ -28,6 +28,7 @@ import { install as s12 } from "./ui/dashboard/12-marketing.js";
 import { install as s13 } from "./ui/dashboard/13-blog-pages.js";
 import { install as s14 } from "./ui/dashboard/14-reviews.js";
 import { install as s15 } from "./ui/dashboard/15-payments-cities.js";
+import { install as s15b } from "./ui/dashboard/15b-store-info.js";
 import { install as s16 } from "./ui/dashboard/16-team.js";
 import { install as s17 } from "./ui/dashboard/17-reports.js";
 import { install as s18 } from "./ui/dashboard/18-settings.js";
@@ -66,6 +67,7 @@ const _initDashboard = () => {
   s13(ctx); // Blog and pages
   s14(ctx); // Reviews
   s15(ctx); // Payments and shipping cities
+  s15b(ctx); // My store (1.15)
   s16(ctx); // Team
   s17(ctx); // Reports
   s18(ctx); // Settings

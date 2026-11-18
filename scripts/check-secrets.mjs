@@ -40,12 +40,8 @@ const isSecretPath = (f) =>
   f === ".vercel" ||
   f.startsWith(".vercel/") ||
   f.includes("/.vercel/");
-// assets/js/config.js carries the PUBLIC anon key (a JWT on older Supabase projects) by design — every visitor gets it.
 const skipScan = (f) =>
-  isExample(f) ||
-  f.endsWith("scripts/check-secrets.mjs") ||
-  f.endsWith("scripts/check-secrets.sh") ||
-  f === "assets/js/config.js";
+  isExample(f) || f.endsWith("scripts/check-secrets.mjs") || f.endsWith("scripts/check-secrets.sh");
 
 let fail = 0;
 for (const f of files) {

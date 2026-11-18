@@ -113,9 +113,6 @@ function applyUpdate(src, templatePkg, plan) {
   fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
   sh("npm ci --no-audit --no-fund");
   sh(`node "${path.join(src, "scripts/apply-brand.mjs")}" "${CLIENT}"`, src);
-  // ALL_IN_ONE.sql is protected from a plain copy (it is the merchant's own file) but it must stay current:
-  // rebuild it from the client's tree (schema + every migration + demo seed, idempotent — safe to paste again).
-  if (fs.existsSync(path.join(CLIENT, "scripts/build-sql.mjs"))) sh("node scripts/build-sql.mjs");
   sh(
     `node "${path.join(src, "node_modules/prettier/bin/prettier.cjs")}" --log-level warn --write assets/js/brand.config.js package.json`
   );

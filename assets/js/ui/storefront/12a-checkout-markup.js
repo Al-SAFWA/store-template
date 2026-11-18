@@ -51,6 +51,11 @@ export function checkoutPageHTML(ctx, data) {
                   )
                   .join("")}
               </div>
+              <div class="pay-account" id="pay-account" hidden>
+                <span>${ctx.R.lang === "ar" ? "حوّل المبلغ إلى رقم" : "Virement vers le numéro"} <strong id="pay-account-name"></strong></span>
+                <code id="pay-account-number" dir="ltr"></code>
+                <button class="btn btn-outline btn-sm" type="button" id="pay-account-copy">${ctx.ICON.copy || ""} ${ctx.R.lang === "ar" ? "نسخ" : "Copier"}</button>
+              </div>
               <div class="coupon-row">
                 <div class="field"><label for="co-coupon">${ctx.esc(ctx.t("coupon"))}</label><input id="co-coupon" placeholder="RESTORE10"></div>
                 <button class="btn btn-outline" type="button" id="apply-coupon">${ctx.esc(ctx.t("apply"))}</button>

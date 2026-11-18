@@ -9,9 +9,7 @@ test("language toggle switches dir/lang and persists across pages", async ({ pag
   await page.click("[data-lang-toggle]");
   const target = startLang.startsWith("ar") ? "fr" : "ar";
   await page.click(`[data-set-lang="${target}"]`);
-  // setLang() stores the choice and reloads; on a slow CI runner the reload can take longer than a fixed wait.
-  await page.waitForFunction((previous) => document.documentElement.lang !== previous, startLang, { timeout: 10_000 });
-  await page.waitForLoadState("domcontentloaded");
+  await page.waitForTimeout(400);
   const nextLang = await page.evaluate(() => document.documentElement.lang);
   expect(nextLang).not.toBe(startLang);
   expect(await page.evaluate(() => document.documentElement.dir)).toBe(nextLang.startsWith("ar") ? "rtl" : "ltr");

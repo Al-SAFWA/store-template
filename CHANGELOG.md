@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.15.0 — 2026-10-29
+
+- Dashboard: new "بيانات متجري" (My store) page — 4 short steps: name/logo, contact (WhatsApp first), address + optional
+  map link (`settings.mapUrl`), opening hours with tappable day chips + "closed temporarily" switch. A dark live
+  preview shows exactly what the storefront footer will print. Replaces the scattered fields under Settings/Appearance.
+- Dashboard: "الدفع والتوصيل" rebuilt as phone cards — payment methods with on/off switch and a 4-step editor
+  (active → account number → discount → note); shipping cities with the fee editable in place and on/off switch;
+  free-shipping threshold as its own step. Old tabs removed.
+- New per-payment field `account` (e.g. the merchant's Bankily number). Checkout shows it under the chosen method
+  with a copy button, and the WhatsApp order message carries it next to the payment name.
+- Bankily 10 % discount removed from defaults (discount 0, demo offer inactive, announcement/FAQ reworded). The
+  "pay with Bankily, get 10 %" banner on home, product page and footer now only renders while an active payment
+  method actually has a discount (`ctx.hasPaymentOffer()`).
+- Storefront footer: address links to the map when `mapUrl` is set; working hours are the real sentence built from
+  `settings.hours` (days, from–to, or "closed temporarily") instead of the static i18n string. SW cache v22.
+
 ## 1.13.6 — 2026-10-29
 
 - Storefront phones (≤900px) show a "my account" icon in the header; it is replaced by the avatar dropdown once the

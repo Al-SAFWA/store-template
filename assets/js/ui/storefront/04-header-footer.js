@@ -170,6 +170,26 @@ export function install(ctx) {
     }
   }
 
+  const DAY_NAMES = {
+    ar: ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"],
+    fr: ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."]
+  };
+  /** Opening hours sentence from settings.hours (1.15: edited in "My store"); falls back to the old i18n text. */
+  function hoursText() {
+    const hours = ctx.SET.hours;
+    if (!hours || !Array.isArray(hours.days) || !hours.open) return ctx.t("workingHours");
+    const lang = ctx.R.lang === "fr" ? "fr" : "ar";
+    if (hours.closed) return lang === "ar" ? "مغلق مؤقتاً" : "Fermé temporairement";
+    const days = hours.days.slice().sort((a, b) => a - b);
+    const list =
+      days.length === 7
+        ? lang === "ar"
+          ? "كل الأيام"
+          : "Tous les jours"
+        : days.map((i) => DAY_NAMES[lang][i]).join(lang === "ar" ? "، " : ", ");
+    return `${list}، ${hours.open}–${hours.close || ""}`.replace(/،\s*$/, "");
+  }
+
   function renderFooter() {
     const el = document.getElementById("site-footer");
     if (!el) return;
@@ -180,7 +200,7 @@ export function install(ctx) {
           <ul class="trust-list">
             ${(ctx.SET.trustBar || []).map((item) => `<li><span class="trust-ico" data-icon="${ctx.esc(item.icon)}"></span>${ctx.esc(ctx.L(item.label))}</li>`).join("")}
           </ul>
-          <div class="footer-promo">${ctx.ICON.bolt}<span>${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</span></div>
+          ${ctx.hasPaymentOffer() ? `<div class="footer-promo">${ctx.ICON.bolt}<span>${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</span></div>` : ""}
         </div>
       </div>`;
     el.innerHTML =
@@ -192,10 +212,10 @@ export function install(ctx) {
             <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.SET.logoWhite}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="420" height="96" decoding="async"></a>
             <div class="footer-contact">
               <h4>${ctx.esc(ctx.t("contactUs"))}</h4>
-              <div class="row"><span>${ctx.ICON.mapPin} ${ctx.esc(ctx.L(ctx.SET.address))}</span></div>
+              <div class="row"><span>${ctx.ICON.mapPin} ${ctx.SET.mapUrl ? `<a href="${ctx.esc(ctx.SET.mapUrl)}" target="_blank" rel="noopener">${ctx.esc(ctx.L(ctx.SET.address))}</a>` : ctx.esc(ctx.L(ctx.SET.address))}</span></div>
               <div class="row"><span>${ctx.ICON.whatsapp} <a href="https://wa.me/${ctx.esc(ctx.SET.whatsapp)}" target="_blank" rel="noopener" dir="ltr">${ctx.esc(ctx.SET.phoneDisplay)}</a></span><span>${ctx.esc(ctx.t("replyWithin"))}</span></div>
               <div class="row"><span>${ctx.ICON.mail} <a href="mailto:${ctx.esc(ctx.SET.email)}">${ctx.esc(ctx.SET.email)}</a></span></div>
-              <div class="row"><span>${ctx.ICON.clock} ${ctx.esc(ctx.t("workingHours"))}</span></div>
+              <div class="row"><span>${ctx.ICON.clock} ${ctx.esc(hoursText())}</span></div>
             </div>
             <div class="footer-pay" aria-label="${ctx.esc(ctx.t("paymentMethods"))}">
               ${(ctx.SET.payments || [])

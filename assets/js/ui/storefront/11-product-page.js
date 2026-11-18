@@ -317,7 +317,7 @@ export function install(ctx) {
         <div class="rating">${[1, 2, 3, 4, 5].map((n) => `<span class="tp-star${n > Math.round(Number(rating)) ? " off" : ""}" data-icon="star"></span>`).join("")}<span>${rating} · ${productReviews(p).length} ${ctx.esc(ctx.t("reviews"))}</span></div>
         ${pdpBadges(p, currentConditionLabel(p))}
         ${pdpPriceRow(price, compare, ctx.discountFor(price, compare))}
-        <div class="payment-offer-line">${ctx.ICON.bolt}<span>${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</span></div>
+        ${ctx.hasPaymentOffer() ? `<div class="payment-offer-line">${ctx.ICON.bolt}<span>${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</span></div>` : ""}
         ${options}
         ${pdpSpecsHTML(p)}
         <div class="opt-label">${ctx.esc(ctx.t("quantity"))}</div>

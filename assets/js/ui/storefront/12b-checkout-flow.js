@@ -111,6 +111,7 @@ export function buildOrderDraft(ctx, input) {
     payment: {
       id: payment.id,
       name: ctx.L(payment.name),
+      account: payment.account || "",
       discount: payment.discount || 0
     },
     currency: "MRU",
@@ -147,7 +148,7 @@ export function orderTemplateValues(ctx, order, draft, form, payName, cityName) 
     phone: draft.customer.phone,
     city: cityName,
     address: draft.customer.address,
-    payment: payName,
+    payment: draft.payment?.account ? `${payName} (${draft.payment.account})` : payName,
     items: messageItemsHTML(ctx, order.items || draft.items),
     subtotal: ctx.money(order.subtotal),
     shipping: order.shipping ? ctx.money(order.shipping) : ctx.t("free"),

@@ -38,6 +38,7 @@ export function install(ctx) {
     `<svg viewBox="0 0 24 24" width="18" height="18" ${filled ? 'fill="currentColor" stroke="none"' : 'fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"'}>${body}</svg>`;
 
   const ICON = {
+    copy: svg('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'),
     search: svg('<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>'),
     user: svg('<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c.6-3.6 3.6-5.5 7.5-5.5s6.9 1.9 7.5 5.5"/>'),
     heart: svg('<path d="M12 20.3S4.8 15.9 4.8 10.9A4.1 4.1 0 0 1 12 8a4.1 4.1 0 0 1 7.2 2.9c0 5-7.2 9.4-7.2 9.4z"/>'),
@@ -136,5 +137,10 @@ export function install(ctx) {
     clearTimeout(ctx.toastTimer);
     ctx.toastTimer = setTimeout(() => t.classList.remove("show"), 2200);
   }
-  Object.assign(ctx, { esc, money, discountFor, variantLabel, SPEC_LABELS, specsText, svg, ICON });
+  /* 1.15 — payment-offer texts ("pay with Bankily, get 10 %") only make sense while an active payment method
+     actually carries a discount; otherwise the banner, product line and footer promo are hidden. */
+  const hasPaymentOffer = () =>
+    (ctx.SET.payments || []).some((p) => p.active !== false && Number(p.discount) > 0) &&
+    Boolean(ctx.L(ctx.SET.paymentOffer));
+  Object.assign(ctx, { esc, money, discountFor, variantLabel, SPEC_LABELS, specsText, svg, ICON, hasPaymentOffer });
 }

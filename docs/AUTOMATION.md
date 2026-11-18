@@ -33,5 +33,3 @@ the plan for the next release at any time.
 ## First-time for an existing store (e.g. demo1 on 1.5.3)
 The workflows live in the repo, so the first 1.7.0 patch must be pushed once by a human (`apply-patch.cmd` in the patch
 does it in one double-click). From then on everything above is automatic.
-
-> **PAT permissions for `CLIENTS_TOKEN`:** Contents read/write, Issues read/write, **Workflows read/write** (the update adds files under `.github/workflows/`).

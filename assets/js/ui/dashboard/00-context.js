@@ -11,6 +11,7 @@ export function install(ctx) {
     toast,
     getPath,
     setPath,
+    htmlToNode,
     orderList,
     productList,
     newOrdersCount,
@@ -167,6 +168,8 @@ export function install(ctx) {
     up: '<path d="M6 15l6-6 6 6"/>',
     down: '<path d="M18 9l-6 6-6-6"/>',
     check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    mapPin: '<path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
     truck: '<path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
     box: '<path d="M3 8l9-4 9 4v9l-9 4-9-4z"/><path d="M3 8l9 4 9-4M12 12v9"/>',
@@ -203,6 +206,13 @@ export function install(ctx) {
       .split(".")
       .reduce((value, key) => value?.[key], object);
   }
+  /** First element of an HTML string (for in-place partial refreshes). */
+  function htmlToNode(html) {
+    const tpl = document.createElement("template");
+    tpl.innerHTML = html.trim();
+    return tpl.content.firstElementChild;
+  }
+
   function setPath(object, path, value) {
     const parts = String(path).split(".");
     let cursor = object;

@@ -105,6 +105,15 @@ export function install(ctx) {
     "[data-page-section-visible], [data-home-section-visible], [data-product-active], [data-coupon-active], [data-payment-active], [data-city-active], [data-review-approved]";
 
   /** Change handlers, tested in order; the first match consumes the event. */
+  document.addEventListener("click", (event) => {
+    const day = /** @type {HTMLElement} */ (event.target).closest("[data-store-day]");
+    if (day instanceof HTMLElement) ctx.toggleStoreDay(Number(day.dataset.storeDay));
+  });
+  document.addEventListener("input", (event) => {
+    const node = /** @type {HTMLInputElement} */ (event.target);
+    if (node.matches?.("[data-city-fee]")) ctx.setCityFee(node.dataset.cityFee, node.value);
+  });
+
   const CHANGE_HANDLERS = [
     { match: (node) => node.matches("[data-upload-path]"), run: (node) => ctx.handleUpload(node) },
     { match: (node) => node.id === "profile-avatar-upload", run: (node) => updateAvatar(node) },

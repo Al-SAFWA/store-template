@@ -4,6 +4,10 @@
     {
       "repo": "Al-SAFWA/store-demo1",
       "key": "demo1"
+    },
+    {
+      "repo": "x/cs",
+      "key": "cs"
     }
   ]
 }

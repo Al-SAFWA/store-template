@@ -83,7 +83,7 @@ export function createDefaultTexts(ctx) {
         q: ctx.txt("كيف أدفع؟", "Comment payer ?"),
         a: ctx.txt(
           "يمكنك الدفع عبر بنكيلي، مصرفي، سداد، كليك أو نقدًا عند الاستلام. الدفع عبر بنكيلي يمنحك خصمًا 10%.",
-          "Vous pouvez payer via Bankily, Masrvi, Sedad, Click ou en espèces à la livraison. Le paiement Bankily offre 10 % de réduction."
+          "Vous pouvez payer via Bankily, Masrvi, Sedad, Click ou en espèces à la livraison."
         )
       },
       {
@@ -366,8 +366,9 @@ export function createDefaultTexts(ctx) {
         name: ctx.txt("بنكيلي", "Bankily"),
         color: "#00a651",
         active: true,
-        discount: 10,
-        note: ctx.txt("خصم 10% عند الدفع عبر بنكيلي", "10 % de réduction avec Bankily")
+        discount: 0,
+        account: "",
+        note: ctx.txt("", "")
       },
       {
         id: "masrvi",

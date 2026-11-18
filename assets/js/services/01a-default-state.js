@@ -125,8 +125,8 @@ export function createDefaultState(ctx) {
   function contentSettings() {
     return {
       announcement: ctx.txt(
-        "توصيل مجاني داخل نواكشوط • خصم 10% عند الدفع عبر بنكيلي",
-        "Livraison gratuite à Nouakchott • -10 % avec Bankily"
+        "توصيل مجاني داخل نواكشوط • الدفع عند الاستلام أو عبر بنكيلي",
+        "Livraison gratuite à Nouakchott • Paiement à la livraison ou Bankily"
       ),
       renewalText: bt("ما معنى مجدد من {brand}؟", "Que signifie reconditionné chez {brand} ?"),
       categoriesTitle: ctx.txt("تسوق الإلكترونيات المجددة", "Électronique reconditionnée"),
@@ -175,7 +175,8 @@ export function createDefaultState(ctx) {
         { icon: "return", label: ctx.txt("إرجاع خلال 10 أيام", "Retour sous 10 jours") },
         { icon: "badgeCheck", label: ctx.txt("فحص بواسطة خبراء", "Vérifié par des experts") }
       ],
-      paymentOffer: ctx.txt("اشترِ عبر بنكيلي واحصل على خصم 10%", "Payez avec Bankily et obtenez 10 % de réduction"),
+      paymentOffer: ctx.txt("", ""),
+      mapUrl: "",
       paymentOfferCode: "BANKILY10",
       shippingNote: ctx.txt(
         "رسوم الشحن تُحسب حسب المدينة عند إتمام الطلب.",
@@ -325,7 +326,7 @@ export function createDefaultState(ctx) {
       offers: [
         {
           id: "bankily",
-          active: true,
+          active: false,
           title: ctx.txt("خصم 10% عند الدفع عبر بنكيلي", "10 % de réduction avec Bankily"),
           subtitle: ctx.txt(
             "اختر بنكيلي عند إتمام الطلب وسيُطبّق الخصم تلقائيًا.",

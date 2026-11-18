@@ -1,0 +1,169 @@
+// @ts-check
+/* dashboard.js → "My store" (1.15): the merchant's own data on ONE phone-first screen.
+   Name/logo, contact (WhatsApp first), address, opening hours — fields that used to live in Settings, Appearance and
+   Texts. Every input is a `[data-path]` field, so it writes straight into the draft like the rest of the dashboard;
+   the preview card at the bottom mirrors what the storefront footer / "open now" badge will show. */
+
+const DAY_LABELS = [
+  { ar: "أحد", fr: "Dim" },
+  { ar: "إثنين", fr: "Lun" },
+  { ar: "ثلاثاء", fr: "Mar" },
+  { ar: "أربعاء", fr: "Mer" },
+  { ar: "خميس", fr: "Jeu" },
+  { ar: "جمعة", fr: "Ven" },
+  { ar: "سبت", fr: "Sam" }
+];
+
+/** @param {DashboardCtx} ctx */
+export function install(ctx) {
+  Object.assign(ctx, { viewStoreInfo, toggleStoreDay, storeInfoPreviewHTML });
+
+  const S = () => ctx.model.settings;
+
+  function input(path, value, { type = "text", dir = "", placeholder = "", inputmode = "" } = {}) {
+    const attrs = [
+      `data-path="${ctx.esc(path)}"`,
+      `type="${type}"`,
+      `value="${ctx.esc(value ?? "")}"`,
+      dir ? `dir="${dir}"` : "",
+      placeholder ? `placeholder="${ctx.esc(placeholder)}"` : "",
+      inputmode ? `inputmode="${inputmode}"` : ""
+    ]
+      .filter(Boolean)
+      .join(" ");
+    return `<input ${attrs}>`;
+  }
+
+  function labelled(label, control, hint = "") {
+    return `<label class="si-field"><span>${ctx.esc(label)}</span>${control}${hint ? `<small>${ctx.esc(hint)}</small>` : ""}</label>`;
+  }
+
+  /** Step 1 — name + logo. French name folded away; empty FR falls back to AR on the storefront already. */
+  function stepIdentity() {
+    const s = S();
+    return `<section class="pe-step">
+      <h4>${ctx.dt("الاسم والشعار", "Nom et logo")}</h4>
+      <div class="si-identity">
+        <div class="si-logo">${s.logo ? `<img src="${ctx.esc(s.logo)}" alt="">` : `<span>${ctx.esc(String(ctx.lng(s.storeName) || "?").slice(0, 1))}</span>`}</div>
+        <div class="u-grow">
+          ${labelled(ctx.dt("اسم المتجر", "Nom de la boutique"), input("settings.storeName.ar", s.storeName?.ar, { dir: "rtl" }))}
+        </div>
+      </div>
+      <details class="pe-more"><summary>${ctx.dt("الاسم بالفرنسية وتغيير الشعار", "Nom en français et logo")}</summary>
+        <div class="pe-more-body">
+          ${labelled(ctx.dt("الاسم بالفرنسية", "Nom en français"), input("settings.storeName.fr", s.storeName?.fr, { dir: "ltr" }))}
+          ${ctx.directImageEditor(ctx.dt("الشعار", "Logo"), "settings.logo", s.logo)}
+        </div>
+      </details>
+    </section>`;
+  }
+
+  /** Step 2 — contact. WhatsApp is where orders arrive, so it comes first and says so. */
+  function stepContact() {
+    const s = S();
+    return `<section class="pe-step">
+      <h4>${ctx.dt("التواصل", "Contact")}</h4>
+      ${labelled(
+        ctx.dt("رقم واتساب — تصل إليه الطلبات", "Numéro WhatsApp — reçoit les commandes"),
+        input("settings.whatsapp", s.whatsapp, { dir: "ltr", inputmode: "tel", placeholder: "22244123456" }),
+        ctx.dt(
+          "بصيغة دولية بدون + ولا مسافات، مثل 22244123456",
+          "Format international sans + ni espaces, ex. 22244123456"
+        )
+      )}
+      ${labelled(ctx.dt("الهاتف الذي يظهر للزبون", "Téléphone affiché au client"), input("settings.phoneDisplay", s.phoneDisplay, { dir: "ltr", inputmode: "tel", placeholder: "+222 44 12 34 56" }))}
+      ${labelled(ctx.dt("البريد الإلكتروني (اختياري)", "E-mail (optionnel)"), input("settings.email", s.email, { type: "email", dir: "ltr", placeholder: "contact@…" }))}
+    </section>`;
+  }
+
+  /** Step 3 — address + optional Google Maps link. */
+  function stepAddress() {
+    const s = S();
+    return `<section class="pe-step">
+      <h4>${ctx.dt("العنوان", "Adresse")}</h4>
+      ${labelled(ctx.dt("العنوان", "Adresse"), input("settings.address.ar", s.address?.ar, { dir: "rtl", placeholder: ctx.dt("مثل: تفرغ زينة، شارع جمال عبد الناصر", "ex. Tevragh Zeina, av. Nasser") }))}
+      <div class="si-row">
+        ${labelled(ctx.dt("المدينة", "Ville"), input("settings.city.ar", s.city?.ar, { dir: "rtl" }))}
+        ${labelled(ctx.dt("رابط خرائط Google (اختياري)", "Lien Google Maps (optionnel)"), input("settings.mapUrl", s.mapUrl, { type: "url", dir: "ltr", placeholder: "https://maps.app.goo.gl/…" }))}
+      </div>
+      <details class="pe-more"><summary>${ctx.dt("بالفرنسية", "En français")}</summary>
+        <div class="pe-more-body si-row">
+          ${labelled("Adresse", input("settings.address.fr", s.address?.fr, { dir: "ltr" }))}
+          ${labelled("Ville", input("settings.city.fr", s.city?.fr, { dir: "ltr" }))}
+        </div>
+      </details>
+    </section>`;
+  }
+
+  /** Step 4 — opening hours: tappable days, from/to, holiday switch. */
+  function stepHours() {
+    const hours = S().hours || {};
+    const days = Array.isArray(hours.days) ? hours.days : [0, 1, 2, 3, 4, 5, 6];
+    const chips = DAY_LABELS.map(
+      (d, i) =>
+        `<button type="button" class="si-day${days.includes(i) ? " on" : ""}" data-store-day="${i}" aria-pressed="${days.includes(i)}">${ctx.esc(ctx.dt(d.ar, d.fr))}</button>`
+    ).join("");
+    return `<section class="pe-step">
+      <h4>${ctx.dt("أوقات العمل", "Horaires")}</h4>
+      <div class="si-days">${chips}</div>
+      <div class="si-row">
+        ${labelled(ctx.dt("من", "De"), input("settings.hours.open", hours.open || "09:00", { type: "time", dir: "ltr" }))}
+        ${labelled(ctx.dt("إلى", "À"), input("settings.hours.close", hours.close || "19:00", { type: "time", dir: "ltr" }))}
+      </div>
+      ${ctx.directToggle(ctx.dt("إغلاق مؤقت (إجازة) — يُعرض «مغلق» ويُوقف الطلبات", "Fermeture temporaire — affiche « fermé » et bloque les commandes"), "settings.hours.closed", hours.closed === true)}
+    </section>`;
+  }
+
+  /** Human sentence for the hours, e.g. "الأحد–الخميس والسبت، 9:00–19:00". */
+  function hoursSentence() {
+    const hours = S().hours || {};
+    const days = (Array.isArray(hours.days) ? hours.days : [0, 1, 2, 3, 4, 5, 6]).slice().sort((a, b) => a - b);
+    if (hours.closed) return ctx.dt("مغلق مؤقتاً", "Fermé temporairement");
+    if (!days.length) return ctx.dt("لا أيام عمل محددة", "Aucun jour ouvré");
+    const names = days.map((i) => ctx.dt(DAY_LABELS[i].ar, DAY_LABELS[i].fr));
+    const list = days.length === 7 ? ctx.dt("كل الأيام", "Tous les jours") : names.join("، ");
+    return `${list}، ${hours.open || "09:00"}–${hours.close || "19:00"}`;
+  }
+
+  function storeInfoPreviewHTML() {
+    const s = S();
+    const open = typeof ctx.R.isStoreOpen === "function" ? ctx.R.isStoreOpen() : true;
+    return `<div class="si-preview" data-store-preview>
+      <strong>${ctx.dt("هكذا يظهر في أسفل المتجر:", "Aperçu du pied de page :")}</strong>
+      <div>${ctx.icon("mapPin")} ${ctx.esc([ctx.lng(s.address), ctx.lng(s.city)].filter(Boolean).join("، ") || ctx.dt("— لا عنوان بعد", "— pas d’adresse"))}</div>
+      <div>${ctx.icon("phone")} <span dir="ltr">${ctx.esc(s.phoneDisplay || s.whatsapp || "—")}</span></div>
+      <div>${ctx.icon("clock")} ${ctx.esc(hoursSentence())} · <em class="${open ? "si-open" : "si-closed"}">${open ? ctx.dt("مفتوح الآن", "Ouvert") : ctx.dt("مغلق الآن", "Fermé")}</em></div>
+    </div>`;
+  }
+
+  function viewStoreInfo() {
+    return `
+      <div class="dash-view-head">
+        <div><h2>${ctx.dt("بيانات متجري", "Ma boutique")}</h2><p>${ctx.dt("كل ما يراه الزبون عنك في مكان واحد. يُحفظ تلقائياً؛ اضغط «نشر» ليظهر في المتجر.", "Tout ce que le client voit de vous, au même endroit. Sauvegardé automatiquement ; publiez pour l’afficher.")}</p></div>
+      </div>
+      <div class="pe si">
+        ${stepIdentity()}
+        ${stepContact()}
+        ${stepAddress()}
+        ${stepHours()}
+        ${storeInfoPreviewHTML()}
+      </div>`;
+  }
+
+  /** Day chip tapped: flip membership in settings.hours.days, save, refresh chip + preview (no full re-render). */
+  function toggleStoreDay(index) {
+    const hours = (S().hours = S().hours || {});
+    const days = new Set(Array.isArray(hours.days) ? hours.days : [0, 1, 2, 3, 4, 5, 6]);
+    if (days.has(index)) days.delete(index);
+    else days.add(index);
+    hours.days = [...days].sort((a, b) => a - b);
+    ctx.saveDraftNow();
+    document.querySelectorAll("[data-store-day]").forEach((node) => {
+      const el = /** @type {HTMLElement} */ (node);
+      const on = days.has(Number(el.dataset.storeDay));
+      el.classList.toggle("on", on);
+      el.setAttribute("aria-pressed", String(on));
+    });
+    document.querySelector("[data-store-preview]")?.replaceWith(ctx.htmlToNode(storeInfoPreviewHTML()));
+  }
+}

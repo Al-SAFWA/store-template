@@ -72,7 +72,7 @@ export function install(ctx) {
         <ul class="trust-list">
           ${(ctx.SET.trustBar || []).map((item) => `<li><span class="trust-ico" data-icon="${ctx.esc(item.icon)}"></span>${ctx.esc(ctx.L(item.label))}</li>`).join("")}
         </ul>
-        <a class="bnpl" href="checkout.html">${ctx.ICON.bolt} ${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</a>
+        ${ctx.hasPaymentOffer() ? `<a class="bnpl" href="checkout.html">${ctx.ICON.bolt} ${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</a>` : ""}
       </div>
     </div>`;
   }
