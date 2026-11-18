@@ -294,7 +294,8 @@ export function install(ctx) {
   function whatsappQuestion(p, v) {
     const hello = ctx.R.lang === "ar" ? "مرحباً" : "Bonjour";
     const intent = ctx.R.lang === "ar" ? "أريد الاستفسار عن" : "je voudrais des informations sur";
-    return `${hello} ${ctx.L(ctx.SET.storeName)}، ${intent} ${p.title}${v?.title ? ` (${v.title})` : ""}.`;
+    const variantTitle = ctx.L(v?.title) || (v ? ctx.variantLabel(v) : "");
+    return `${hello} ${ctx.L(ctx.SET.storeName)}، ${intent} ${ctx.L(p.title)}${variantTitle ? ` (${variantTitle})` : ""}.`;
   }
 
   function pdpInfoHTML() {

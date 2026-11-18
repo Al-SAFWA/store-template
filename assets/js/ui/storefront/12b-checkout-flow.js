@@ -89,7 +89,7 @@ export function buildOrderDraft(ctx, input) {
     },
     items: items.map((it) => ({
       handle: it.handle,
-      title: it.product.title,
+      title: ctx.L(it.product.title),
       image: it.product.image,
       variantId: it.variant?.id,
       variantTitle: ctx.variantLabel(it.variant),
@@ -124,7 +124,7 @@ export function messageItemsHTML(ctx, items) {
     .map((item) => {
       const variant = item.variantTitle ? ` (${item.variantTitle})` : "";
       const specs = item.specsText ? `\n   ${item.specsText}` : "";
-      return `- ${item.title}${variant}${specs} × ${item.qty} = ${ctx.money(item.line ?? item.price * item.qty)}`;
+      return `- ${ctx.L(item.title)}${variant}${specs} × ${item.qty} = ${ctx.money(item.line ?? item.price * item.qty)}`;
     })
     .join("\n");
 }
@@ -196,7 +196,7 @@ export function abandonedLead(ctx, { form, city, items, subtotal }) {
     cityId: city?.id,
     items: items.map((it) => ({
       handle: it.handle,
-      title: it.product.title,
+      title: ctx.L(it.product.title),
       qty: it.qty,
       variant: ctx.variantLabel(it.variant)
     })),

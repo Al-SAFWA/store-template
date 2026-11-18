@@ -18,7 +18,7 @@ export function install(ctx) {
 
   const discountFor = (price, compare) => (compare && compare > price ? Math.round((1 - price / compare) * 100) : 0);
 
-  const variantLabel = (v) => [v.o1, v.o2, v.o3].filter(Boolean).join(" / ");
+  const variantLabel = (v) => (v ? [v.o1, v.o2, v.o3].filter(Boolean).join(" / ") : "");
   const SPEC_LABELS = {
     cpu: "cpu",
     ram: "ram",

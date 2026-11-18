@@ -175,9 +175,12 @@ function scrollTrack(e, el) {
 
 function addToCart(ctx) {
   if (!ctx.PDP.p) return false;
+  const product = ctx.PDP.p;
   const variant = ctx.pdpVariant();
-  if (!variant) return false;
-  ctx.addToCart(ctx.PDP.p.handle, variant.id, ctx.PDP.qty, ctx.PDP.specs);
+  // A product without choices (no variants) is a valid, buyable product: it goes to the cart under its own handle.
+  if (!variant && (product.variants || []).length) return false;
+  if (Number(product.stock) <= 0 && !variant) return false;
+  ctx.addToCart(product.handle, variant ? variant.id : product.handle, ctx.PDP.qty, ctx.PDP.specs);
   return true;
 }
 

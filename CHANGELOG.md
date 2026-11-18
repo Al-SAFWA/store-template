@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.13.4 — 2026-10-29
+
+- **Fix: a product created in the dashboard without choices (no colours/sizes) could not be bought.** The product page's
+  add-to-cart/buy-now handler returned silently when the product had no variants (`15a-click-handlers.js`); such a
+  product now goes to the cart under its own handle, the cart/checkout use a stand-in base variant (`02-cart.js`),
+  and `variantLabel` tolerates a missing variant. The secure order function already handled items without a variant.
+- **Fix: "[object Object]" in WhatsApp messages.** Dashboard products carry bilingual `{ar,fr}` titles; the product-page
+  WhatsApp question, the checkout order items + WhatsApp message, and the SEO `<title>` now resolve them with `L()`.
+- e2e 03 extended: simple product → WhatsApp text → cart → checkout summary, all readable.
+
 ## 1.13.3 — 2026-10-29
 
 - Hero photos look consistent whatever the merchant uploads. New `ui/dashboard/10c-hero-image.js`: on upload the near-white background connected to the picture's edges is flood-filled to transparent (white areas inside the product survive, 1px feathered edge), exported as WebP with alpha. If nothing could be removed (a real photo on a coloured background) the slide gets `imageStyle: "card"` and the storefront shows it as a rounded card with a shadow (`.hero-img-card`) instead of a bare rectangle. Editor preview mirrors the result; toast says which treatment was applied. e2e fixtures `e2e/fixtures/*.jpg`.

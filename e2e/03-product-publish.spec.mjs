@@ -40,5 +40,19 @@ test("staff: create a product in the dashboard, publish, and see it on the store
   await expect(h1).toContainText(/E2E Produit|منتج اختبار/);
   await expect(h1).not.toContainText("[object Object]");
   await expect(page.locator("[data-add-cart]")).toBeVisible();
+  // 1.13.4 — a product without choices (no variants) must be buyable and readable everywhere:
+  // the WhatsApp question, the cart drawer and the checkout summary/message all carry the localized title.
+  const waHref = await page.locator(".whatsapp-order").getAttribute("href");
+  expect(decodeURIComponent(waHref || "")).not.toContain("[object Object]");
+  expect(decodeURIComponent(waHref || "")).toContain("منتج اختبار");
+  await page.click("[data-add-cart]");
+  await expect(page.locator(".cart-item-title").first()).toContainText(/E2E Produit|منتج اختبار/);
+  const cart = await page.evaluate(() => JSON.parse(localStorage.getItem("restore_cart_v1") || "[]"));
+  expect(cart.length, "cart holds the simple product").toBe(1);
+  expect(cart[0].handle).toBe(handle);
+  await page.goto("/checkout.html");
+  const summary = page.locator(".order-summary").first();
+  await expect(summary).toContainText(/E2E Produit|منتج اختبار/);
+  await expect(page.locator("body")).not.toContainText("[object Object]");
   expect(errors, errors.join("\n")).toEqual([]);
 });

@@ -156,8 +156,9 @@ export function install(ctx) {
   function applyProductSeo(product) {
     const base = siteBase();
     const path = `/product.html?handle=${encodeURIComponent(product.handle)}`;
-    const title = `${product.title} | ${ctx.L(ctx.SET.storeName)}`;
-    const description = `${product.title} — ${ctx.L(product.description)}`.slice(0, 300);
+    const name = ctx.L(product.title);
+    const title = `${name} | ${ctx.L(ctx.SET.storeName)}`;
+    const description = `${name} — ${ctx.L(product.description)}`.slice(0, 300);
     const image = absoluteUrl(product.image);
     document.title = title;
     setCanonical(`${base}${path}`);

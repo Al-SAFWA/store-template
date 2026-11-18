@@ -20,12 +20,18 @@ export function install(ctx) {
     ctx.renderCart();
   }
 
+  /** Stand-in line variant for a product sold without choices (dashboard products often have none). */
+  const baseVariant = (product) => ({ id: product.handle, price: product.price, stock: product.stock });
+
   function cartDetails() {
     return readCart()
       .map((it) => {
         const product = ctx.BY_HANDLE.get(it.handle);
         if (!product) return null;
-        const variant = product.variants.find((v) => String(v.id) === String(it.variantId)) || product.variants[0];
+        const variant =
+          (product.variants || []).find((v) => String(v.id) === String(it.variantId)) ||
+          product.variants?.[0] ||
+          baseVariant(product);
         return { ...it, product, variant, line: (Number(variant?.price ?? product.price) || 0) * it.qty };
       })
       .filter(Boolean);
