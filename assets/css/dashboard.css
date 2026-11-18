@@ -154,6 +154,8 @@ body[data-page="dashboard"] {
 .dash-table .price { font-weight: 700; white-space: nowrap; }
 .table-empty { text-align: center; padding: 38px 15px; color: var(--muted); font-size: 11px; }
 .table-empty .btn { margin-top: 10px; }
+/* 1.13.6 — empty-state icons were unsized inline SVGs (filled the whole card on desktop). */
+.table-empty > svg { width: 40px; height: 40px; display: block; margin: 0 auto 10px; opacity: 0.45; }
 .status-pill { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 999px; background: color-mix(in srgb, var(--status, var(--orange)) 12%, transparent); color: var(--status, var(--orange)); font-size: 8px; font-weight: 700; white-space: nowrap; border: 0; }
 .status-pill::before { content: ""; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
 .mini-bar { height: 5px; border-radius: 99px; background: var(--surface-3); overflow: hidden; min-width: 70px; }

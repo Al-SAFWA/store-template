@@ -146,6 +146,7 @@ export function install(ctx) {
     const root = document.getElementById("customer-account");
     if (!root) return;
     const cust = ctx.R.getCustomer();
+    root.closest(".header-actions")?.classList.toggle("is-customer", Boolean(cust));
     if (cust) {
       const initial = String(cust.name || "U")
         .trim()

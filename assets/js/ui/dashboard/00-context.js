@@ -181,7 +181,7 @@ export function install(ctx) {
     chevron: '<path d="M9 5l7 7-7 7"/>'
   };
   const icon = (name) =>
-    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.overview}</svg>`;
+    `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name] || ICONS.overview}</svg>`;
 
   /**
    * Shows the dashboard toast for 3.2 s. The hide timer is kept on the function object.

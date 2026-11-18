@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.13.6 — 2026-10-29
+
+- Storefront phones (≤900px) show a "my account" icon in the header; it is replaced by the avatar dropdown once the
+  customer signs in (`.header-actions.is-customer`). Wishlist icon and the wide login button stay hidden on phones.
+- Fix (class of bug, final): every inline icon now carries intrinsic `width`/`height` (`ctx.icon()` in the dashboard,
+  `svg()` in the storefront), so an icon without a CSS rule can never again fill its container — seen last on the
+  orders empty state on desktop. Explicit CSS sizes still win where defined; `.table-empty > svg` gets 40px.
+
 ## 1.13.5 — 2026-10-29
 
 - **Fix: orders were only visible on the device that placed them.** The dashboard rendered `localStorage` orders and

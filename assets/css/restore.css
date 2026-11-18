@@ -690,8 +690,12 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 @media (max-width: 900px) {
   .announcement span { animation-duration: 20s; }
   .header-top { grid-template-columns: auto 1fr auto; }
-  .header-actions [href="account.html"],
-  .header-actions [href="wishlist.html"] { display: none; }
+  /* 1.13.6 — phones keep a "my account" icon in the header (merchant request); the wide login button and the
+     wishlist icon stay hidden. Once the customer is signed in the avatar dropdown replaces the icon. */
+  .header-actions [href="wishlist.html"],
+  .header-actions .account-login-link,
+  .header-actions.is-customer > [href="account.html"] { display: none; }
+  .header-actions > [href="account.html"] { display: inline-flex; }
   .country { display: none; }
   .hero-banner .hero-inner { grid-template-columns: 1fr; min-height: 0; padding-top: 34px; padding-bottom: 46px; gap: 8px; }
   .hero-banner h1 { max-width: 20ch; }
