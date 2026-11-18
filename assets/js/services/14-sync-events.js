@@ -7,6 +7,17 @@ export function install(ctx) {
     ctx.loadRemoteState().finally(() => ctx.loadCatalog({ silent: false }));
     setInterval(ctx.loadRemoteState, Math.max(2500, Number(ctx.CFG.pollMs) || 5000));
     setInterval(ctx.pollCatalog, Math.max(2500, Number(ctx.CFG.pollMs) || 5000));
+    // Orders live in restore_orders; until 1.13.5 the dashboard only ever showed the orders placed on the SAME device
+    // (localStorage). Staff sessions now pull the table at boot, every poll tick, on login and when the tab regains focus.
+    const pollOrders = () => {
+      if (ctx.session?.mode === "supabase") ctx.refreshOrders().catch(() => {});
+    };
+    setTimeout(pollOrders, 600);
+    setInterval(pollOrders, Math.max(5000, (Number(ctx.CFG.pollMs) || 5000) * 2));
+    window.addEventListener("restore:staff", pollOrders);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") pollOrders();
+    });
     setInterval(() => {
       if (ctx.session?.mode === "supabase") ctx.remoteSessionValid().catch(() => {});
       if (ctx.customerAuth?.accessToken) ctx.refreshCustomerToken().catch(() => {});

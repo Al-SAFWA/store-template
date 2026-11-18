@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.13.5 — 2026-10-29
+
+- **Fix: orders were only visible on the device that placed them.** The dashboard rendered `localStorage` orders and
+  never pulled `restore_orders`; `refreshOrders()` existed but was only called for signed-in customers. Staff sessions
+  now sync the table at boot, every 10 s, on login and whenever the tab becomes visible (`services/14-sync-events.js`).
+  Merge keeps the newest `updatedAt`, so status changes made on another device also propagate.
+
 ## 1.13.4 — 2026-10-29
 
 - **Fix: a product created in the dashboard without choices (no colours/sizes) could not be bought.** The product page's
