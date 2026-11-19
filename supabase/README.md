@@ -42,7 +42,7 @@ persistent, cross-device data sync and staff authentication.
 1. Go to **Authentication > Users** → **Add user**.
 2. Email: `owner@restore.mr` (or your preferred owner email).
 3. Password: a strong temporary password (the owner will be forced to change it on first login).
-4. **User Metadata** (JSON):
+4. **App Metadata** (JSON):
    ```json
    {
      "role": "owner",
