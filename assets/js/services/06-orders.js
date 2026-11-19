@@ -1,5 +1,5 @@
 // @ts-check
-/* state.js → Orders, abandoned carts and audit
+/* state.js → Orders and audit
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see state.js). */
 
 export function install(ctx) {
@@ -13,10 +13,6 @@ export function install(ctx) {
     updateOrder,
     normalizeRemoteOrder,
     refreshOrders,
-    getAbandoned,
-    abandonedToken,
-    saveAbandoned,
-    removeAbandoned,
     getAudit,
     addAudit
   });
@@ -269,61 +265,6 @@ export function install(ctx) {
     if (!Array.isArray(rows) || !rows.length) return getOrders();
     mergeOrderRows(rows);
     return getOrders();
-  }
-
-  function getAbandoned() {
-    const rows = ctx.readJSON(ctx.LS_ABANDONED, []);
-    return Array.isArray(rows) ? rows : [];
-  }
-  function abandonedToken() {
-    const key = "restore_abandoned_token_v1";
-    let token = localStorage.getItem(key);
-    if (!token) {
-      token = ctx.uid("tok");
-      localStorage.setItem(key, token);
-    }
-    return token;
-  }
-  function saveAbandoned(entry) {
-    const rows = getAbandoned();
-    const phone = ctx.normalizeDigits(entry.phone);
-    const existing = rows.find((item) => ctx.normalizeDigits(item.phone) === phone && item.status === "open" && phone);
-    if (existing) Object.assign(existing, entry, { updatedAt: ctx.nowISO(), cartToken: abandonedToken() });
-    else
-      rows.unshift({
-        id: phone ? `ab_${phone.slice(-8)}` : `ab_${Date.now()}`,
-        createdAt: ctx.nowISO(),
-        status: "open",
-        cartToken: abandonedToken(),
-        ...entry
-      });
-    ctx.writeJSON(ctx.LS_ABANDONED, rows.slice(0, 100));
-    ctx.channel?.postMessage({ type: "abandoned" });
-    if (ctx.REMOTE && phone) {
-      const row = rows.find((item) => ctx.normalizeDigits(item.phone) === phone && item.status === "open");
-      const payload = {
-        id: row.id,
-        data: row,
-        cart_token: row.cartToken || abandonedToken(),
-        created_at: row.createdAt,
-        updated_at: row.updatedAt || ctx.nowISO()
-      };
-      // Insert-only for anon safety (no public update permission). Ignore duplicates.
-      ctx
-        .supa(`/rest/v1/${ctx.CFG.abandonedTable}`, {
-          method: "POST",
-          body: JSON.stringify(payload),
-          headers: { Prefer: "resolution=ignore-duplicates,return=minimal" }
-        })
-        .catch(() => {});
-    }
-  }
-  function removeAbandoned(id) {
-    ctx.writeJSON(
-      ctx.LS_ABANDONED,
-      getAbandoned().filter((item) => item.id !== id)
-    );
-    ctx.channel?.postMessage({ type: "abandoned" });
   }
 
   function getAudit() {

@@ -43,7 +43,6 @@ export async function loginDashboard(page) {
 export const DASHBOARD_ROUTES = [
   "overview",
   "orders",
-  "abandoned",
   "products",
   "categories",
   "reviews",
@@ -51,11 +50,10 @@ export const DASHBOARD_ROUTES = [
   "homepage",
   "appearance",
   "marketing",
-  "blog",
   "pages",
   "payments",
+  "store-info",
   "team",
-  "reports",
   "settings",
   "audit",
   "profile"

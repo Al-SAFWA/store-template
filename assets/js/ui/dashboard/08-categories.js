@@ -18,8 +18,7 @@ export function install(ctx) {
     setCategoryImage,
     toggleCategoryProduct,
     toggleCategoryFlag,
-    filterCategoryProducts,
-    collectionEditor
+    filterCategoryProducts
   });
 
   const collections = () => ctx.model.collections || [];
@@ -309,10 +308,5 @@ export function install(ctx) {
       });
     } else ctx.saveDraftNow();
     ctx.renderRoute();
-  }
-
-  /** Legacy entry kept for older callers; opens the same editor. */
-  function collectionEditor(index) {
-    categoryEditor(index);
   }
 }

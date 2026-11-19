@@ -2,7 +2,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
-  abandonedLead,
   buildOrderDraft,
   buildOrderMessage,
   fillTemplate,
@@ -193,19 +192,4 @@ test("findCoupon: case-insensitive, ignores inactive coupons and empty input", (
   assert.equal(findCoupon(coupons, "OLD20"), null, "inactive coupons never apply");
   assert.equal(findCoupon(coupons, ""), null);
   assert.equal(findCoupon(null, "X"), null);
-});
-
-test("abandonedLead: keeps only the fields the abandoned-checkout feature stores", () => {
-  const ctx = ctxStub();
-  const lead = abandonedLead(ctx, {
-    form: FORM,
-    city: { id: "nktt", name: { fr: "Nouakchott" } },
-    items: ITEMS,
-    subtotal: 2400
-  });
-  assert.equal(lead.phone, "46000000", "digits only, no +222");
-  assert.equal(lead.cityId, "nktt");
-  assert.equal(lead.lang, "fr");
-  assert.equal(lead.items[0].variant, "128 Go");
-  assert.equal(lead.subtotal, 2400);
 });

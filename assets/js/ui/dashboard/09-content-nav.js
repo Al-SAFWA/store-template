@@ -27,59 +27,15 @@ export function install(ctx) {
     const settings = ctx.model.settings;
     return `
       <div class="dash-view-head">
-        <div><h2>${ctx.dt("نصوص المتجر", "Textes & contenu")}</h2><p>${ctx.dt("كل نص يظهر في المتجر قابل للتعديل هنا بالعربية والفرنسية.", "Chaque texte visible sur la boutique est modifiable ici en arabe et en français.")}</p></div>
+        <div><h2>${ctx.dt("القائمة والتذييل", "Menu & pied de page")}</h2><p>${ctx.dt("كل نص يظهر في المتجر قابل للتعديل هنا بالعربية والفرنسية.", "Chaque texte visible sur la boutique est modifiable ici en arabe et en français.")}</p></div>
         <div class="dash-view-actions"><button class="btn btn-primary" data-action="save-draft">${ctx.icon("check")} ${ctx.dt("حفظ المسودة", "Enregistrer")}</button></div>
       </div>
       <div class="dash-tabs">
-        <button class="active" type="button" data-dash-tab="content-main">${ctx.dt("الهوية والنصوص", "Identité & textes")}</button>
-        <button type="button" data-dash-tab="content-contact">${ctx.dt("التواصل والمواعيد", "Contact & horaires")}</button>
-        <button type="button" data-dash-tab="content-trust">${ctx.dt("شريط الثقة", "Barre de confiance")}</button>
+        <button class="active" type="button" data-dash-tab="content-trust">${ctx.dt("شريط الثقة", "Barre de confiance")}</button>
         <button type="button" data-dash-tab="content-nav">${ctx.dt("القائمة", "Navigation")}</button>
         <button type="button" data-dash-tab="content-footer">${ctx.dt("التذييل", "Pied de page")}</button>
       </div>
-      <div class="dash-panel active" data-dash-panel="content-main">
-        <div class="dash-grid cols-2">
-          <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("النصوص الأساسية", "Textes principaux")}</h3></div><div class="dash-card-body dash-form">
-            ${ctx.biField(ctx.dt("اسم المتجر", "Nom de la boutique"), "settings.storeName")}
-            ${ctx.biField(ctx.dt("الشعار النصي", "Slogan"), "settings.tagline")}
-            ${ctx.biField(ctx.dt("شريط الإعلان", "Bandeau d’annonce"), "settings.announcement", { type: "textarea", rows: 2 })}
-            ${ctx.biField(ctx.dt("عنوان الفئات", "Titre catégories"), "settings.categoriesTitle")}
-            ${ctx.biField(ctx.dt("عنوان خدمة العملاء", "Titre service"), "settings.serviceTitle", { type: "textarea", rows: 2 })}
-            ${ctx.biField(ctx.dt("عنوان آراء العملاء", "Titre avis"), "settings.reviewsTitle")}
-            ${ctx.biField(ctx.dt("عنوان الصحافة", "Titre presse"), "settings.pressTitle")}
-            ${ctx.biField(ctx.dt("نص المجدد", "Texte reconditionné"), "settings.renewalText")}
-          </div></article>
-          <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("أقسام مخصصة", "Sections personnalisées")}</h3></div><div class="dash-card-body dash-form">
-            ${ctx.biField(ctx.dt("عنوان الثقة", "Titre confiance"), "settings.trustTitle")}
-            ${ctx.biField(ctx.dt("عنوان المجتمع", "Titre communauté"), "settings.communityTitle")}
-            ${ctx.biField(ctx.dt("ملاحظة الشحن", "Note livraison"), "settings.shippingNote", { type: "textarea", rows: 2 })}
-            ${ctx.field(ctx.dt("الحد الأدنى للشحن المجاني (MRU)", "Seuil livraison gratuite (MRU)"), "settings.freeShippingOver", { type: "number" })}
-            ${ctx.field(ctx.dt("رقم الهاتف للعرض", "Téléphone affiché"), "settings.phoneDisplay")}
-            ${ctx.field("WhatsApp", "settings.whatsapp", { hint: ctx.dt("أرقام فقط مع رمز الدولة، مثال 22246000000", "Chiffres uniquement avec indicatif, ex. 22246000000") })}
-            ${ctx.field(ctx.dt("البريد الإلكتروني", "E-mail"), "settings.email", { type: "email" })}
-          </div></article>
-        </div>
-      </div>
-      <div class="dash-panel" data-dash-panel="content-contact">
-        <div class="dash-grid cols-2">
-          <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("معلومات التواصل", "Coordonnées")}</h3></div><div class="dash-card-body dash-form">
-            ${ctx.biField(ctx.dt("العنوان", "Adresse"), "settings.address", { type: "textarea", rows: 2 })}
-            ${ctx.field(ctx.dt("الهاتف", "Téléphone"), "settings.phone")}
-            ${ctx.field(ctx.dt("واتساب", "WhatsApp"), "settings.whatsapp")}
-            ${ctx.field(ctx.dt("بريد الدعم", "E-mail support"), "settings.email", { type: "email" })}
-            ${ctx.field(ctx.dt("المنطقة الزمنية", "Fuseau horaire"), "settings.timezone")}
-          </div></article>
-          <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("ساعات العمل والحالة", "Horaires et état")}</h3></div><div class="dash-card-body dash-form">
-            <div class="form-grid">${ctx.field(ctx.dt("الفتح", "Ouverture"), "settings.hours.open", { type: "time" })}${ctx.field(ctx.dt("الإغلاق", "Fermeture"), "settings.hours.close", { type: "time" })}</div>
-            <div class="check-row"><label class="toggle"><input type="checkbox" data-path="settings.hours.closed" data-type="bool" ${settings.hours.closed ? "checked" : ""}><span></span></label><span>${ctx.dt("إغلاق المتجر مؤقتًا", "Fermer temporairement")}</span></div>
-            <div class="check-row"><label class="toggle"><input type="checkbox" data-path="settings.hours.maintenance" data-type="bool" ${settings.hours.maintenance ? "checked" : ""}><span></span></label><span>${ctx.dt("وضع الصيانة", "Mode maintenance")}</span></div>
-            ${ctx.biField(ctx.dt("رسالة الإغلاق", "Message de fermeture"), "settings.closedMessage", { type: "textarea", rows: 2 })}
-            <p class="form-note">${ctx.dt("تظهر حالة المتجر تلقائيًا للزوار حسب ساعات العمل. الأوقات بتوقيت نواكشوط.", "L’état est calculé selon les horaires. Heure de Nouakchott.")}</p>
-            <p class="form-note">${ctx.dt("ساعات اليوم", "Aujourd’hui")}: <strong>${ctx.R.isStoreOpen() ? ctx.dt("مفتوح", "Ouvert") : ctx.dt("مغلق", "Fermé")}</strong></p>
-          </div></article>
-        </div>
-      </div>
-      <div class="dash-panel" data-dash-panel="content-trust">
+      <div class="dash-panel active" data-dash-panel="content-trust">
         <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("شريط الثقة", "Barre de confiance")}</h3><button data-action="add-trust">${ctx.icon("plus")} ${ctx.dt("إضافة", "Ajouter")}</button></div><div class="dash-card-body">
           <div class="dash-form">${(settings.trustBar || []).map((item, index) => `<div class="form-section"><div class="form-grid"><div class="field"><label>${ctx.dt("الأيقونة", "Icône")}</label><input data-path="settings.trustBar.${index}.icon" value="${ctx.esc(item.icon)}"></div><div class="field"><label>${ctx.dt("العربي", "Arabe")}</label><input data-path="settings.trustBar.${index}.label.ar" value="${ctx.esc(item.label?.ar || "")}" dir="rtl"></div><div class="field"><label>Français</label><input data-path="settings.trustBar.${index}.label.fr" value="${ctx.esc(item.label?.fr || "")}" dir="ltr"></div><div class="u-flex u-items-end"><button class="btn btn-sm btn-danger" data-action="remove-trust" data-index="${index}">${ctx.icon("trash")}</button></div></div></div>`).join("")}</div>
         </div></article>

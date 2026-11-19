@@ -134,21 +134,7 @@ function orderActions(ctx) {
     },
     "print-invoice": ({ id }) => ctx.printOrder(findOrder(id), "invoice"),
     "print-label": ({ id }) => ctx.printOrder(findOrder(id), "label"),
-    "export-orders": () => ctx.exportOrdersCsv(),
-    "abandoned-status": ({ node, id }) => {
-      const rows = ctx.R.getAbandoned().map((item) =>
-        item.id === id ? { ...item, status: node.dataset.status || "contacted", contactedAt: ctx.nowIso() } : item
-      );
-      localStorage.setItem("restore_abandoned_v1", JSON.stringify(rows));
-      window.dispatchEvent(new CustomEvent("restore:orders"));
-      ctx.renderRoute();
-      ctx.toast(ctx.dt("تم تحديث السلة", "Panier mis à jour"), "good");
-    },
-    "delete-abandoned": ({ id }) => {
-      if (!ask(ctx, "حذف السلة المتروكة؟", "Supprimer ce panier ?")) return;
-      ctx.R.removeAbandoned(id);
-      ctx.renderRoute();
-    }
+    "export-orders": () => ctx.exportOrdersCsv()
   };
 }
 
@@ -181,27 +167,6 @@ function catalogActions(ctx) {
       if (ctx.categoryDraft?.index != null) ctx.deleteCategory(ctx.categoryDraft.index);
     },
     "move-category": ({ index, node }) => ctx.moveCategory(index, Number(node.dataset.dir)),
-    "edit-collection": ({ index }) => ctx.collectionEditor(index),
-    "save-collection": ({ index }) => {
-      if (ctx.editBuffer && ctx.tablesMode()) {
-        ctx
-          .catalogWrite(ctx.dt("تم حفظ المجموعة في قاعدة البيانات", "Collection enregistrée en base"), () =>
-            ctx.CAT.saveCollection(ctx.editBuffer)
-          )
-          .then((ok) => {
-            if (!ok) return;
-            ctx.closeModal();
-            ctx.renderRoute();
-          });
-        return;
-      }
-      if (!ctx.editBuffer) return;
-      ctx.model.collections[index] = ctx.editBuffer;
-      ctx.saveDraftNow();
-      ctx.closeModal();
-      ctx.renderRoute();
-      ctx.toast(ctx.dt("تم حفظ المجموعة", "Collection enregistrée"), "good");
-    },
     "import-catalog": () => {
       if (!ctx.CAT?.enabled) return;
       const go = ask(

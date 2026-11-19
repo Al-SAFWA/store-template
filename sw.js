@@ -1,5 +1,5 @@
 /* Restore storefront service worker: fast repeat visits without stale prices. */
-const CACHE = "restore-shell-v22";
+const CACHE = "restore-shell-v23";
 const SHELL = [
   "./",
   "index.html",
@@ -8,8 +8,6 @@ const SHELL = [
   "checkout.html",
   "wishlist.html",
   "account.html",
-  "blog.html",
-  "blog-post.html",
   "page.html",
   "print.html",
   "manifest.webmanifest",

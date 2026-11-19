@@ -25,8 +25,6 @@ if (!PAGE) {
     "wishlist.html",
     "page.html",
     "account.html",
-    "blog.html",
-    "blog-post.html",
     "dashboard.html",
     "print.html",
     "guide.html"
@@ -189,7 +187,6 @@ if (PAGE === "dashboard.html") {
   for (const r of [
     "overview",
     "orders",
-    "abandoned",
     "products",
     "categories",
     "reviews",
@@ -197,11 +194,9 @@ if (PAGE === "dashboard.html") {
     "homepage",
     "appearance",
     "marketing",
-    "blog",
     "pages",
     "payments",
     "team",
-    "reports",
     "settings",
     "audit",
     "profile"

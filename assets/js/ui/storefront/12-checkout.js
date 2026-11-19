@@ -5,7 +5,6 @@
 import { computeTotals, couponDiscount } from "../../domain/pricing.js";
 import { checkoutPageHTML, checkoutSuccessHTML, emptyCheckoutHTML, noPaymentHTML } from "./12a-checkout-markup.js";
 import {
-  abandonedLead,
   buildOrderDraft,
   buildOrderMessage,
   findCoupon,
@@ -116,24 +115,8 @@ export function install(ctx) {
       };
     }
 
-    function saveLead() {
-      const form = readForm();
-      const phone = digits(form.phone);
-      const name = form.name.trim();
-      if (!phone && !name) return;
-      ctx.R.saveAbandoned(abandonedLead(ctx, { form, city: selectedCity(), items, subtotal }));
-    }
-    let leadTimer;
-    const onLead = () => {
-      clearTimeout(leadTimer);
-      leadTimer = setTimeout(saveLead, 900);
-    };
-    ["co-name", "co-phone", "co-email", "co-address", "co-notes"].forEach((id) =>
-      $(id)?.addEventListener("input", onLead)
-    );
     ["co-city"].forEach((id) =>
       $(id)?.addEventListener("change", () => {
-        onLead();
         refresh();
       })
     );
@@ -192,8 +175,6 @@ export function install(ctx) {
         ctx.R.updateOrder(order.id, { whatsappUrl: link, message: built.message });
 
       ctx.R.decrementStock(order.items || draft.items);
-      const openLead = ctx.R.getAbandoned().find((lead) => lead.status === "open" && digits(lead.phone) === phone);
-      if (openLead) ctx.R.removeAbandoned(openLead.id);
       localStorage.setItem(`restore_last_order_${phone}`, String(Date.now()));
       localStorage.removeItem(ctx.CART_KEY);
       ctx.syncBadges();

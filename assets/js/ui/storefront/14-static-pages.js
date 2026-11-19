@@ -4,7 +4,7 @@
 
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
-  Object.assign(ctx, { renderPage, renderBlog, renderBlogPost, renderAccount });
+  Object.assign(ctx, { renderPage, renderAccount });
   function renderPage() {
     const slug = new URLSearchParams(location.search).get("slug") || "about-us";
     const page = ctx.R.getPage(slug);
@@ -39,59 +39,6 @@ export function install(ctx) {
     root.innerHTML = `<span class="eyebrow">${ctx.esc(ctx.L(ctx.SET.storeName))}</span><h1>${ctx.esc(ctx.L(page.title))}</h1>${paragraphs}${contact}
       <p class="page-meta">${ctx.esc(ctx.L(ctx.SET.city))}, ${ctx.esc(ctx.L(ctx.SET.country.name))} · <span class="phone-ltr">${ctx.esc(ctx.SET.phoneDisplay)}</span></p>`;
     ctx.observeReveals();
-  }
-
-  function renderBlog() {
-    const root = document.getElementById("blog-root");
-    if (!root) return;
-    const posts = (ctx.S.blog || [])
-      .filter((post) => post.published !== false)
-      .sort((a, b) => String(b.date).localeCompare(String(a.date)));
-    document.title = `${ctx.t("blog")} | ${ctx.L(ctx.SET.storeName)}`;
-    root.innerHTML = `<div class="container">
-      <div class="blog-head"><span class="eyebrow">${ctx.esc(ctx.L(ctx.SET.storeName))}</span><h1>${ctx.esc(ctx.t("blog"))}</h1><p>${ctx.esc(ctx.t("latestArticles"))}</p></div>
-      <div class="blog-grid">
-        ${
-          posts
-            .map(
-              (post) => `<a class="blog-card reveal" href="blog-post.html?slug=${encodeURIComponent(post.slug)}">
-          <div class="blog-card-img"><img src="${ctx.esc(post.image || "assets/img/category-iphone.svg")}" alt="${ctx.esc(ctx.L(post.title))}" loading="lazy"></div>
-          <div class="blog-card-body"><time>${ctx.esc(ctx.R.formatDate(post.date))}</time><h2>${ctx.esc(ctx.L(post.title))}</h2><p>${ctx.esc(ctx.L(post.excerpt))}</p><span class="read-more">${ctx.esc(ctx.t("readMore"))} ${ctx.ICON.arrowRight}</span></div>
-        </a>`
-            )
-            .join("") || `<div class="empty-state u-span-full"><h2>${ctx.esc(ctx.t("noProducts"))}</h2></div>`
-        }
-      </div>
-    </div>`;
-    ctx.observeReveals();
-  }
-
-  function renderBlogPost() {
-    const root = document.getElementById("blog-root");
-    if (!root) return;
-    const slug = new URLSearchParams(location.search).get("slug");
-    const post = (ctx.S.blog || []).find((item) => item.slug === slug && item.published !== false);
-    if (!post) {
-      document.title = `${ctx.t("pageNotFound")} | ${ctx.L(ctx.SET.storeName)}`;
-      root.innerHTML = `<div class="container"><div class="empty-state"><h1>${ctx.esc(ctx.t("pageNotFound"))}</h1><a class="btn btn-primary" href="blog.html">${ctx.esc(ctx.t("blog"))}</a></div></div>`;
-      return;
-    }
-    document.title = `${ctx.L(post.title)} | ${ctx.L(ctx.SET.storeName)}`;
-    root.innerHTML = `<div class="container">
-      <div class="breadcrumb"><a href="index.html">${ctx.esc(ctx.t("homeCrumb"))}</a><span>/</span><a href="blog.html">${ctx.esc(ctx.t("blog"))}</a><span>/</span><span>${ctx.esc(ctx.L(post.title))}</span></div>
-      <article class="blog-post">
-        <span class="eyebrow">${ctx.esc(ctx.R.formatDate(post.date))}</span>
-        <h1>${ctx.esc(ctx.L(post.title))}</h1>
-        <p class="blog-excerpt">${ctx.esc(ctx.L(post.excerpt))}</p>
-        <img class="blog-hero" src="${ctx.esc(post.image || "assets/img/category-iphone.svg")}" width="1200" height="600" decoding="async" alt="${ctx.esc(ctx.L(post.title))}">
-        ${String(ctx.L(post.body))
-          .split("\n")
-          .filter(Boolean)
-          .map((line) => `<p>${ctx.esc(line)}</p>`)
-          .join("")}
-        <a class="btn btn-outline" href="blog.html">${ctx.esc(ctx.t("blog"))}</a>
-      </article>
-    </div>`;
   }
 
   function renderAccount() {

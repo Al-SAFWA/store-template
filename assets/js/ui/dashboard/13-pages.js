@@ -1,53 +1,10 @@
 // @ts-check
-/* dashboard.js → Blog and pages
+/* dashboard.js → Pages and FAQ (blog removed in 1.17)
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see dashboard.js). */
 
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
-  Object.assign(ctx, { viewBlog, postEditor, viewPages, pageEditor, savePageEditor, faqEditor });
-  function viewBlog() {
-    return `
-      <div class="dash-view-head"><div><h2>${ctx.dt("المدونة", "Blog")}</h2><p>${ctx.dt("مقالات تساعد العملاء وتقوي SEO.", "Des articles utiles et bons pour le SEO.")}</p></div><div class="dash-view-actions"><button class="btn btn-primary" data-action="add-post">${ctx.icon("plus")} ${ctx.dt("مقال جديد", "Nouvel article")}</button></div></div>
-      <div class="dash-card"><div class="dash-table-wrap"><table class="dash-table"><thead><tr><th>${ctx.dt("المقال", "Article")}</th><th>${ctx.dt("الرابط", "Slug")}</th><th>${ctx.dt("التاريخ", "Date")}</th><th>${ctx.dt("منشور", "Publié")}</th><th></th></tr></thead><tbody>
-        ${(ctx.model.blog || []).map((post, index) => `<tr><td><div class="cell-main"><img src="${ctx.esc(post.image)}" alt=""><div><strong>${ctx.esc(ctx.lng(post.title))}</strong><small>${ctx.esc(ctx.lng(post.excerpt))}</small></div></div></td><td class="handle u-ltr">${ctx.esc(post.slug)}</td><td>${ctx.esc(post.date)}</td><td><span class="badge-soft ${post.published !== false ? "green" : ""}">${post.published !== false ? ctx.dt("منشور", "Publié") : ctx.dt("مسودة", "Brouillon")}</span></td><td><div class="cell-actions"><button class="btn btn-sm btn-soft" data-action="edit-post" data-index="${index}">${ctx.icon("edit")}</button><button class="btn btn-sm btn-soft" data-action="delete-post" data-index="${index}">${ctx.icon("trash")}</button></div></td></tr>`).join("")}
-      </tbody></table></div></div>`;
-  }
-
-  ctx.pendingPostIndex = null;
-  function postEditor(index) {
-    const isNew = index == null;
-    const buffer = isNew
-      ? {
-          id: `post-${Date.now().toString(36)}`,
-          slug: `post-${Date.now().toString(36)}`,
-          title: { ar: "", fr: "" },
-          excerpt: { ar: "", fr: "" },
-          body: { ar: "", fr: "" },
-          image: "assets/img/category-iphone.svg",
-          date: new Date().toISOString().slice(0, 10),
-          published: true
-        }
-      : ctx.clone(ctx.model.blog[index]);
-    ctx.editBuffer = buffer;
-    ctx.pendingPostIndex = isNew ? null : index;
-    ctx.openModal(
-      isNew ? ctx.dt("مقال جديد", "Nouvel article") : ctx.lng(buffer.title),
-      `
-      <div class="form-grid">
-        ${ctx.editBi(ctx.dt("العنوان", "Titre"), "title", buffer.title)}
-        <div class="field"><label>${ctx.dt("الرابط", "Slug")}</label><input data-edit-path="slug" value="${ctx.esc(buffer.slug)}" dir="ltr"></div>
-        <div class="field"><label>${ctx.dt("التاريخ", "Date")}</label><input type="date" data-edit-path="date" value="${ctx.esc(buffer.date)}"></div>
-        ${ctx.editBi(ctx.dt("المقتطف", "Extrait"), "excerpt", buffer.excerpt, { type: "textarea", rows: 2 })}
-        <div class="span-2">${ctx.imageEditor(ctx.dt("الصورة", "Image"), "image", buffer.image)}</div>
-        ${ctx.editBi(ctx.dt("المحتوى", "Contenu"), "body", buffer.body, { type: "textarea", rows: 10 })}
-        <div class="span-2">${ctx.editToggle(ctx.dt("نشر المقال", "Publier"), "published", buffer.published !== false)}</div>
-      </div>`,
-      {
-        footer: `<button class="btn btn-soft btn-sm" data-action="close-modal">${ctx.dt("إلغاء", "Annuler")}</button><button class="btn btn-primary btn-sm" data-action="save-post" data-index="${isNew ? "" : index}">${ctx.dt("حفظ", "Enregistrer")}</button>`
-      }
-    );
-  }
-
+  Object.assign(ctx, { viewPages, pageEditor, savePageEditor, faqEditor });
   function viewPages() {
     return `
       <div class="dash-view-head"><div><h2>${ctx.dt("الصفحات", "Pages")}</h2><p>${ctx.dt("الصفحات الثابتة والأسئلة الشائعة.", "Pages statiques et FAQ.")}</p></div></div>

@@ -102,13 +102,6 @@ export function install(ctx) {
       "Après l’ouverture d’une demande de garantie, vous recevez un numéro de suivi. Le délai habituel est de 3 à 7 jours ouvrés.\nContactez le support sur WhatsApp pour toute mise à jour."
     ],
     [
-      "blog",
-      "مدونة " + BN.ar,
-      "Le blog " + BN.fr,
-      "نصائح لاختيار هاتف مجدد، مقارنات بين الأجهزة، وطرق العناية بالبطارية.\nاقرأ أحدث المقالات من لوحة التحكم أو من قسم المدونة.",
-      "Conseils pour choisir un téléphone reconditionné, comparatifs et astuces pour préserver la batterie.\nRetrouvez les derniers articles dans la section blog."
-    ],
-    [
       "become-a-seller",
       "كن بائعًا معنا",
       "Devenir vendeur",
@@ -178,59 +171,8 @@ export function install(ctx) {
     }
   ];
 
-  const DEFAULT_BLOG = [
-    {
-      id: "b1",
-      slug: "choisir-telephone-reconditionne",
-      title: ctx.txt(
-        "كيف تختار هاتفًا مجددًا دون أن تقع في الفخ؟",
-        "Comment choisir un téléphone reconditionné sans se tromper ?"
-      ),
-      excerpt: ctx.txt(
-        "خمسة معايير مهمة قبل الشراء: البطارية، الحالة، الضمان، المصدر، وسياسة الإرجاع.",
-        "Cinq critères essentiels : batterie, état, garantie, provenance et politique de retour."
-      ),
-      body: ctx.txt(
-        "ابدأ دائمًا بصحة البطارية. نسبة 85% فما فوق جيدة للاستخدام اليومي.\nتأكد من وجود ضمان مكتوب وسياسة إرجاع واضحة.\nاسأل عن الحالة الفعلية للجهاز واطلب صورًا حقيقية.\nقارن السعر بالسوق ولا تنسَ تكلفة الشحن.",
-        "Commencez toujours par la santé de la batterie. Au-dessus de 85 %, elle convient à un usage quotidien.\nExigez une garantie écrite et une politique de retour claire.\nDemandez l’état réel de l’appareil et des photos authentiques.\nComparez le prix au marché et pensez aux frais de livraison."
-      ),
-      image: "assets/img/category-iphone.svg",
-      date: "2026-09-12",
-      published: true
-    },
-    {
-      id: "b2",
-      slug: "macbook-ou-pc-portable",
-      title: ctx.txt("ماك بوك أم حاسوب ويندوز؟ دليل مبسط", "MacBook ou PC portable ? Le guide simple"),
-      excerpt: ctx.txt(
-        "أيهما يناسب الدراسة والعمل والبرامج التي تحتاجها؟",
-        "Lequel convient aux études, au travail et à vos logiciels ?"
-      ),
-      body: ctx.txt(
-        "اختر MacBook إذا كنت تعمل على التصميم أو المونتاج أو تريد عمر بطارية طويل.\nاختر حاسوب ويندوز إذا كنت تحتاج برامج هندسية أو محاسبية خاصة أو ميزانية أقل.\nفي الحالتين، تحقق من صحة البطارية والمنافذ ولوحة المفاتيح.",
-        "Choisissez un MacBook pour le design, le montage ou une longue autonomie.\nChoisissez un PC Windows pour certains logiciels d’ingénierie, de comptabilité ou un budget plus serré.\nDans les deux cas, vérifiez la batterie, les ports et le clavier."
-      ),
-      image: "assets/img/category-macbooks.svg",
-      date: "2026-08-28",
-      published: true
-    },
-    {
-      id: "b3",
-      slug: "entretenir-batterie",
-      title: ctx.txt("سبع عادات تطيل عمر بطارية هاتفك", "Sept habitudes qui prolongent la batterie de votre téléphone"),
-      excerpt: ctx.txt(
-        "نصائح عملية لشحن أذكى واستخدام أطول.",
-        "Des conseils concrets pour charger plus intelligemment."
-      ),
-      body: ctx.txt(
-        "حافظ على الشحن بين 20% و80% عندما يكون ذلك ممكنًا.\nتجنب الحرارة العالية أثناء الشحن.\nاستخدم شاحنًا أصليًا أو معتمدًا.\nلا تترك الهاتف مشحونًا 100% طوال الليل.",
-        "Gardez la charge entre 20 % et 80 % lorsque c’est possible.\nÉvitez la chaleur pendant la charge.\nUtilisez un chargeur d’origine ou certifié.\nNe laissez pas le téléphone à 100 % toute la nuit."
-      ),
-      image: "assets/img/category-chargers.svg",
-      date: "2026-07-19",
-      published: true
-    }
-  ];
+  /** Blog removed in 1.17 — kept as an empty list so older saved content/backups still merge. */
+  const DEFAULT_BLOG = [];
 
   Object.assign(ctx, { DEFAULT_PAGES, DEFAULT_PRESS, DEFAULT_BLOG });
 }

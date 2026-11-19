@@ -7,48 +7,39 @@ import { TEMPLATE_VERSION } from "../../version.js";
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { renderShell, renderRoute });
+  /* 1.17 — eight everyday screens, everything else folded under "متقدم" (collapsed, remembered). */
   const NAV_GROUPS = [
     {
-      label: { ar: "نظرة عامة", fr: "Vue d’ensemble" },
+      label: { ar: "يومياً", fr: "Au quotidien" },
       items: [
         { id: "overview", icon: "overview", ar: "نظرة عامة", fr: "Vue d’ensemble" },
         { id: "orders", icon: "orders", ar: "الطلبات", fr: "Commandes", count: true },
-        { id: "abandoned", icon: "abandoned", ar: "السلال المتروكة", fr: "Paniers abandonnés" }
-      ]
-    },
-    {
-      label: { ar: "المتجر", fr: "Boutique" },
-      items: [
-        { id: "store-info", icon: "home", ar: "بيانات متجري", fr: "Ma boutique" },
         { id: "products", icon: "products", ar: "المنتجات", fr: "Produits" },
         { id: "categories", icon: "categories", ar: "الفئات", fr: "Catégories" },
-        { id: "reviews", icon: "reviews", ar: "التقييمات", fr: "Avis" }
+        { id: "marketing", icon: "marketing", ar: "الكوبونات والعروض", fr: "Coupons & offres" }
       ]
     },
     {
-      label: { ar: "المحتوى", fr: "Contenu" },
+      label: { ar: "متجري", fr: "Ma boutique" },
       items: [
-        { id: "content", icon: "content", ar: "نصوص المتجر", fr: "Textes & contenu" },
+        { id: "store-info", icon: "home", ar: "بيانات متجري", fr: "Ma boutique" },
+        { id: "payments", icon: "payment", ar: "الدفع والتوصيل", fr: "Paiement & livraison" },
+        { id: "profile", icon: "team", ar: "ملفي الشخصي", fr: "Mon profil" }
+      ]
+    },
+    {
+      label: { ar: "متقدم", fr: "Avancé" },
+      advanced: true,
+      items: [
+        { id: "reviews", icon: "reviews", ar: "التقييمات", fr: "Avis" },
         { id: "homepage", icon: "home", ar: "الصفحة الرئيسية", fr: "Page d’accueil" },
         { id: "appearance", icon: "palette", ar: "الهوية والألوان", fr: "Identité & couleurs" },
-        { id: "marketing", icon: "marketing", ar: "الكوبونات والعروض", fr: "Coupons & offres" },
-        { id: "blog", icon: "blog", ar: "المدونة", fr: "Blog" },
-        { id: "pages", icon: "pages", ar: "الصفحات", fr: "Pages" }
-      ]
-    },
-    {
-      label: { ar: "العمليات", fr: "Opérations" },
-      items: [
-        { id: "payments", icon: "payment", ar: "الدفع والتوصيل", fr: "Paiement & livraison" },
+        { id: "content", icon: "content", ar: "القائمة والتذييل", fr: "Menu & pied de page" },
+        { id: "pages", icon: "pages", ar: "الصفحات", fr: "Pages" },
         { id: "team", icon: "team", ar: "الفريق", fr: "Équipe" },
-        { id: "reports", icon: "reports", ar: "التقارير", fr: "Rapports" },
         { id: "settings", icon: "settings", ar: "الإعدادات", fr: "Réglages" },
         { id: "audit", icon: "audit", ar: "سجل النشاط", fr: "Journal d’activité" }
       ]
-    },
-    {
-      label: { ar: "الحساب", fr: "Compte" },
-      items: [{ id: "profile", icon: "team", ar: "ملفي الشخصي", fr: "Mon profil" }]
     }
   ];
   const OWNER_ONLY_ROUTES = new Set(["team", "settings", "audit"]);
@@ -63,11 +54,6 @@ export function install(ctx) {
       fr: "Commandes",
       sub: { ar: "إدارة الطلبات والواتساب والفواتير", fr: "Commandes, WhatsApp et factures" }
     },
-    abandoned: {
-      ar: "السلال المتروكة",
-      fr: "Paniers abandonnés",
-      sub: { ar: "استرجع العملاء الذين لم يكملوا الطلب", fr: "Récupérez les clients qui n’ont pas finalisé" }
-    },
     products: { ar: "المنتجات", fr: "Produits", sub: { ar: "المخزون والأسعار والصور", fr: "Stock, prix et images" } },
     categories: {
       ar: "الفئات",
@@ -80,9 +66,9 @@ export function install(ctx) {
       sub: { ar: "راجع واعتمد تقييمات العملاء", fr: "Modérez les avis clients" }
     },
     content: {
-      ar: "نصوص المتجر",
-      fr: "Textes & contenu",
-      sub: { ar: "المحتوى بالعربية والفرنسية", fr: "Contenu en arabe et français" }
+      ar: "القائمة والتذييل",
+      fr: "Menu & pied de page",
+      sub: { ar: "القائمة العلوية، شريط الثقة والتذييل", fr: "Menu, barre de confiance et pied de page" }
     },
     homepage: {
       ar: "الصفحة الرئيسية",
@@ -99,7 +85,6 @@ export function install(ctx) {
       fr: "Offres & marketing",
       sub: { ar: "بنكيلي، الكوبونات والبانرات", fr: "Bankily, coupons et bannières" }
     },
-    blog: { ar: "المدونة", fr: "Blog", sub: { ar: "المقالات والصور المنشورة", fr: "Articles et images publiés" } },
     pages: {
       ar: "الصفحات",
       fr: "Pages",
@@ -116,11 +101,6 @@ export function install(ctx) {
       sub: { ar: "بنكيلي، مصرفي، سداد، كليك والمدن", fr: "Bankily, Masrvi, Sedad, Click et villes" }
     },
     team: { ar: "الفريق", fr: "Équipe", sub: { ar: "المديرون وصلاحيات الدخول", fr: "Gérants et accès" } },
-    reports: {
-      ar: "التقارير",
-      fr: "Rapports",
-      sub: { ar: "المبيعات، الطلبات والمخزون", fr: "Ventes, commandes et stock" }
-    },
     settings: {
       ar: "الإعدادات",
       fr: "Réglages",
@@ -162,7 +142,10 @@ export function install(ctx) {
       .filter((item) => isOwner || !OWNER_ONLY_ROUTES.has(item.id))
       .map(navLinkHTML)
       .join("");
-    return `<div class="dash-nav-label">${ctx.esc(group.label[ctx.dashLang] || group.label.ar)}</div>${links}`;
+    const label = ctx.esc(group.label[ctx.dashLang] || group.label.ar);
+    if (!group.advanced) return `<div class="dash-nav-label">${label}</div>${links}`;
+    const open = localStorage.getItem("dash-advanced") === "1" || group.items.some((item) => item.id === ctx.route);
+    return `<details class="dash-nav-adv" data-nav-advanced ${open ? "open" : ""}><summary class="dash-nav-label">${label} <small>${ctx.dt("نادراً ما تحتاجها", "Rarement utile")}</small></summary>${links}</details>`;
   }
 
   function sidebarBrandHTML() {
@@ -253,7 +236,6 @@ export function install(ctx) {
   const VIEWS = {
     overview: "viewOverview",
     orders: "viewOrders",
-    abandoned: "viewAbandoned",
     products: "viewProducts",
     categories: "viewCategories",
     reviews: "viewReviews",
@@ -261,12 +243,10 @@ export function install(ctx) {
     homepage: "viewHomepage",
     appearance: "viewAppearance",
     marketing: "viewMarketing",
-    blog: "viewBlog",
     pages: "viewPages",
     payments: "viewPayments",
     "store-info": "viewStoreInfo",
     team: "viewTeam",
-    reports: "viewReports",
     settings: "viewSettings",
     audit: "viewAudit",
     profile: "viewProfile"
@@ -348,7 +328,7 @@ export function install(ctx) {
     view.innerHTML = localAccountWarningHTML() + routeView();
     restoreDashTab(view);
     syncRouteChrome();
-    if (ctx.route === "orders" || ctx.route === "reports")
+    if (ctx.route === "orders")
       setTimeout(() => localStorage.setItem("restore_orders_seen_v1", String(ctx.newOrdersCount())), 800);
   }
 

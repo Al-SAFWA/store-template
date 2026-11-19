@@ -197,7 +197,6 @@ export function createDefaultState(ctx) {
           links: [
             { label: ctx.txt("من نحن", "À propos"), href: "page.html?slug=about-us" },
             { label: ctx.txt("تسوق الآن", "Boutique"), href: "collection.html?handle=all" },
-            { label: ctx.txt("مدونتنا", "Notre blog"), href: "blog.html" },
             { label: ctx.txt("كن بائعًا", "Devenir vendeur"), href: "page.html?slug=become-a-seller" }
           ]
         },

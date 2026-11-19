@@ -58,6 +58,15 @@ export function install(ctx) {
     }
   ];
 
+  document.addEventListener(
+    "toggle",
+    (event) => {
+      const details = event.target;
+      if (details instanceof HTMLDetailsElement && details.hasAttribute("data-nav-advanced"))
+        localStorage.setItem("dash-advanced", details.open ? "1" : "0");
+    },
+    true
+  );
   document.addEventListener("input", (event) => {
     const node = event.target;
     const handler = INPUT_HANDLERS.find((entry) => entry.match(node));
@@ -236,8 +245,7 @@ export function install(ctx) {
   });
 
   window.addEventListener("restore:orders", () => {
-    if (ctx.session && (ctx.route === "orders" || ctx.route === "overview" || ctx.route === "reports"))
-      ctx.updateCounts();
+    if (ctx.session && (ctx.route === "orders" || ctx.route === "overview")) ctx.updateCounts();
   });
 
   window.addEventListener("beforeunload", () => {

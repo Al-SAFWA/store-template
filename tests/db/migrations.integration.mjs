@@ -72,7 +72,9 @@ for (const f of [
   "migrations/0002_relational.sql",
   "migrations/0003_catalog_source_of_truth.sql",
   "migrations/0004_catalog_atomic.sql",
-  "migrations/0005_fix_create_order_v2.sql"
+  "migrations/0005_fix_create_order_v2.sql",
+  "migrations/0006_stock_bumps_catalog.sql",
+  "migrations/0007_security_hardening.sql"
 ]) {
   await run(
     "apply " + f,
@@ -85,6 +87,15 @@ for (const f of [
 
 const STAFF = "11111111-1111-1111-1111-111111111111";
 await q("insert into auth.users(id,email) values ($1,'owner@test')", [STAFF]);
+// 0007: is_staff()/is_owner() also require an ACTIVE restore_staff row (JWT alone is no longer enough)
+await q(
+  "insert into public.restore_staff(auth_id, username, email, name, role, active) values ($1,'owner','owner@test','{}'::jsonb,'owner',true)",
+  [STAFF]
+);
+// published settings the order RPC reads prices of delivery / payment discounts from (0007)
+await q(
+  `insert into public.restore_state(id, data) values ('main', '{"settings":{"freeShippingOver":20000,"cities":[{"id":"nouakchott","name":{"ar":"نواكشوط","fr":"Nouakchott"},"fee":0,"active":true},{"id":"rosso","name":{"ar":"روصو","fr":"Rosso"},"fee":600,"active":true}],"payments":[{"id":"cash","name":{"ar":"نقدا","fr":"Cash"},"active":true,"discount":0},{"id":"bankily","name":{"ar":"بنكيلي","fr":"Bankily"},"active":true,"discount":10}]}}'::jsonb) on conflict (id) do update set data = excluded.data`
+);
 await q(
   'insert into public.restore_collections(id,handle,title) values (\'iphone\',\'iphone\',\'{"ar":"آيفون","fr":"iPhone"}\'),(\'deals\',\'deals\',\'{"ar":"عروض","fr":"Promos"}\')'
 );
@@ -437,6 +448,142 @@ try {
       (await q("select status from restore_orders where id='ORD-B'")).rows[0].status === "confirmed"
     );
   });
+  // ---- 0007 hardening ------------------------------------------------------------------------------------
+  const MGR = "33333333-3333-3333-3333-333333333333";
+  await q("insert into auth.users(id,email) values ($1,'mgr@test') on conflict do nothing", [MGR]);
+  await q(
+    "insert into public.restore_staff(auth_id, username, email, name, role, active) values ($1,'mgr','mgr@test','{}'::jsonb,'manager',true) on conflict (auth_id) do nothing",
+    [MGR]
+  );
+  const mgrJwt = { sub: MGR, role: "authenticated", app_metadata: { role: "manager" } };
+  await asRole("authenticated", mgrJwt, async () => {
+    check("manager is staff", (await q("select public.is_staff() s")).rows[0].s === true);
+    await q("update restore_staff set whatsapp='22246000000' where auth_id=$1", [MGR]);
+    check(
+      "manager may edit own profile fields",
+      (await q("select whatsapp w from restore_staff where auth_id=$1", [MGR])).rows[0].w === "22246000000"
+    );
+    let blocked = "";
+    try {
+      await q("update restore_staff set role='owner' where auth_id=$1", [MGR]);
+    } catch (e) {
+      blocked = e.message;
+    }
+    const role = (await q("select role from restore_staff where auth_id=$1", [MGR])).rows[0].role;
+    check(
+      "manager CANNOT promote himself to owner (0007 guard)",
+      /forbidden/.test(blocked) && role === "manager",
+      `role=${role}`
+    );
+    blocked = "";
+    try {
+      await q("update restore_staff set active=true, username='root' where auth_id=$1", [MGR]);
+    } catch (e) {
+      blocked = e.message;
+    }
+    check("manager CANNOT change his login/active flags", /forbidden/.test(blocked));
+  });
+  // owner deactivates the manager → access ends immediately, even with a valid JWT
+  await asRole("authenticated", { sub: STAFF, role: "authenticated", app_metadata: { role: "owner" } }, async () => {
+    await q("update restore_staff set active=false where auth_id=$1", [MGR]);
+    check(
+      "owner can deactivate a manager",
+      (await q("select active a from restore_staff where auth_id=$1", [MGR])).rows[0].a === false
+    );
+    let blocked = "";
+    try {
+      await q("update restore_staff set role='manager' where auth_id=$1", [STAFF]);
+    } catch (e) {
+      blocked = e.message;
+    }
+    check("the last owner cannot demote himself", /last owner/.test(blocked));
+  });
+  await asRole("authenticated", mgrJwt, async () => {
+    check(
+      "deactivated manager is NOT staff any more (JWT still says manager)",
+      (await q("select public.is_staff() s")).rows[0].s === false
+    );
+    check("deactivated manager cannot read orders", (await count("select count(*) n from restore_orders")) === 0);
+  });
+  // JWT role without a staff row is not staff either
+  await asRole("authenticated", { sub: CUST_B, role: "authenticated", app_metadata: { role: "owner" } }, async () => {
+    check(
+      "forged app_metadata.role without a restore_staff row is not staff",
+      (await q("select public.is_staff() s")).rows[0].s === false
+    );
+  });
+  // money: the client cannot pick its own discount, and delivery is charged by the server
+  await setJwt(null);
+  await q("update restore_products set stock = 50 where id='plain'");
+  const tampered = (
+    await q("select public.restore_create_order_v2($1::jsonb) o", [
+      JSON.stringify({
+        items: [{ handle: "plain", qty: 1 }],
+        customer: { name: "T", phone: "44444869", cityId: "rosso", city: "روصو" },
+        payment: { id: "cash", discount: 100 }
+      })
+    ])
+  ).rows[0].o;
+  check(
+    "client-sent payment.discount is ignored (cash = 0 %)",
+    tampered.discount === 0 && tampered.payment.discount === 0,
+    `discount=${tampered.discount}`
+  );
+  check(
+    "delivery fee of the chosen city is charged server-side (Rosso 600)",
+    tampered.shipping === 600 && tampered.total === 1600,
+    `total=${tampered.total}`
+  );
+  const bankily = (
+    await q("select public.restore_create_order_v2($1::jsonb) o", [
+      JSON.stringify({
+        items: [{ handle: "plain", qty: 1 }],
+        customer: { name: "T", phone: "44444869", cityId: "nouakchott" },
+        payment: { id: "bankily" }
+      })
+    ])
+  ).rows[0].o;
+  check(
+    "configured payment discount is applied (Bankily 10 % of 1000 = 100)",
+    bankily.paymentDiscount === 100 && bankily.total === 900,
+    `total=${bankily.total}`
+  );
+  const freeShip = (
+    await q("select public.restore_create_order_v2($1::jsonb) o", [
+      JSON.stringify({
+        items: [
+          { handle: "plain", qty: 20 },
+          { handle: "plain", qty: 5 }
+        ],
+        customer: { name: "T", phone: "44444869", cityId: "rosso" },
+        payment: { id: "cash" }
+      })
+    ])
+  ).rows[0].o;
+  check(
+    "free delivery at/above settings.freeShippingOver (25000 >= 20000)",
+    freeShip.shipping === 0,
+    `shipping=${freeShip.shipping}`
+  );
+  let unknownPay = "";
+  try {
+    await q("select public.restore_create_order_v2($1::jsonb)", [
+      JSON.stringify({
+        items: [{ handle: "plain", qty: 1 }],
+        customer: { name: "T", phone: "44444869" },
+        payment: { id: "paypal" }
+      })
+    ]);
+  } catch (e) {
+    unknownPay = e.message;
+  }
+  check("unknown payment method is rejected", /Unknown payment method/.test(unknownPay));
+  check(
+    "SVG no longer accepted in the public media bucket",
+    !(await q("select allowed_mime_types m from storage.buckets where id='restore-media'")).rows[0].m.includes(
+      "image/svg+xml"
+    )
+  );
   // rate limiter used by the Edge Functions
   await setJwt(null);
   const hits = [];

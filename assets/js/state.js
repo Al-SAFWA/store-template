@@ -30,6 +30,7 @@ import { install as s12 } from "./services/12-pages-settings.js";
 import { install as s13 } from "./services/13-store-utils.js";
 import { install as s14 } from "./services/14-sync-events.js";
 import { install as s15 } from "./services/15-backup.js";
+import { install as s16 } from "./services/16-error-log.js";
 
 if (!RAW) {
   console.warn("Restore: window.STORE missing");
@@ -44,7 +45,7 @@ if (!RAW) {
   s3(ctx); // Utilities shared by auth, reviews and media
   s4(ctx); // Managers and staff sessions
   s5(ctx); // Supabase REST helpers
-  s6(ctx); // Orders, abandoned carts and audit
+  s6(ctx); // Orders and audit
   s7(ctx); // Published state, drafts and remote polling
   s8(ctx); // Catalog (products / collections / coupons) — relational source of truth
   s9(ctx); // Customer accounts, addresses and wishlist
@@ -54,6 +55,7 @@ if (!RAW) {
   s13(ctx); // Query, pricing and store utilities
   s14(ctx); // Cross-tab and cross-device notifications
   s15(ctx); // Backup export / import (P4)
+  s16(ctx); // Local error log (1.17)
   ctx.applyDocument();
   R = {
     config: ctx.CFG,
@@ -83,9 +85,6 @@ if (!RAW) {
     },
     get orders() {
       return ctx.getOrders();
-    },
-    get abandoned() {
-      return ctx.getAbandoned();
     },
     get audit() {
       return ctx.getAudit();
@@ -155,9 +154,6 @@ if (!RAW) {
     orderId: ctx.orderId,
     statusMeta: ctx.statusMeta,
     decrementStock: ctx.decrementStock,
-    getAbandoned: ctx.getAbandoned,
-    saveAbandoned: ctx.saveAbandoned,
-    removeAbandoned: ctx.removeAbandoned,
     getPages: ctx.getPages,
     getPage: ctx.getPage,
     savePage: ctx.savePage,
@@ -179,6 +175,8 @@ if (!RAW) {
     loadCatalog: ctx.loadCatalog,
     supa: ctx.supa,
     remoteSessionValid: ctx.remoteSessionValid,
+    readErrors: ctx.readErrors,
+    clearErrors: ctx.clearErrors,
     get statuses() {
       return ["new", "confirmed", "preparing", "shipped", "delivered", "cancelled", "returned"];
     }

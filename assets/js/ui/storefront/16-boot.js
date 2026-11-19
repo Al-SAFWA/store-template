@@ -15,8 +15,6 @@ export function install(ctx) {
     else if (page === "wishlist") ctx.renderWishlist();
     else if (page === "page") ctx.renderPage();
     else if (page === "account") ctx.renderAccount();
-    else if (page === "blog") ctx.renderBlog();
-    else if (page === "post") ctx.renderBlogPost();
     ctx.renderCart();
     ctx.hydrateIcons();
   }

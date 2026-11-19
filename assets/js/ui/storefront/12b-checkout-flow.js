@@ -187,21 +187,3 @@ export function findCoupon(coupons, code) {
   if (!wanted) return null;
   return (coupons || []).find((item) => item.active !== false && String(item.code).toUpperCase() === wanted) || null;
 }
-
-/** Payload saved as an abandoned checkout. */
-export function abandonedLead(ctx, { form, city, items, subtotal }) {
-  return {
-    name: String(form.name || "").trim(),
-    phone: onlyDigits(form.phone),
-    city: ctx.L(city?.name),
-    cityId: city?.id,
-    items: items.map((it) => ({
-      handle: it.handle,
-      title: ctx.L(it.product.title),
-      qty: it.qty,
-      variant: ctx.variantLabel(it.variant)
-    })),
-    subtotal,
-    lang: ctx.R.lang
-  };
-}

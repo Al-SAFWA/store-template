@@ -15,7 +15,6 @@ import { install as s3 } from "./ui/dashboard/03-overview.js";
 import { install as s4 } from "./ui/dashboard/04-modal-helpers.js";
 import { install as s5 } from "./ui/dashboard/05-orders.js";
 import { install as s5b } from "./ui/dashboard/05b-orders-cards.js";
-import { install as s6 } from "./ui/dashboard/06-abandoned.js";
 import { install as s7 } from "./ui/dashboard/07-products.js";
 import { install as s7b } from "./ui/dashboard/07b-product-editor.js";
 import { install as s8 } from "./ui/dashboard/08-categories.js";
@@ -25,12 +24,11 @@ import { install as s10b } from "./ui/dashboard/10b-hero-editor.js";
 import { install as s10c } from "./ui/dashboard/10c-hero-image.js";
 import { install as s11 } from "./ui/dashboard/11-appearance.js";
 import { install as s12 } from "./ui/dashboard/12-marketing.js";
-import { install as s13 } from "./ui/dashboard/13-blog-pages.js";
+import { install as s13 } from "./ui/dashboard/13-pages.js";
 import { install as s14 } from "./ui/dashboard/14-reviews.js";
 import { install as s15 } from "./ui/dashboard/15-payments-cities.js";
 import { install as s15b } from "./ui/dashboard/15b-store-info.js";
 import { install as s16 } from "./ui/dashboard/16-team.js";
-import { install as s17 } from "./ui/dashboard/17-reports.js";
 import { install as s18 } from "./ui/dashboard/18-settings.js";
 import { install as s19 } from "./ui/dashboard/19-audit.js";
 import { install as s20 } from "./ui/dashboard/20-publish.js";
@@ -54,7 +52,6 @@ const _initDashboard = () => {
   s4(ctx); // Shared modal / field helpers
   s5(ctx); // Orders
   s5b(ctx); // Orders — phone cards and next-step actions
-  s6(ctx); // Abandoned checkout
   s7b(ctx); // Product editor (markup + behaviour)
   s7(ctx); // Products
   s8(ctx); // Categories
@@ -64,12 +61,11 @@ const _initDashboard = () => {
   s10c(ctx); // Hero photo clean-up (1.13.3)
   s11(ctx); // Appearance
   s12(ctx); // Marketing / coupons
-  s13(ctx); // Blog and pages
+  s13(ctx); // Pages and FAQ
   s14(ctx); // Reviews
   s15(ctx); // Payments and shipping cities
   s15b(ctx); // My store (1.15)
   s16(ctx); // Team
-  s17(ctx); // Reports
   s18(ctx); // Settings
   s19(ctx); // Audit log
   s20(ctx); // Publish, preview and draft lifecycle

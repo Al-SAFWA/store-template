@@ -50,20 +50,6 @@ export function install(ctx) {
         ctx.renderRoute();
       }
     },
-    {
-      match: (event) => /** @type {HTMLElement} */ (event.target).closest("[data-abandoned-filter]"),
-      run: (event, button) => {
-        ctx.abandonedFilter = button.dataset.abandonedFilter;
-        ctx.renderRoute();
-      }
-    },
-    {
-      match: (event) => /** @type {HTMLElement} */ (event.target).closest("[data-report-range]"),
-      run: (event, button) => {
-        ctx.reportRange = button.dataset.reportRange;
-        ctx.renderRoute();
-      }
-    },
     /* `[data-product-filter]` is intentionally a no-op here: it is handled by the change listener. */
     { match: (event) => /** @type {HTMLElement} */ (event.target).closest("[data-product-filter]"), run: () => {} }
   ];

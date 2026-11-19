@@ -22,7 +22,6 @@ export function install(ctx) {
   ctx.productSearch = "";
   ctx.productCategory = "all";
   ctx.productStock = "all";
-  ctx.abandonedFilter = "open";
 
   function openModal(title, body, { wide = false, footer = "", onMount = null } = {}) {
     ctx.modalRoot.innerHTML = `

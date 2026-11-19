@@ -1,5 +1,41 @@
 # Changelog
 
+## 1.17.0 — 2026-10-29
+
+### Security (pre-sale review) — apply `supabase/migrations/0007_security_hardening.sql` on every existing store
+- **HIGH** Privilege escalation: a manager could `update restore_staff set role='owner'` on his own row (RLS allowed
+  self-update of any column) and `admin-create-staff` trusts that column → full owner takeover. Now a trigger refuses
+  role/active/auth_id/username/email changes unless the caller is an owner; the last owner cannot be demoted.
+- **HIGH** Deactivated staff kept API access until their refresh token died (`is_staff()` only read the JWT). Now
+  `is_staff()`/`is_owner()` also require an `active = true` row in `restore_staff`; deactivation is immediate and a
+  forged `app_metadata.role` without a staff row is worthless.
+- **HIGH** Client-controlled money: `restore_create_order_v2` took the payment discount from the request body
+  (`payment.discount: 100` → order stored at total 0) and never charged delivery. Now the discount is looked up in
+  the published `settings.payments` by id, delivery comes from `settings.cities` + `freeShippingOver`, unknown payment
+  ids are rejected, coupons are clamped to 0–100 %.
+- Order item ids no longer depend on `clock_timestamp()` (could collide for two lines of one product).
+- Media bucket: SVG uploads disabled (script-bearing images). Reviews: one per customer per product, text length
+  caps. Customer jsonb (wishlist/addresses) capped at 32 KB.
+- New tests: `tests/db/migrations.integration.mjs` proves each fix on PostgreSQL 16 (PGlite); `e2e/13-xss-fuzz.spec.mjs`
+  poisons 1 200+ strings of the published state plus hostile orders/reviews, strips CSP, and visits every storefront
+  page and dashboard route — zero executions (escaping holds without CSP; CSP remains as second layer).
+
+- Dashboard menu: eight everyday screens (overview, orders, products, categories, coupons & offers, my store,
+  payment & delivery, profile). Everything else lives under a collapsed "متقدم" group whose open/closed state is
+  remembered: reviews, homepage, identity & colours, menu & footer, pages, team, settings, activity log.
+- Overview rebuilt for a phone: three big tap-through cards (to confirm / today / low stock), quick buttons (new
+  product, new coupon, open store), store open/closed status, this month's three numbers, last five orders. Charts
+  removed.
+- Removed for good (code deleted, DB untouched): blog (`blog.html`, `blog-post.html`, editor, defaults), abandoned
+  carts (dashboard screen + checkout lead tracking; the `restore_abandoned` table stays and is simply unused),
+  reports screen, the duplicate "collections" editor (categories are the one list since 1.16), the "store texts"
+  screen (its contact/hours/name fields moved to "my store" in 1.15; the menu / trust bar / footer tabs stay as
+  "القائمة والتذييل" under advanced). Bankily offer banner kept.
+- Go-live kit: `docs/GO-LIVE.md` (Arabic checklist: data clean-up, accounts, two-device test, backup *and restore*
+  drill, monitoring, support agreement), `node scripts/rollback.mjs vX.Y.Z` (one-command rollback that publishes
+  the previous release as a new patch tag), and a local error log (last 20 uncaught errors of the device) readable
+  from Settings → Advanced so a merchant can send a screenshot instead of "it doesn't work". SW cache v23.
+
 ## 1.16.0 — 2026-10-29
 
 - Dashboard "الفئات" rebuilt as one list of phone cards (image, product count, where it shows, on/off switch, ▲▼

@@ -22,8 +22,6 @@ const pages = {
   "checkout.html": [`إتمام الطلب | ${ar}`, `أكمل طلبك من ${ar}.`],
   "wishlist.html": [`المفضلة | ${ar}`, `المنتجات المحفوظة في مفضلة ${ar}.`],
   "account.html": [`حسابي | ${ar}`, `تتبع طلباتك من ${ar}.`],
-  "blog.html": [`المدونة | ${ar}`, `مقالات ونصائح من ${ar}.`],
-  "blog-post.html": [`مقال | ${ar}`, `مقال من مدونة ${ar}.`],
   "page.html": [`معلومات | ${ar}`, `معلومات ${ar}.`],
   "dashboard.html": [`لوحة تحكم ${ar} | ${fr} Dashboard`, `لوحة تحكم متجر ${ar}.`]
 };
@@ -61,7 +59,6 @@ const sm = site
       `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`,
       url("", "1.0"),
       url("collection.html?handle=all", "0.9"),
-      url("blog.html", "0.6"),
       ...["about-us", "help", "contact"].map((s) => url(`page.html?slug=${s}`, "0.5")),
       ...data.collections.map((c) => url(`collection.html?handle=${c.handle}`, "0.8")),
       ...data.products.map((p) => url(`product.html?handle=${p.handle}`, "0.7")),

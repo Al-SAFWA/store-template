@@ -31,6 +31,10 @@ function couponActions(ctx) {
       ctx.renderRoute();
     },
     "copy-text": ({ node }) => ctx.copyText(node.dataset.text || ""),
+    "clear-errors": () => {
+      ctx.R.clearErrors?.();
+      ctx.renderRoute();
+    },
     "save-coupon": async ({ node }) => {
       if (!finalizeCouponBuffer(ctx)) return;
       if (ctx.tablesMode()) {
@@ -142,27 +146,10 @@ function teamActions(ctx) {
   };
 }
 
-/* ---------- blog, pages, FAQ, reviews ---------- */
+/* ---------- pages, FAQ, reviews ---------- */
 
 function contentActions(ctx) {
   return {
-    "add-post": () => ctx.postEditor(null),
-    "edit-post": ({ index }) => ctx.postEditor(index),
-    "delete-post": ({ index }) => {
-      if (!ask(ctx, "حذف المقال؟", "Supprimer l’article ?")) return;
-      ctx.model.blog.splice(index, 1);
-      ctx.saveDraftNow();
-      ctx.renderRoute();
-    },
-    "save-post": () => {
-      if (!ctx.editBuffer) return;
-      if (ctx.pendingPostIndex == null) ctx.model.blog.push(ctx.editBuffer);
-      else ctx.model.blog[ctx.pendingPostIndex] = ctx.editBuffer;
-      ctx.saveDraftNow();
-      ctx.closeModal();
-      ctx.renderRoute();
-      ctx.toast(ctx.dt("تم حفظ المقال", "Article enregistré"), "good");
-    },
     "add-page": () => ctx.pageEditor(null),
     "edit-page": ({ index }) => ctx.pageEditor(index),
     "delete-page": ({ index }) => {

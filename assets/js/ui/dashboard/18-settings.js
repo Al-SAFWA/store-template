@@ -59,6 +59,14 @@ export function install(ctx) {
       </div>
       <div class="dash-panel" data-dash-panel="settings-advanced">
         <div class="dash-grid cols-2">
+          <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("آخر الأخطاء على هذا الجهاز", "Dernières erreurs (cet appareil)")}</h3><button data-action="clear-errors">${ctx.dt("مسح", "Effacer")}</button></div><div class="dash-card-body">
+            ${(() => {
+              const rows = typeof ctx.R.readErrors === "function" ? ctx.R.readErrors() : [];
+              if (!rows.length)
+                return `<p class="form-note">${ctx.dt("لا أخطاء مسجلة. إن اشتكى زبون من عطل، افتح هذه الشاشة من هاتفه وأرسل صورة.", "Aucune erreur. Si un client signale un bug, ouvrez cet écran sur son téléphone et envoyez une capture.")}</p>`;
+              return `<div class="list-editor">${rows.map((row) => `<div class="list-row"><div class="grow"><strong class="u-fs-9" dir="ltr">${ctx.esc(row.message)}</strong><small dir="ltr">${ctx.esc(row.page)} · ${ctx.esc(row.source || "")} · ${ctx.esc(ctx.fmtDateTime(row.at))}</small></div></div>`).join("")}</div>`;
+            })()}
+          </div></article>
           <article class="dash-card"><div class="dash-card-head"><h3>${ctx.dt("التكامل والاستضافة", "Intégration & hébergement")}</h3></div><div class="dash-card-body">
             <div class="publish-modal-list">
               <div><span>${ctx.dt("وضع البيانات", "Mode données")}</span><strong>${ctx.R.remote ? "Supabase" : ctx.dt("محلي تجريبي", "Local démo")}</strong></div>
