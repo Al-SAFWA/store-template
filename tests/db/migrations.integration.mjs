@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- one PGlite boot shared by every DB scenario; splitting would re-apply 8 migrations per file */
 /* Database integration test — runs ALL migrations (0001..0005) on a real PostgreSQL 16 (PGlite, in-process)
    with a stubbed Supabase `auth`/`storage` schema, then exercises the RPCs, RLS grants and the audit trigger.
    Run: npm run test:db   (needs devDependency @electric-sql/pglite; no Supabase project required) */
@@ -74,7 +75,8 @@ for (const f of [
   "migrations/0004_catalog_atomic.sql",
   "migrations/0005_fix_create_order_v2.sql",
   "migrations/0006_stock_bumps_catalog.sql",
-  "migrations/0007_security_hardening.sql"
+  "migrations/0007_security_hardening.sql",
+  "migrations/0008_restock_on_cancel.sql"
 ]) {
   await run(
     "apply " + f,
@@ -578,6 +580,47 @@ try {
     unknownPay = e.message;
   }
   check("unknown payment method is rejected", /Unknown payment method/.test(unknownPay));
+  // ---- 0008: cancel / return gives the units back -------------------------------------------------------
+  {
+    const stock0 = Number((await q("select stock from restore_products where id='plain'")).rows[0].stock);
+    const used0 = Number((await q("select used_count from restore_coupons where code='RESTORE10'")).rows[0].used_count);
+    const o = (
+      await q("select public.restore_create_order_v2($1::jsonb) o", [
+        JSON.stringify({
+          items: [{ handle: "plain", qty: 3 }],
+          customer: { name: "T", phone: "44444869", cityId: "nouakchott" },
+          payment: { id: "cash" },
+          coupon: "RESTORE10"
+        })
+      ])
+    ).rows[0].o;
+    const stock1 = Number((await q("select stock from restore_products where id='plain'")).rows[0].stock);
+    check("order of 3 decrements stock by 3", stock1 === stock0 - 3, `${stock0} -> ${stock1}`);
+    await asRole("authenticated", { sub: STAFF, role: "authenticated", app_metadata: { role: "owner" } }, async () => {
+      // the dashboard sends status + its own copy of data (without any flag)
+      await q("update restore_orders set status='cancelled', data = data - 'stockRestored' where id=$1", [o.id]);
+    });
+    const stock2 = Number((await q("select stock from restore_products where id='plain'")).rows[0].stock);
+    check("cancelled → 3 units back in stock (0008)", stock2 === stock0, `${stock2}`);
+    const used1 = Number((await q("select used_count from restore_coupons where code='RESTORE10'")).rows[0].used_count);
+    check("cancelled → coupon usage reversed", used1 === used0, `${used0} -> ${used1}`);
+    await q("update restore_orders set status='cancelled', data = data || '{\"internalNote\":\"x\"}' where id=$1", [
+      o.id
+    ]);
+    await q("update restore_orders set status='returned' where id=$1", [o.id]);
+    const stock3 = Number((await q("select stock from restore_products where id='plain'")).rows[0].stock);
+    check("repeated cancelled/returned updates do NOT restock twice", stock3 === stock0, `${stock3}`);
+    const flag = (await q("select data->>'stockRestored' f from restore_orders where id=$1", [o.id])).rows[0].f;
+    check("flag survives a data overwrite by the client", flag === "true");
+    await q("update restore_orders set status='confirmed' where id=$1", [o.id]);
+    const stock4 = Number((await q("select stock from restore_products where id='plain'")).rows[0].stock);
+    check("re-opened by mistake → units taken again", stock4 === stock0 - 3, `${stock4}`);
+    await q("update restore_orders set status='delivered' where id=$1", [o.id]);
+    const stock5 = Number((await q("select stock from restore_products where id='plain'")).rows[0].stock);
+    check("delivered does not touch stock", stock5 === stock0 - 3, `${stock5}`);
+    const bumped = (await q("select version from restore_catalog_meta where id='main'")).rows[0].version;
+    check("catalog version bumped so dashboards refresh stock", Number(bumped) > 0);
+  }
   check(
     "SVG no longer accepted in the public media bucket",
     !(await q("select allowed_mime_types m from storage.buckets where id='restore-media'")).rows[0].m.includes(

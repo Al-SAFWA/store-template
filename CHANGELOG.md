@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.17.1 — 2026-10-29
+
+- Cancelled / returned orders put their units back in stock (`supabase/migrations/0008_restock_on_cancel.sql`,
+  trigger on `restore_orders.status`): any status → cancelled|returned restocks every line (variant row when the
+  line has one) and reverses the coupon usage; cancelled|returned → open status takes the units again (refused when
+  stock ran out). Safe against repeated updates and against the dashboard overwriting `data` (flag
+  `data.stockRestored` is preserved). Legacy pre-0002 orders fall back to `data.items`. Covered by
+  `tests/db/migrations.integration.mjs`.
+
 ## 1.17.0 — 2026-10-29
 
 ### Security (pre-sale review) — apply `supabase/migrations/0007_security_hardening.sql` on every existing store
