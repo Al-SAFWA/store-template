@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.17.4 — 2026-10-29
+
+- Dashboard dark mode: the 1.17 cards (overview KPIs / month / last orders, payment & city cards, categories, coupons, store-info fields, product-editor steps) used hard-coded `#fff` backgrounds, so in dark mode text became invisible. They now use `var(--surface)` + `var(--border)`; the hot/warn tints are mixed from the surface colour.
+
 ## 1.17.3 — 2026-10-29
 
 _Re-release of 1.17.2: the tag was pushed twice, so client stores never received the second batch (dashboard de-clutter). Same content, new version number._
