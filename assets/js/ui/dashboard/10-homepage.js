@@ -15,12 +15,14 @@ export function install(ctx) {
     sustain: { ar: "الاستدامة", fr: "Durabilité" },
     service: { ar: "الخدمات", fr: "Services" },
     video: { ar: "المجتمع والفيديو", fr: "Communauté & vidéo" },
-    reviews: { ar: "آراء العملاء", fr: "Avis clients" },
-    press: { ar: "الصحافة", fr: "Presse" }
+    reviews: { ar: "آراء العملاء", fr: "Avis clients" }
   };
 
   function viewHomepage() {
-    const sections = [...(ctx.model.settings.pageSections || [])].sort((a, b) => Number(a.order) - Number(b.order));
+    // 1.17.5 — "press" was removed from the storefront; hide it from stores that still carry it in their settings
+    const sections = [...(ctx.model.settings.pageSections || [])]
+      .filter((section) => section.id !== "press")
+      .sort((a, b) => Number(a.order) - Number(b.order));
     const productSections = [...(ctx.model.settings.homeSections || [])].sort(
       (a, b) => Number(a.order) - Number(b.order)
     );

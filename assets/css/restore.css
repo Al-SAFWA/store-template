@@ -676,7 +676,6 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 }
 
 @media (max-width: 1100px) {
-  .header-actions .theme-btn { display: none; }
   .country-name { display: none; }
   .country { padding: 0 8px; }
   .hero-banner .hero-inner { grid-template-columns: 1.15fr .85fr; }
@@ -689,6 +688,8 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 
 @media (max-width: 900px) {
   .announcement span { animation-duration: 20s; }
+  .lang-current span { display: none; } /* flag only on phones — keeps the centre free for the logo */
+  .lang-current { padding: 0 6px; min-width: 36px; }
   .header-top { grid-template-columns: auto 1fr auto; }
   /* 1.13.6 — phones keep a "my account" icon in the header (merchant request); the wide login button and the
      wishlist icon stay hidden. Once the customer is signed in the avatar dropdown replaces the icon. */

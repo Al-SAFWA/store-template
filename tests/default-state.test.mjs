@@ -92,7 +92,7 @@ test("createDefaultState: builds the settings tree and keeps collection handles 
   assert.equal(state.settings.country.code, "MR");
   assert.deepEqual(
     state.settings.pageSections.map((section) => section.id),
-    ["hero", "trust", "renewed", "categories", "offer", "products", "sustain", "service", "video", "reviews", "press"]
+    ["hero", "trust", "renewed", "categories", "offer", "products", "sustain", "service", "video", "reviews"]
   );
   assert.ok(Array.isArray(state.collections));
   assert.deepEqual(state.home, { anniversary: [], iphones: [], samsung: [], laptops: [] });

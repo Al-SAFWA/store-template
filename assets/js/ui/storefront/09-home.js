@@ -18,8 +18,7 @@ export function install(ctx) {
       sustain: ctx.sustainHTML,
       service: ctx.serviceHTML,
       video: ctx.videoHTML,
-      reviews: ctx.reviewsHTML,
-      press: ctx.pressHTML
+      reviews: ctx.reviewsHTML
     };
     const order = (ctx.SET.pageSections || [])
       .filter((s) => s.visible !== false)

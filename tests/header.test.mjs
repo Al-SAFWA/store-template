@@ -31,7 +31,7 @@ test("renderHeader: .header-actions keeps its 6 children (no stray </div>)", () 
   const inner = tpl.slice(open, close);
   for (const marker of [
     'id="customer-account"',
-    'class="lang-switch"',
+    'class="lang-current"',
     "theme-btn",
     'href="account.html"',
     'href="wishlist.html"',

@@ -285,8 +285,7 @@ export function createDefaultState(ctx) {
         { id: "sustain", visible: true, order: 7 },
         { id: "service", visible: true, order: 8 },
         { id: "video", visible: true, order: 9 },
-        { id: "reviews", visible: true, order: 10 },
-        { id: "press", visible: true, order: 11 }
+        { id: "reviews", visible: true, order: 10 }
       ]
     };
   }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.17.5 — 2026-10-29
+
+- Storefront checkout: the payment account number (`.pay-account code`) was light-on-light in dark mode; now uses theme variables.
+- Storefront header (phones): theme toggle is visible again; the language control is a **single tap** AR ⇄ FR (no dropdown, flag only on phones); the logo sits in the grid instead of being absolutely centred, so it cannot overlap the action buttons.
+- Homepage: the "{brand} في الأخبار / dans la presse" section with fake press quotes is removed for good (storefront ignores it, dashboard hides it, defaults no longer create it).
+- Dashboard tables: column headers align with their cells (`th` defaulted to centre).
+- Dashboard dark mode, full sweep (all 16 routes + product editor + order modal screenshotted in dark): product-editor inputs/modal body, payment marks, category thumbs/chips/move buttons, notices, badges and the WhatsApp quick button no longer use fixed light colours; product thumbnails keep a light tile on purpose.
+
 ## 1.17.4 — 2026-10-29
 
 - Dashboard dark mode: the 1.17 cards (overview KPIs / month / last orders, payment & city cards, categories, coupons, store-info fields, product-editor steps) used hard-coded `#fff` backgrounds, so in dark mode text became invisible. They now use `var(--surface)` + `var(--border)`; the hot/warn tints are mixed from the surface colour.

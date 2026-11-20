@@ -65,15 +65,9 @@ export function install(ctx) {
         </form>
         <div class="header-actions">
           <div class="customer-account" id="customer-account"></div>
-          <div class="lang-switch">
-            <button class="lang-current" type="button" data-lang-toggle aria-label="${ctx.esc(ctx.t("language"))}">
-              <img src="${currentFlag}" alt="" width="20" height="14"><span>${lang.toUpperCase()}</span>${ctx.ICON.chevronDown}
-            </button>
-            <div class="lang-menu">
-              <button type="button" data-set-lang="ar"><img src="assets/img/flag-mr.svg" alt="" width="22" height="15"><span>العربية</span></button>
-              <button type="button" data-set-lang="fr"><img src="assets/img/flag-fr.svg" alt="" width="22" height="15"><span>Français</span></button>
-            </div>
-          </div><button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="${ctx.esc(themeButtonLabel())}">${themeButtonIcon()}</button>
+          <button class="lang-current" type="button" data-set-lang="${lang === "ar" ? "fr" : "ar"}" aria-label="${ctx.esc(ctx.t("language"))}" title="${lang === "ar" ? "Français" : "العربية"}">
+            <img src="${currentFlag}" alt="" width="20" height="14"><span>${lang.toUpperCase()}</span>
+          </button><button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="${ctx.esc(themeButtonLabel())}">${themeButtonIcon()}</button>
           <a class="icon-btn" href="account.html" aria-label="${ctx.esc(ctx.t("account"))}">${ctx.ICON.user}</a>
           <a class="icon-btn" href="wishlist.html" aria-label="${ctx.esc(ctx.t("wishlist"))}">${ctx.ICON.heart}<span class="cart-count wish-count" hidden>0</span></a>
           <button class="icon-btn" type="button" data-open-cart aria-label="${ctx.esc(ctx.t("cart"))}">${ctx.ICON.bag}<span class="cart-count cart-count-n" hidden>0</span></button>
@@ -104,10 +98,6 @@ export function install(ctx) {
     el.querySelector("[data-open-menu]")?.addEventListener("click", ctx.openMenu);
     el.querySelector(".nav-scroll")?.addEventListener("click", () => {
       el.querySelector(".nav-inner")?.scrollBy({ left: (ctx.R.lang === "ar" ? -1 : 1) * 260, behavior: "smooth" });
-    });
-    el.querySelector("[data-lang-toggle]")?.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      el.querySelector(".lang-switch")?.classList.toggle("open");
     });
     el.querySelector("[data-currency-toggle]")?.addEventListener("click", (ev) => {
       ev.stopPropagation();
