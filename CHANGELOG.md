@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.17.3 — 2026-10-29
+
+_Re-release of 1.17.2: the tag was pushed twice, so client stores never received the second batch (dashboard de-clutter). Same content, new version number._
+
 ## 1.17.2 — 2026-10-29
 
 - Storefront checkout: the line under a payment method is **derived from the configured discount** — `خصم 10% عند الدفع بهذه الطريقة` when the method has 10 %, the merchant's free-text note otherwise, and a note that advertises a percentage the method does not have is dropped. (Root cause of "the checkout says 10 % but the order got 0": older demo data shipped a static "خصم 10%" note on Bankily while `discount` was 0; the server was right.)
