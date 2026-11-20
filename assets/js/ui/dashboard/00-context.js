@@ -114,8 +114,8 @@ export function install(ctx) {
     if (!CAT || !CAT.enabled) return "";
     if (CAT.info?.error)
       return `<div class="notice warn u-mb-12">${dt("تعذر الاتصال بقاعدة البيانات لقراءة الكتالوج — الأرقام المعروضة قديمة. تحقق من الإنترنت أو أطفئ مانع الإعلانات/Brave Shields لهذا الموقع ثم أعد التحميل.", "Connexion à la base impossible : catalogue affiché obsolète. Vérifiez la connexion ou désactivez le bloqueur de pubs / Brave Shields pour ce site, puis rechargez.")} <small>${esc(String(CAT.info.error))}</small></div>`;
-    if (tablesMode())
-      return `<div class="notice good u-mb-12">${dt("مصدر الحقيقة: الجداول العلائقية (restore_products / restore_collections / restore_coupons). كل تعديل هنا يُحفظ مباشرة في قاعدة البيانات مع تسجيل في سجل التدقيق.", "Source de vérité : tables relationnelles. Chaque modification est enregistrée directement en base avec audit.")}</div>`;
+    // 1.17.2 — nothing to say when everything is fine (the green "source of truth" banner was noise for merchants)
+    if (tablesMode()) return "";
     return `<div class="notice warn u-mb-12">${dt("الجداول العلائقية فارغة أو لم تُطبَّق الهجرة 0002/0003. المنتجات تُقرأ حاليًا من JSON (مصدر قديم). طبّق الهجرات ثم انقل البيانات:", "Tables relationnelles vides ou migrations 0002/0003 non appliquées. Appliquez-les puis importez :")} <button class="btn btn-sm btn-primary" data-action="import-catalog">${dt("نقل الكتالوج إلى الجداول", "Importer le catalogue")}</button></div>`;
   }
   ctx.session = ctx.R.currentSession();

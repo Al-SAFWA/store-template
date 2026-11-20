@@ -23,8 +23,7 @@ export function install(ctx) {
       label: { ar: "متجري", fr: "Ma boutique" },
       items: [
         { id: "store-info", icon: "home", ar: "بيانات متجري", fr: "Ma boutique" },
-        { id: "payments", icon: "payment", ar: "الدفع والتوصيل", fr: "Paiement & livraison" },
-        { id: "profile", icon: "team", ar: "ملفي الشخصي", fr: "Mon profil" }
+        { id: "payments", icon: "payment", ar: "الدفع والتوصيل", fr: "Paiement & livraison" }
       ]
     },
     {
@@ -163,7 +162,7 @@ export function install(ctx) {
     const avatarHTML = avatar ? `<img src="${ctx.esc(avatar)}" alt="">` : ctx.esc(initials);
     const roleHTML = ctx.session?.role === "owner" ? ctx.dt("المالك", "Propriétaire") : ctx.dt("مدير", "Gérant");
     return `<div class="dash-user">
-            <span class="dash-avatar" data-route="profile" title="${ctx.dt("ملفي الشخصي", "Mon profil")}">${avatarHTML}</span>
+            <span class="dash-avatar" data-route="team" title="${ctx.dt("الفريق", "Équipe")}">${avatarHTML}</span>
             <div><strong>${ctx.esc(displayName)}</strong><small>${roleHTML}</small></div>
             <button type="button" data-action="logout" title="${ctx.dt("خروج", "Déconnexion")}">${ctx.icon("logout")}</button>
           </div>`;

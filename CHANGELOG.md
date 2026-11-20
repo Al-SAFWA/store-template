@@ -9,6 +9,7 @@
 - Storefront WhatsApp message: `qty × price` stays on the product line and every spec goes on its own indented line (was glued to the title and wrapped unreadably).
 - Storefront header: logo is boxed to `max-height 44px` (34px on phones) with `object-fit: contain`, so tall/square images no longer overflow into the announcement bar. Dark-mode inversion is now opt-in (`img.mono`) instead of applied to every logo.
 - Dashboard → store info: hint under the logo field (horizontal PNG, ~2:1).
+- Dashboard de-clutter: the green "source of truth: relational tables" banner is gone (warnings still show when the DB is unreachable or not migrated); the SKU column and SKU field are removed from the product list/editor (data kept, still searchable, visible under "للمبرمج (JSON)"); "ملفي الشخصي" left the sidebar and the avatar opens الفريق, which already has "كلمة مروري" (the `#profile` route still renders for deep links).
 
 ## 1.17.1 — 2026-10-29
 

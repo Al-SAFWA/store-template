@@ -181,7 +181,6 @@ export function install(ctx) {
           ${field(ctx.dt("الحالة", "État"), `<select data-edit-path="condition">${opt(PRODUCT_CONDITIONS, buffer.condition)}</select>`)}
           ${field(ctx.dt("صحة البطارية %", "Batterie %"), `<input type="number" data-edit-path="battery" value="${ctx.esc(buffer.battery ?? "")}" inputmode="numeric">`)}
           ${field(ctx.dt("الضمان (أشهر)", "Garantie (mois)"), `<input type="number" data-edit-path="warrantyMonths" value="${ctx.esc(buffer.warrantyMonths || 12)}" inputmode="numeric">`)}
-          ${field("SKU", `<input data-edit-path="sku" value="${ctx.esc(buffer.sku || "")}" dir="ltr">`)}
           ${field(ctx.dt("العلامة", "Marque"), `<input data-edit-path="vendor" value="${ctx.esc(buffer.vendor || "")}">`)}
         </div>
         <p class="form-note" dir="ltr">${ctx.dt("رابط المنتج", "Lien")}: product?handle=<b data-pe-handle>${ctx.esc(buffer.handle)}</b></p>

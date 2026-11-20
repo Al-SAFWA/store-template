@@ -54,7 +54,7 @@ export function install(ctx) {
       <div class="dash-card">
         ${
           shown.length
-            ? `<div class="dash-table-wrap"><table class="dash-table"><thead><tr><th>${ctx.dt("المنتج", "Produit")}</th><th>${ctx.dt("SKU", "SKU")}</th><th>${ctx.dt("الفئة", "Catégorie")}</th><th>${ctx.dt("السعر", "Prix")}</th><th>${ctx.dt("المخزون", "Stock")}</th><th>${ctx.dt("الحالة", "Statut")}</th><th>${ctx.dt("المتجر", "Boutique")}</th><th></th></tr></thead><tbody>
+            ? `<div class="dash-table-wrap"><table class="dash-table"><thead><tr><th>${ctx.dt("المنتج", "Produit")}</th><th>${ctx.dt("الفئة", "Catégorie")}</th><th>${ctx.dt("السعر", "Prix")}</th><th>${ctx.dt("المخزون", "Stock")}</th><th>${ctx.dt("الحالة", "Statut")}</th><th>${ctx.dt("المتجر", "Boutique")}</th><th></th></tr></thead><tbody>
           ${shown
             .map((product) => {
               return productRow(product);
@@ -134,7 +134,6 @@ export function install(ctx) {
     const isLow = Number(product.stock) <= Number(ctx.model.settings.lowStockThreshold || 2);
     return `<tr>
               <td><div class="cell-main"><img src="${ctx.esc(product.image)}" alt=""><div><strong>${ctx.esc(ctx.lng(product.title))}</strong><small>${ctx.esc(product.type || "")} · ${ctx.esc(product.condition || "")}</small></div></div></td>
-              <td class="u-ltr">${ctx.esc(product.sku || product.handle)}</td>
               <td>${ctx.esc(productCategoryLabel(product))}</td>
               <td class="price">${ctx.money(product.price)}${productCompareLabel(product)}</td>
               <td><div class="u-flex u-col u-gap-3"><strong class="u-fs-9 u-tint-text" data-sv="fg:${ctx.esc(stockColor(product, isLow))}">${product.stock}</strong><div class="mini-bar" data-sv="bar:${isLow ? "#e67e22" : "#25a55f"};min-width:50px"><i class="u-w-pct" data-sv="w:${stockBarPercent(product)}"></i></div></div></td>
