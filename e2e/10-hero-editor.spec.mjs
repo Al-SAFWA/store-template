@@ -160,9 +160,8 @@ test("hero photo clean-up: white studio background becomes transparent, a real p
   slides = await page.evaluate(() => window.RESTORE.useDraft().settings.heroSlides);
   expect(slides[1].imageStyle).toBe("card");
 
-  // Publish, then the storefront renders the card class.
+  // Publish (one tap since 1.17.2 — no confirmation modal), then the storefront renders the card class.
   await page.click('[data-action="publish"]');
-  await page.locator('[data-action="confirm-publish"]').click();
   await page.waitForTimeout(600);
   await page.goto("/index.html");
   await expect(page.locator(".hero-slide").nth(1).locator("img.hero-img-card")).toHaveCount(1);
