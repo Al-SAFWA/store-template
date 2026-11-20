@@ -37,7 +37,10 @@ function setLang(ctx, e, el) {
   e.preventDefault();
   if (el.dataset.setLang === ctx.R.lang) return;
   ctx.R.setLang(el.dataset.setLang);
-  location.reload();
+  // 1.17.5 — the header flip is one tap, so it can happen while modules are still streaming in; reloading
+  // mid-load aborts those requests (console "requestfailed"). Wait for the load event first.
+  if (document.readyState === "complete") location.reload();
+  else window.addEventListener("load", () => location.reload(), { once: true });
 }
 
 function toggleTheme(ctx, e) {

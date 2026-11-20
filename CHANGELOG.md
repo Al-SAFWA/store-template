@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.17.6 — 2026-10-29
+
+- CI fix: `e2e/04-i18n-consent` still drove the old language dropdown; it now taps the one-tap header button and waits for the reload to settle. The storefront language flip also defers its reload until the page `load` event so a very fast tap cannot abort module requests.
+
 ## 1.17.5 — 2026-10-29
 
 - Storefront checkout: the payment account number (`.pay-account code`) was light-on-light in dark mode; now uses theme variables.
