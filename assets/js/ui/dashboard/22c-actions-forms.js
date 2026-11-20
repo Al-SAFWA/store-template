@@ -62,8 +62,7 @@ function shellActions(ctx) {
       if (ctx.dirty) ctx.saveDraftNow();
       window.open("index.html?preview=1", "_blank", "noopener");
     },
-    publish: () => ctx.openPublishModal(),
-    "confirm-publish": () => ctx.publishNow(),
+    publish: () => ctx.publishNow(),
     "discard-draft": () => {
       if (!ask(ctx, "إلغاء كل التغييرات غير المنشورة؟", "Annuler toutes les modifications non publiées ?")) return;
       ctx.R.discardDraft();

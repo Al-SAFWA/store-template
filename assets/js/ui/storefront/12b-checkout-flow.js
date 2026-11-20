@@ -124,8 +124,15 @@ export function messageItemsHTML(ctx, items) {
   return items
     .map((item) => {
       const variant = item.variantTitle ? ` (${item.variantTitle})` : "";
-      const specs = item.specsText ? `\n   ${item.specsText}` : "";
-      return `- ${ctx.L(item.title)}${variant}${specs} × ${item.qty} = ${ctx.money(item.line ?? item.price * item.qty)}`;
+      // 1.17.2 — qty × price on the title line; specs on their own indented lines (one per spec) so the WhatsApp
+      // message stays readable on a phone with mixed Arabic/Latin text.
+      const specs = item.specsText
+        ? String(item.specsText)
+            .split(" · ")
+            .map((part) => `\n    ${part}`)
+            .join("")
+        : "";
+      return `- ${ctx.L(item.title)}${variant} × ${item.qty} = ${ctx.money(item.line ?? item.price * item.qty)}${specs}`;
     })
     .join("\n");
 }

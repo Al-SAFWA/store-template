@@ -52,7 +52,7 @@ body { font-family: var(--font-main, "Montserrat", sans-serif); }
 .site-header { background: var(--header-bg); backdrop-filter: blur(18px); }
 .site-header.scrolled { box-shadow: 0 10px 34px rgba(15, 15, 25, .09); }
 html[data-theme="dark"] .site-header.scrolled { box-shadow: 0 10px 34px rgba(0, 0, 0, .45); }
-html[data-theme="dark"] .logo img { filter: brightness(0) invert(1); }
+html[data-theme="dark"] .logo img.mono { filter: brightness(0) invert(1); }
 html[data-theme="dark"] .cat-card span,
 html[data-theme="dark"] .trust-list li,
 html[data-theme="dark"] .categories h2,
@@ -80,7 +80,7 @@ html[data-theme="dark"] .cat-arrow { background: var(--surface); border-color: v
 }
 
 .header-top { grid-template-columns: 190px minmax(0, 1fr) auto; gap: 22px; }
-.logo img { width: 132px; height: auto; }
+.logo img { width: auto; max-width: 150px; height: auto; max-height: 44px; object-fit: contain; }
 .search { background: var(--surface-2); border: 1px solid transparent; transition: border-color .2s, background .2s; }
 .search:focus-within { border-color: var(--orange); background: var(--surface); }
 .search input { color: var(--text); }
@@ -721,7 +721,7 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 @media (max-width: 640px) {
   .announcement { display: block; font-size: 9px; padding: 6px 8px; }
   .header-top { gap: 8px; }
-  .logo img { width: 104px; }
+  .logo img { max-width: 120px; max-height: 34px; }
   /* keep the language code visible on phones: a lone 19px flag was not recognised as a switch (demo1 feedback) */
   .lang-current > svg:last-child { display: none; }
   .lang-current { padding: 0 8px; min-height: 30px; gap: 5px; border: 1px solid var(--line, #e5e7eb); border-radius: 999px; font-weight: 700; font-size: 11px; }

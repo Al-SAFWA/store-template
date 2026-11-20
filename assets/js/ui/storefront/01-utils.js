@@ -142,5 +142,37 @@ export function install(ctx) {
   const hasPaymentOffer = () =>
     (ctx.SET.payments || []).some((p) => p.active !== false && Number(p.discount) > 0) &&
     Boolean(ctx.L(ctx.SET.paymentOffer));
-  Object.assign(ctx, { esc, money, discountFor, variantLabel, SPEC_LABELS, specsText, svg, ICON, hasPaymentOffer });
+  /* 1.17.2 — older demos shipped a static note "خصم 10% عند الدفع عبر بنكيلي" on the Bankily method. Merchants kept it
+     while the real discount stayed 0 %, so the checkout promised 10 % and the server (correctly) applied 0. The note
+     is now derived: a configured discount always wins over free text, and a note advertising a percentage that does
+     not match the configured one is dropped. */
+  const NOTE_PCT = /(\d{1,2})\s*%/;
+  const paymentNote = (payment) => {
+    const pct = Number(payment?.discount) || 0;
+    if (pct > 0)
+      return ctx.R.lang === "ar" ? `خصم ${pct}% عند الدفع بهذه الطريقة` : `${pct} % de réduction avec ce moyen`;
+    const note = ctx.L(payment?.note) || "";
+    const found = note.match(NOTE_PCT);
+    return found && Number(found[1]) !== pct ? "" : note;
+  };
+  /** Best active payment discount, e.g. { pct: 10, name: "بنكيلي" } — or null when no method carries one. */
+  const bestPaymentOffer = () => {
+    const best = (ctx.SET.payments || [])
+      .filter((p) => p.active !== false && Number(p.discount) > 0)
+      .sort((a, b) => Number(b.discount) - Number(a.discount))[0];
+    return best ? { pct: Number(best.discount), name: ctx.L(best.name) } : null;
+  };
+  Object.assign(ctx, {
+    esc,
+    money,
+    discountFor,
+    variantLabel,
+    SPEC_LABELS,
+    specsText,
+    svg,
+    ICON,
+    hasPaymentOffer,
+    paymentNote,
+    bestPaymentOffer
+  });
 }

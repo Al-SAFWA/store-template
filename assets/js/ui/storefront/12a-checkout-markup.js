@@ -45,7 +45,7 @@ export function checkoutPageHTML(ctx, data) {
                     ) => `<label class="payment-card ${i === 0 ? "active" : ""} u-pay-rail" data-sv="pay:${ctx.esc(payment.color)}">
                   <input type="radio" name="co-payment" value="${ctx.esc(payment.id)}" ${i === 0 ? "checked" : ""}>
                   <span class="payment-mark">${payment.image || payment.logo ? `<img src="${ctx.esc(payment.image || payment.logo)}" alt="${ctx.esc(ctx.L(payment.name))}" width="48" height="32" decoding="async">` : ctx.esc(ctx.L(payment.name).slice(0, 2))}</span>
-                  <span class="payment-copy"><strong>${ctx.esc(ctx.L(payment.name))}</strong><small>${ctx.esc(ctx.L(payment.note))}</small></span>
+                  <span class="payment-copy"><strong>${ctx.esc(ctx.L(payment.name))}</strong><small>${ctx.esc(ctx.paymentNote(payment))}</small></span>
                   ${payment.discount ? `<span class="payment-discount">-${payment.discount}%</span>` : ""}
                 </label>`
                   )

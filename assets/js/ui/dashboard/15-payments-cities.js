@@ -18,7 +18,14 @@ export function install(ctx) {
     else if (!/cash|cod|delivery|استلام/i.test(`${payment.id} ${payment.name?.ar || ""}`))
       parts.push(ctx.dt("لم يُضف رقم حساب", "Pas de numéro de compte"));
     if (Number(payment.discount) > 0) parts.push(`${ctx.dt("خصم", "Remise")} ${payment.discount}%`);
-    return parts.join(" · ") || ctx.lng(payment.note) || "";
+    const note = ctx.lng(payment.note) || "";
+    // 1.17.2 — a note that promises a % the method does not have is not shown (storefront drops it too)
+    const stale = /\d{1,2}\s*%/.test(note) && !(Number(payment.discount) > 0);
+    if (stale)
+      parts.push(
+        ctx.dt("⚠ الملاحظة تذكر خصمًا غير مفعّل — لن تظهر للزبون", "⚠ La note promet une remise inactive — masquée")
+      );
+    return parts.join(" · ") || note;
   }
 
   function paymentCard(payment, index) {
@@ -125,6 +132,7 @@ export function install(ctx) {
         ${step(
           ctx.dt("ملاحظة للزبون (اختياري)", "Note au client (optionnel)"),
           `<label class="si-field"><input data-edit-path="note.ar" value="${ctx.esc(buffer.note?.ar || "")}" dir="rtl" placeholder="${ctx.dt("مثل: أرسل لقطة التحويل عبر واتساب", "ex. Envoyez la capture du virement")}"></label>
+           <small class="form-note">${ctx.dt("لا تكتب نسبة الخصم هنا؛ تُعرض تلقائياً من الخطوة 3.", "N’écrivez pas la remise ici ; elle s’affiche depuis l’étape 3.")}</small>
            <details class="pe-more"><summary>${ctx.dt("بالفرنسية، اللون والشعار", "Français, couleur et logo")}</summary><div class="pe-more-body">
              <label class="si-field"><span>Note FR</span><input data-edit-path="note.fr" value="${ctx.esc(buffer.note?.fr || "")}" dir="ltr"></label>
              <label class="si-field"><span>${ctx.dt("اللون", "Couleur")}</span><input type="color" data-edit-path="color" value="${ctx.esc(buffer.color || "#0b6fb8")}"></label>

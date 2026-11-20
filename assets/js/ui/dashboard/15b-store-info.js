@@ -53,6 +53,7 @@ export function install(ctx) {
         <div class="pe-more-body">
           ${labelled(ctx.dt("الاسم بالفرنسية", "Nom en français"), input("settings.storeName.fr", s.storeName?.fr, { dir: "ltr" }))}
           ${ctx.directImageEditor(ctx.dt("الشعار", "Logo"), "settings.logo", s.logo)}
+          <p class="form-note">${ctx.dt("الأفضل: شعار أفقي بخلفية شفافة (PNG)، عرضه ضعف ارتفاعه تقريباً. يُعرض بارتفاع 34–44 بكسل في رأس المتجر — الصور المربعة أو صور المنتجات تظهر صغيرة جداً.", "Idéal : logo horizontal sur fond transparent (PNG), environ deux fois plus large que haut. Affiché à 34–44 px de haut dans l’en-tête ; les images carrées ou photos produits paraîtront minuscules.")}</p>
         </div>
       </details>
     </section>`;

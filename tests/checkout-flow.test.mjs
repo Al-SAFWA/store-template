@@ -146,9 +146,10 @@ test("buildOrderDraft: maps the form, cart and totals into the order shape the s
 test("messageItemsHTML / fillTemplate: one line per item and every placeholder replaced", () => {
   const ctx = ctxStub();
   const lines = messageItemsHTML(ctx, [
-    { title: "Phone X", variantTitle: "128 Go", specsText: "color: noir", qty: 2, line: 2400 }
+    { title: "Phone X", variantTitle: "128 Go", specsText: "color: noir · RAM: 6 GB", qty: 2, line: 2400 }
   ]);
-  assert.equal(lines, "- Phone X (128 Go)\n   color: noir × 2 = 2400 MRU");
+  // 1.17.2 — qty × price stays on the title line, each spec on its own indented line.
+  assert.equal(lines, "- Phone X (128 Go) × 2 = 2400 MRU\n    color: noir\n    RAM: 6 GB");
   assert.equal(fillTemplate("a {x} b {y} c", { x: 1, y: 2 }), "a 1 b 2 c");
   assert.equal(fillTemplate("{missing} stays", {}), "{missing} stays");
   assert.equal(fillTemplate("null -> {x}", { x: null }), "null -> ");

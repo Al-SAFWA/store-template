@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.17.2 — 2026-10-29
+
+- Storefront checkout: the line under a payment method is **derived from the configured discount** — `خصم 10% عند الدفع بهذه الطريقة` when the method has 10 %, the merchant's free-text note otherwise, and a note that advertises a percentage the method does not have is dropped. (Root cause of "the checkout says 10 % but the order got 0": older demo data shipped a static "خصم 10%" note on Bankily while `discount` was 0; the server was right.)
+- Storefront home: the offer tag ("خصم 10% مع بنكيلي") now reads the best active payment discount instead of a fixed i18n string; hidden when none.
+- Dashboard → payments: card shows a ⚠ when a note promises an inactive discount; editor hint not to write the percentage in the note.
+- Dashboard: **publish is one tap** — the "نشر التغييرات" confirmation modal is gone; every نشر button publishes directly (buttons show "جارٍ النشر…" and are locked while in flight). Preview keeps its own button.
+- Storefront WhatsApp message: `qty × price` stays on the product line and every spec goes on its own indented line (was glued to the title and wrapped unreadably).
+- Storefront header: logo is boxed to `max-height 44px` (34px on phones) with `object-fit: contain`, so tall/square images no longer overflow into the announcement bar. Dark-mode inversion is now opt-in (`img.mono`) instead of applied to every logo.
+- Dashboard → store info: hint under the logo field (horizontal PNG, ~2:1).
+
 ## 1.17.1 — 2026-10-29
 
 - Cancelled / returned orders put their units back in stock (`supabase/migrations/0008_restock_on_cancel.sql`,

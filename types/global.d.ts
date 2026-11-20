@@ -239,6 +239,7 @@ declare global {
     dashLang: "ar" | "fr";
     searchTerm: string;
     dirty: boolean;
+    publishing?: boolean;
     session: StaffSession | null;
     model: any;
     editBuffer: any;

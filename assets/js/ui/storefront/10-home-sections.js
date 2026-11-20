@@ -106,6 +106,14 @@ export function install(ctx) {
     </section>`;
   }
 
+  /** 1.17.2 — "-10 % avec Bankily" is no longer a fixed string: it reads the real payment discount, else nothing. */
+  function offerTagHTML() {
+    const best = ctx.bestPaymentOffer();
+    if (!best) return "";
+    const text = ctx.R.lang === "ar" ? `خصم ${best.pct}% مع ${best.name}` : `-${best.pct} % avec ${best.name}`;
+    return `<span class="offer-tag">${ctx.ICON.bolt} ${ctx.esc(text)}</span>`;
+  }
+
   function offerHTML() {
     const offer = (ctx.SET.offers || []).find((o) => o.active !== false);
     if (!offer) return "";
@@ -114,7 +122,7 @@ export function install(ctx) {
       <div class="container">
         <div class="offer-card">
           <div class="offer-copy">
-            <span class="offer-tag">${ctx.ICON.bolt} ${ctx.esc(ctx.t("paymentOfferShort"))}</span>
+            ${offerTagHTML()}
             <h2>${ctx.esc(ctx.L(offer.title))}</h2>
             <p>${ctx.esc(ctx.L(offer.subtitle))}</p>
             ${ends ? `<div class="countdown" data-countdown="${ctx.esc(offer.endsAt)}"></div>` : ""}
