@@ -1,9 +1,0 @@
-{
-  "comment": "Stores that the release workflow pushes template updates to (needs CLIENTS_TOKEN secret in this repo). Added automatically by new-client when --repo is given.",
-  "clients": [
-    {
-      "repo": "Al-SAFWA/store-demo1",
-      "key": "demo1"
-    }
-  ]
-}
