@@ -2,6 +2,8 @@
 /* state.js → Default content: demo products, buildState, hydrate, i18n helpers (texts live in 01-default-texts.js)
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see state.js). */
 import { t as tI18n, L as LI18n } from "../i18n/index.js";
+import { applyChannelsToSettings } from "../domain/channels.js";
+import { applySiteSettingsToState, mergeSiteSettings } from "../domain/site-settings.js";
 import { createDefaultState } from "./01a-default-state.js";
 
 export function install(ctx) {
@@ -51,6 +53,9 @@ export function install(ctx) {
       if (wa.length === 8) wa = `222${wa}`;
       out.settings.whatsapp = wa;
     }
+    out.settings.siteSettings = mergeSiteSettings(out.settings.siteSettings, out.settings);
+    applySiteSettingsToState(out.settings, ctx.lang);
+    applyChannelsToSettings(out.settings, window.BRAND || {});
     return out;
   }
   // I18N moved to ./i18n/ar.js, ./i18n/fr.js (single source of truth)

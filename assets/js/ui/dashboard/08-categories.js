@@ -18,6 +18,7 @@ export function install(ctx) {
     setCategoryImage,
     toggleCategoryProduct,
     toggleCategoryFlag,
+    toggleCategoryVisible,
     filterCategoryProducts
   });
 
@@ -61,7 +62,7 @@ export function install(ctx) {
         <span class="ct-thumb"><img src="${ctx.esc(categoryImage(collection))}" alt=""></span>
         <span class="ct-text"><strong>${ctx.esc(ctx.lng(collection.title))}</strong><small>${ctx.esc(cardMeta(collection))}</small></span>
       </button>
-      <label class="toggle"><input type="checkbox" data-path="collections.${index}.visible" data-type="bool" ${collection.visible !== false ? "checked" : ""}><span></span></label>
+      <label class="toggle"><input type="checkbox" data-action="toggle-category-visible" data-index="${index}" ${collection.visible !== false ? "checked" : ""}><span></span></label>
     </article>`;
   }
 
@@ -271,13 +272,29 @@ export function install(ctx) {
     ctx.toast(ctx.dt("تم حفظ الفئة", "Catégorie enregistrée"), "good");
   }
 
+  async function toggleCategoryVisible(index, checked) {
+    const item = collections()[index];
+    if (!item) return;
+    item.visible = checked !== false;
+    const nav = navList().find((entry) => entry.href === navHref(item.handle));
+    if (nav) nav.visible = item.visible;
+    if (ctx.tablesMode()) {
+      await ctx.catalogWrite(ctx.dt("تم تحديث الظهور", "Visibilité mise à jour"), () => ctx.CAT.saveCollection(item));
+    } else ctx.saveDraftNow();
+    ctx.renderRoute();
+  }
+
   async function deleteCategory(index) {
     const item = collections()[index];
     if (!item) return;
-    if (
-      !window.confirm(ctx.dt("حذف الفئة؟ المنتجات تبقى في المتجر.", "Supprimer la catégorie ? Les produits restent."))
-    )
-      return;
+    const count = membersOf(item.handle).length;
+    const warn = count
+      ? ctx.dt(
+          `هذه الفئة تحتوي على ${count} منتجات. حذف الفئة لن يحذف المنتجات. المتابعة؟`,
+          `Cette catégorie contient ${count} produits. Ils ne seront pas supprimés. Continuer ?`
+        )
+      : ctx.dt("حذف الفئة الفارغة؟", "Supprimer cette catégorie vide ?");
+    if (!window.confirm(warn)) return;
     if (ctx.tablesMode()) {
       const ok = await ctx.catalogWrite(ctx.dt("تم حذف الفئة", "Catégorie supprimée"), () =>
         ctx.CAT.deleteCollection(item)
@@ -293,6 +310,20 @@ export function install(ctx) {
     ctx.renderRoute();
   }
 
+  function syncHomeOrder() {
+    const home = homeList();
+    const byHandle = new Map(home.map((entry) => [entry.handle, entry]));
+    const next = [];
+    for (const collection of collections()) {
+      const entry = byHandle.get(collection.handle);
+      if (entry) next.push(entry);
+    }
+    for (const entry of home) {
+      if (!next.includes(entry)) next.push(entry);
+    }
+    ctx.model.theme.categories = next;
+  }
+
   async function moveCategory(index, dir) {
     const list = collections();
     const target = index + dir;
@@ -301,6 +332,7 @@ export function install(ctx) {
     list.forEach((item, position) => {
       item.sortOrder = position;
     });
+    syncHomeOrder();
     if (ctx.tablesMode()) {
       await ctx.catalogWrite(ctx.dt("تم تغيير الترتيب", "Ordre modifié"), async () => {
         await ctx.CAT.saveCollection(list[index]);

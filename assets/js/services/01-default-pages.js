@@ -119,8 +119,8 @@ export function install(ctx) {
       "renewed",
       "ما معنى مجدد من " + BN.ar + "؟",
       "Que signifie reconditionné chez " + BN.fr + " ?",
-      "الجهاز المجدد هو جهاز مستعمل تم فحصه وتنظيفه وإصلاح ما يلزم فيه ليعمل كجهاز جديد.\nنفحص الشاشة، البطارية، الكاميرا، الصوت، المنافذ والاتصال، ثم نمسح البيانات ونثبت النظام.\nكل جهاز يأتي بضمان 12 شهرًا، توصيل مجاني داخل نواكشوط، وإمكانية الإرجاع خلال 10 أيام.",
-      "Un appareil reconditionné est un appareil d’occasion contrôlé, nettoyé et réparé si nécessaire pour fonctionner comme neuf.\nNous vérifions l’écran, la batterie, les caméras, le son, les ports et la connectivité, puis nous effaçons les données et installons le système.\nChaque appareil est livré avec 12 mois de garantie, la livraison gratuite à Nouakchott et un retour possible sous 10 jours."
+      "الجهاز المجدد هو جهاز مستعمل تم فحصه وتنظيفه وإصلاح ما يلزم فيه ليعمل كجهاز جديد.\nنفحص الشاشة، البطارية، الكاميرا، الصوت، المنافذ والاتصال، ثم نمسح البيانات ونثبت النظام.\nكل جهاز يأتي بضمان 12 شهرًا، توصيل مجاني داخل نواكشوط، وإمكانية الإرجاع خلال {returnDays} أيام.",
+      "Un appareil reconditionné est un appareil d’occasion contrôlé, nettoyé et réparé si nécessaire pour fonctionner comme neuf.\nNous vérifions l’écran, la batterie, les caméras, le son, les ports et la connectivité, puis nous effaçons les données et installons le système.\nChaque appareil est livré avec 12 mois de garantie, la livraison gratuite à Nouakchott et un retour possible sous {returnDays} jours."
     ],
     [
       "shipping",
@@ -133,8 +133,8 @@ export function install(ctx) {
       "returns",
       "الإرجاع والضمان",
       "Retours et garantie",
-      "لديك 10 أيام لاختبار الجهاز وإرجاعه إذا لم يعجبك، بشرط أن يكون في حالته الأصلية.\nالضمان 12 شهرًا يغطي الأعطال التقنية، ولا يغطي الكسر أو دخول الماء أو سوء الاستخدام.\nلبدء الإرجاع راسلنا على واتساب مع رقم الطلب.",
-      "Vous disposez de 10 jours pour tester l’appareil et le retourner s’il ne vous convient pas, à condition qu’il soit dans son état d’origine.\nLa garantie de 12 mois couvre les pannes techniques, hors casse, dégâts d’eau ou mauvais usage.\nPour un retour, contactez-nous sur WhatsApp avec votre numéro de commande."
+      "لديك {returnDays} أيام لاختبار الجهاز وإرجاعه إذا لم يعجبك، بشرط أن يكون في حالته الأصلية.\nالضمان 12 شهرًا يغطي الأعطال التقنية، ولا يغطي الكسر أو دخول الماء أو سوء الاستخدام.\nلبدء الإرجاع راسلنا على واتساب مع رقم الطلب.",
+      "Vous disposez de {returnDays} jours pour tester l’appareil et le retourner s’il ne vous convient pas, à condition qu’il soit dans son état d’origine.\nLa garantie de 12 mois couvre les pannes techniques, hors casse, dégâts d’eau ou mauvais usage.\nPour un retour, contactez-nous sur WhatsApp avec votre numéro de commande."
     ]
   ].map(([slug, ar, fr, bodyAr, bodyFr]) => ({
     slug,

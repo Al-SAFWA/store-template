@@ -13,6 +13,7 @@ window.RESTORE_CONFIG = {
   createOrderFunction: "create-order",
   createStaffFunction: "admin-create-staff",
   staffTable: "restore_staff",
+  siteSettingsTable: "site_settings",
   stateTable: "restore_state",
   ordersTable: "restore_orders",
   abandonedTable: "restore_abandoned",

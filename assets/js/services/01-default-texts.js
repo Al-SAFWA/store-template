@@ -66,8 +66,8 @@ export function createDefaultTexts(ctx) {
         id: "faq-3",
         q: ctx.txt("هل يمكنني الإرجاع؟", "Puis-je retourner l’appareil ?"),
         a: ctx.txt(
-          "نعم، لديك 10 أيام لإرجاع الجهاز في حالته الأصلية إذا لم يعجبك.",
-          "Oui, vous avez 10 jours pour retourner l’appareil dans son état d’origine s’il ne vous convient pas."
+          "نعم، لديك {returnDays} أيام لإرجاع الجهاز في حالته الأصلية إذا لم يعجبك.",
+          "Oui, vous avez {returnDays} jours pour retourner l’appareil dans son état d’origine s’il ne vous convient pas."
         )
       },
       {
@@ -208,15 +208,15 @@ export function createDefaultTexts(ctx) {
     return [
       {
         id: "anniversary",
-        label: bt("{brand} أنيفرساري", "Anniversaire {brand}"),
-        href: "collection.html?handle=restore-anniversary",
+        label: ctx.txt("عروض", "Offres"),
+        href: "collection.html?handle=special-offers",
         flame: true,
         visible: true
       },
       {
         id: "iphones",
         label: ctx.txt("آيفون", "iPhones"),
-        href: "collection.html?handle=refurbished-iphones",
+        href: "collection.html?handle=phones",
         visible: true,
         sub: [
           { label: ctx.txt("سلسلة iPhone 16", "iPhone 16"), href: "collection.html?q=iPhone%2016" },
@@ -230,7 +230,7 @@ export function createDefaultTexts(ctx) {
       {
         id: "samsung",
         label: ctx.txt("سامسونج", "Samsung"),
-        href: "collection.html?handle=used-samsung",
+        href: "collection.html?handle=android",
         visible: true,
         sub: [
           { label: ctx.txt("سلسلة Galaxy S24", "Galaxy S24"), href: "collection.html?q=S24" },
@@ -245,7 +245,7 @@ export function createDefaultTexts(ctx) {
       {
         id: "macbooks",
         label: ctx.txt("ماك بوك", "MacBooks"),
-        href: "collection.html?handle=refurbished-macbooks",
+        href: "collection.html?handle=macbooks",
         visible: true,
         sub: [
           { label: ctx.txt("MacBook Pro", "MacBook Pro"), href: "collection.html?q=MacBook%20Pro" },
@@ -256,7 +256,7 @@ export function createDefaultTexts(ctx) {
       {
         id: "laptops",
         label: ctx.txt("حواسيب محمولة", "Laptops"),
-        href: "collection.html?handle=laptops-used-refurbished",
+        href: "collection.html?handle=laptops",
         visible: true,
         sub: [
           { label: "Lenovo", href: "collection.html?q=Lenovo" },
@@ -265,7 +265,7 @@ export function createDefaultTexts(ctx) {
           { label: "Acer", href: "collection.html?q=Acer" }
         ]
       },
-      { id: "ipads", label: ctx.txt("آيباد", "iPads"), href: "collection.html?handle=ipads", visible: true },
+      { id: "ipads", label: ctx.txt("آيباد", "iPads"), href: "collection.html?handle=tablets", visible: true },
       {
         id: "accessories",
         label: ctx.txt("ملحقات وصوتيات", "Accessoires et audio"),
@@ -275,16 +275,16 @@ export function createDefaultTexts(ctx) {
           { label: ctx.txt("صوتيات", "Audio"), href: "collection.html?handle=audio" },
           {
             label: ctx.txt("شواحن وكابلات", "Chargeurs et câbles"),
-            href: "collection.html?handle=chargers-power-banks-cables"
+            href: "collection.html?handle=chargers"
           },
           { label: ctx.txt("ألعاب", "Gaming"), href: "collection.html?handle=gaming" },
-          { label: ctx.txt("ملحقات", "Accessoires"), href: "collection.html?handle=cases-screen-protectors" }
+          { label: ctx.txt("ملحقات", "Accessoires"), href: "collection.html?handle=accessories" }
         ]
       },
       {
         id: "watches",
         label: ctx.txt("ساعة آبل", "Apple Watch"),
-        href: "collection.html?handle=apple-watches",
+        href: "collection.html?handle=watches",
         visible: true
       },
       {
@@ -305,16 +305,25 @@ export function createDefaultTexts(ctx) {
 
   function collectionTitles() {
     return {
-      "restore-anniversary": bt("{brand} أنيفرساري", "Anniversaire {brand}"),
+      "special-offers": ctx.txt("عروض", "Offres"),
+      "restore-anniversary": ctx.txt("عروض", "Offres"),
+      phones: ctx.txt("هواتف ذكية", "Smartphones"),
       "refurbished-iphones": ctx.txt("آيفون مجدد معتمد", "iPhone reconditionnés certifiés"),
+      android: ctx.txt("أندرويد", "Android"),
       "used-samsung": ctx.txt("سامسونج مجدد معتمد", "Samsung reconditionnés certifiés"),
+      laptops: ctx.txt("حواسيب محمولة", "Laptops"),
       "laptops-used-refurbished": ctx.txt("حواسيب محمولة مجددة", "Ordinateurs portables reconditionnés"),
+      macbooks: ctx.txt("حواسيب للمبدعين", "Creator Laptops"),
       "refurbished-macbooks": ctx.txt("ماك بوك مجدد", "MacBook reconditionnés"),
+      tablets: ctx.txt("أجهزة لوحية", "Tablets"),
       ipads: ctx.txt("آيباد مجدد", "iPad reconditionnés"),
+      watches: ctx.txt("ساعات ذكية", "Smartwatches"),
       "apple-watches": ctx.txt("ساعات آبل", "Montres Apple"),
       audio: ctx.txt("صوتيات", "Audio"),
+      chargers: ctx.txt("شواحن وطاقة", "Chargeurs et câbles"),
       "chargers-power-banks-cables": ctx.txt("شواحن وبطاريات وكابلات", "Chargeurs, batteries et câbles"),
       gaming: ctx.txt("ألعاب", "Gaming"),
+      accessories: ctx.txt("حافظات وحماية", "Cases & Protection"),
       "cases-screen-protectors": ctx.txt("محافظ وواقيات شاشة", "Coques et protections d’écran")
     };
   }
@@ -322,38 +331,38 @@ export function createDefaultTexts(ctx) {
   function categories() {
     return [
       {
-        label: bt("{brand} أنيفرساري", "{brand} Anniversary"),
-        handle: "restore-anniversary",
-        image: "assets/img/category-anniversary.svg"
+        label: ctx.txt("عروض", "Offres"),
+        handle: "special-offers",
+        image: "assets/img/category-special-offers.svg"
       },
-      { label: ctx.txt("آيفون", "iPhone"), handle: "refurbished-iphones", image: "assets/img/category-iphone.svg" },
-      { label: ctx.txt("سامسونج", "Samsung"), handle: "used-samsung", image: "assets/img/category-samsung.svg" },
+      { label: ctx.txt("هواتف ذكية", "Smartphones"), handle: "phones", image: "assets/img/category-phones.svg" },
+      { label: ctx.txt("أندرويد", "Android"), handle: "android", image: "assets/img/category-android.svg" },
       {
-        label: ctx.txt("ماك بوك", "MacBooks"),
-        handle: "refurbished-macbooks",
+        label: ctx.txt("حواسيب للمبدعين", "Creator Laptops"),
+        handle: "macbooks",
         image: "assets/img/category-macbooks.svg"
       },
       {
         label: ctx.txt("حواسيب محمولة", "Laptops"),
-        handle: "laptops-used-refurbished",
+        handle: "laptops",
         image: "assets/img/category-laptops.svg"
       },
-      { label: ctx.txt("آيباد", "iPads"), handle: "ipads", image: "assets/img/category-ipads.svg" },
+      { label: ctx.txt("أجهزة لوحية", "Tablets"), handle: "tablets", image: "assets/img/category-tablets.svg" },
       {
-        label: ctx.txt("ساعات آبل", "Apple Watches"),
-        handle: "apple-watches",
+        label: ctx.txt("ساعات ذكية", "Smartwatches"),
+        handle: "watches",
         image: "assets/img/category-watches.svg"
       },
       { label: ctx.txt("صوتيات", "Audio"), handle: "audio", image: "assets/img/category-audio.svg" },
       {
         label: ctx.txt("شواحن وكابلات", "Chargeurs et câbles"),
-        handle: "chargers-power-banks-cables",
+        handle: "chargers",
         image: "assets/img/category-chargers.svg"
       },
       { label: ctx.txt("ألعاب", "Gaming"), handle: "gaming", image: "assets/img/category-gaming.svg" },
       {
         label: ctx.txt("ملحقات", "Accessoires"),
-        handle: "cases-screen-protectors",
+        handle: "accessories",
         image: "assets/img/category-accessories.svg"
       }
     ];

@@ -1,6 +1,6 @@
 /* Fresh-store scenario (PGlite, real PostgreSQL 16): generate a client with scripts/new-client.mjs, run its
    supabase/ALL_IN_ONE.sql exactly as the merchant pastes it (schema + migrations + seed), then prove that
-   1) the demo catalog is in the tables (21 products, 11 collections), 2) an anonymous order succeeds on the
+   1) the demo catalog is in the tables (51 products, 11 collections), 2) an anonymous order succeeds on the
    FIRST try without any dashboard step, 3) re-running the whole file is idempotent (no duplicates, no error).
    Run: npm run test:db (second step) */
 import { PGlite } from "@electric-sql/pglite";
@@ -69,7 +69,7 @@ const counts = async () => ({
   coupons: (await q("select count(*)::int n from public.restore_coupons")).rows[0].n
 });
 const c1 = await counts();
-check("seed: 21 products in the tables", c1.products === 21, JSON.stringify(c1));
+check("seed: 51 products in the tables", c1.products === 51, JSON.stringify(c1));
 check("seed: 11 collections", c1.collections === 11);
 check("seed: variants and collection links present", c1.variants >= 30 && c1.links >= 21);
 check(

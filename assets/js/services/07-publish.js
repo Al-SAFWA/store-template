@@ -2,6 +2,13 @@
 /* state.js → Published state, drafts and remote polling
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see state.js). */
 
+import {
+  applySiteSettingsToState,
+  mergeSiteSettings,
+  SITE_SETTING_DEFS,
+  siteSettingsToRows
+} from "../domain/site-settings.js";
+
 export function install(ctx) {
   Object.assign(ctx, {
     pushPublishedState,
@@ -30,6 +37,50 @@ export function install(ctx) {
     if (stamp) next.updatedAt = stamp;
     return stamp || null;
   }
+
+  async function pushSiteSettings(settings) {
+    const table = ctx.CFG.siteSettingsTable || "site_settings";
+    try {
+      await ctx.supa(
+        `/rest/v1/${table}`,
+        {
+          method: "POST",
+          body: JSON.stringify(siteSettingsToRows(settings)),
+          headers: { Prefer: "resolution=merge-duplicates,return=minimal" }
+        },
+        true
+      );
+    } catch (error) {
+      console.warn("Restore: site_settings sync skipped", error);
+    }
+  }
+
+  async function overlaySiteSettingsTable(staff) {
+    const table = ctx.CFG.siteSettingsTable || "site_settings";
+    try {
+      const rows = await ctx.supa(`/rest/v1/${table}?select=key,value,is_visible`, {}, staff);
+      if (!Array.isArray(rows) || !rows.length) return false;
+      const before = JSON.stringify(ctx.state.settings.siteSettings);
+      const fromTable = {};
+      for (const row of rows) {
+        if (!row?.key) continue;
+        fromTable[row.key] = { value: row.value, is_visible: row.is_visible !== false };
+      }
+      const merged = mergeSiteSettings(ctx.state.settings.siteSettings);
+      for (const [key, row] of Object.entries(fromTable)) merged[key] = row;
+      if (!staff) {
+        for (const def of SITE_SETTING_DEFS) {
+          if (!(def.key in fromTable)) merged[def.key] = { ...merged[def.key], is_visible: false };
+        }
+      }
+      ctx.state.settings.siteSettings = merged;
+      applySiteSettingsToState(ctx.state.settings, ctx.lang);
+      return before !== JSON.stringify(ctx.state.settings.siteSettings);
+    } catch {
+      return false;
+    }
+  }
+
   async function publish(next = ctx.state) {
     const candidate = ctx.hydrate(ctx.clone(next));
     candidate.updatedAt = ctx.nowISO();
@@ -42,6 +93,7 @@ export function install(ctx) {
       );
       if (stamp) candidate.updatedAt = stamp;
       candidate.publishedAt = candidate.updatedAt;
+      await pushSiteSettings(candidate.settings);
     }
     if (ctx.catalogInfo.source === "tables") {
       // keep the in-memory/published copy consistent with the tables, not with the draft
@@ -126,13 +178,19 @@ export function install(ctx) {
     try {
       const rows = await ctx.supa(`/rest/v1/${ctx.CFG.stateTable}?id=eq.main&select=id,data,updated_at`);
       const remote = Array.isArray(rows) ? rows[0] : null;
-      if (!remote?.data || !remoteIsNewer(remote)) return false;
-      adoptRemoteState(remote);
-      if (ctx.catalogInfo.source !== "state")
-        await ctx.loadCatalog({ staff: ctx.session?.mode === "supabase", silent: true });
-      ctx.applyDocument();
-      window.dispatchEvent(new CustomEvent("restore:changed", { detail: { source: "remote" } }));
-      return true;
+      const staff = ctx.session?.mode === "supabase";
+      let adopted = false;
+      if (remote?.data && remoteIsNewer(remote)) {
+        adoptRemoteState(remote);
+        adopted = true;
+      }
+      const overlayed = await overlaySiteSettingsTable(staff);
+      if (adopted && ctx.catalogInfo.source !== "state") await ctx.loadCatalog({ staff, silent: true });
+      if (adopted || overlayed) {
+        ctx.applyDocument();
+        window.dispatchEvent(new CustomEvent("restore:changed", { detail: { source: "remote" } }));
+      }
+      return adopted || overlayed;
     } catch (error) {
       console.warn("Restore: state sync failed", error);
       return false;

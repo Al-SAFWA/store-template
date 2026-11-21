@@ -3,6 +3,8 @@
    Pure builders: no DOM access, no storage. `hydrate` in 01-default-content.js merges saved data over these. */
 
 import { createProductBuilders } from "./01b-default-products.js";
+import { defaultSiteSettings } from "../domain/site-settings.js";
+import { defaultChannels } from "../domain/channels.js";
 
 /**
  * Builds the default state builders for one `ctx`.
@@ -134,13 +136,23 @@ export function createDefaultState(ctx) {
         "كل أجهزتنا أصلية ومفحوصة من طرف خبراء",
         "Tous nos appareils sont originaux et vérifiés par des experts"
       ),
+      returnDays: 10,
+      returnEnabled: true,
+      noRisk: {
+        visible: true,
+        title: ctx.txt("بدون مخاطرة", "Sans risque"),
+        text: ctx.txt(
+          "{returnDays} أيام لإرجاع الجهاز عند وجود أي مشكلة",
+          "{returnDays} jours pour retourner l’appareil en cas de problème"
+        )
+      },
       serviceItems: [
         {
           icon: "smile",
           title: ctx.txt("بدون مخاطرة", "Sans risque"),
           text: ctx.txt(
-            "10 أيام لإرجاع الجهاز عند وجود أي مشكلة",
-            "10 jours pour retourner l’appareil en cas de problème"
+            "{returnDays} أيام لإرجاع الجهاز عند وجود أي مشكلة",
+            "{returnDays} jours pour retourner l’appareil en cas de problème"
           )
         },
         {
@@ -165,14 +177,14 @@ export function createDefaultState(ctx) {
           text: ctx.txt("خدمة عملاء تجيب على أسئلتك وتتابع طلبك", "Un service client qui répond et suit votre commande")
         }
       ],
-      trustTitle: ctx.txt("150,000+ عميل يثقون بنا", "150 000+ clients nous font confiance"),
+      trustTitle: ctx.txt("آلاف العملاء يثقون بنا", "Des milliers de clients nous font confiance"),
       communityTitle: bt("انضم إلى مجتمع {brand}", "Rejoignez la communauté {brand}"),
       reviewsTitle: ctx.txt("ماذا يقول عملاؤنا", "Ce que disent nos clients"),
       pressTitle: bt("{brand} في الأخبار", "{brand} dans la presse"),
       trustBar: [
         { icon: "truck", label: ctx.txt("توصيل مجاني داخل نواكشوط", "Livraison gratuite à Nouakchott") },
         { icon: "shield", label: ctx.txt("ضمان 12 شهرًا", "Garantie 12 mois") },
-        { icon: "return", label: ctx.txt("إرجاع خلال 10 أيام", "Retour sous 10 jours") },
+        { icon: "return", label: ctx.txt("إرجاع خلال {returnDays} أيام", "Retour sous {returnDays} jours") },
         { icon: "badgeCheck", label: ctx.txt("فحص بواسطة خبراء", "Vérifié par des experts") }
       ],
       paymentOffer: ctx.txt("", ""),
@@ -185,7 +197,8 @@ export function createDefaultState(ctx) {
       freeShippingOver: 20000,
       cities: DEFAULT_CITIES,
       payments: DEFAULT_PAYMENTS,
-      navigation: DEFAULT_NAV
+      navigation: DEFAULT_NAV,
+      siteSettings: defaultSiteSettings()
     };
   }
 
@@ -223,7 +236,21 @@ export function createDefaultState(ctx) {
         { id: "facebook", href: "https://www.facebook.com/", icon: "facebook" },
         { id: "instagram", href: "https://www.instagram.com/", icon: "instagram" },
         { id: "tiktok", href: "https://www.tiktok.com/", icon: "tiktok" }
-      ]
+      ],
+      channels: defaultChannels(
+        {
+          whatsapp: B.whatsapp || "",
+          phoneDisplay: B.phoneDisplay || B.phone || "",
+          email: B.email || "",
+          address: B.address || { ar: "", fr: "" },
+          social: [
+            { id: "facebook", href: "https://www.facebook.com/" },
+            { id: "instagram", href: "https://www.instagram.com/" },
+            { id: "tiktok", href: "https://www.tiktok.com/" }
+          ]
+        },
+        B
+      )
     };
   }
 
@@ -234,8 +261,8 @@ export function createDefaultState(ctx) {
           id: "anniversary",
           visible: true,
           order: 1,
-          title: bt("{brand} أنيفرساري", "{brand} Anniversary"),
-          collection: "restore-anniversary",
+          title: ctx.txt("عروض", "Offres"),
+          collection: "special-offers",
           handles: ctx.RAW.home.anniversary,
           layout: "plain",
           promo: "",
@@ -246,7 +273,7 @@ export function createDefaultState(ctx) {
           visible: true,
           order: 2,
           title: ctx.txt("آيفون مجدد معتمد", "iPhones reconditionnés certifiés"),
-          collection: "refurbished-iphones",
+          collection: "phones",
           handles: ctx.RAW.home.iphones,
           layout: "left",
           promo: "assets/img/restore/promo-iphone.svg",
@@ -257,7 +284,7 @@ export function createDefaultState(ctx) {
           visible: true,
           order: 3,
           title: ctx.txt("سامسونج مجدد معتمد", "Samsung reconditionné certifié"),
-          collection: "used-samsung",
+          collection: "android",
           handles: ctx.RAW.home.samsung,
           layout: "right",
           promo: "assets/img/restore/promo-samsung.svg",
@@ -268,7 +295,7 @@ export function createDefaultState(ctx) {
           visible: true,
           order: 4,
           title: ctx.txt("حواسيب محمولة مجددة", "Ordinateurs portables reconditionnés"),
-          collection: "laptops-used-refurbished",
+          collection: "laptops",
           handles: ctx.RAW.home.laptops,
           layout: "left",
           promo: "assets/img/restore/promo-laptops.svg",
@@ -315,7 +342,7 @@ export function createDefaultState(ctx) {
             "macOS installé, batterie contrôlée et clavier arabe ou français."
           ),
           cta: ctx.txt("اكتشف ماك بوك", "Voir les MacBook"),
-          href: "collection.html?handle=refurbished-macbooks",
+          href: "collection.html?handle=macbooks",
           image: "assets/img/hero-2.webp",
           bg: "linear-gradient(135deg,#eef3ff 0%,#d9e5ff 45%,#f7c7ff 120%)",
           dark: false

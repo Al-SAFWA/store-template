@@ -14,6 +14,7 @@
   --header-bg: rgba(255, 255, 255, .94);
   --success: #128c53;
   --danger: #c0392b;
+  --error: #c0392b;
   --shadow-soft: 0 18px 50px rgba(20, 12, 40, .09);
 }
 
@@ -70,13 +71,53 @@ html[data-theme="dark"] .cat-arrow { background: var(--surface); border-color: v
   font-size: 11px;
   font-weight: 700;
   letter-spacing: .04em;
-  padding: 7px 12px;
+  height: 32px;
+  line-height: 32px;
+  padding: 0;
+  overflow: hidden;
 }
 .announcement.is-closed { background: linear-gradient(90deg, #333, #555); }
-.announcement span {
-  display: block; max-width: 1440px; margin: 0 auto;
-  padding-left: 0; animation: none;
-  text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.announcement.is-closed span {
+  display: block;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 12px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.announcement .announce-track {
+  display: flex;
+  width: max-content;
+  animation: announce-marquee 28s linear infinite;
+  will-change: transform;
+}
+.announcement .announce-track span {
+  display: inline-block;
+  padding: 0 3rem;
+  white-space: nowrap;
+  animation: none;
+}
+@keyframes announce-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+html[dir="rtl"] .announcement .announce-track {
+  animation-name: announce-marquee-rtl;
+}
+@keyframes announce-marquee-rtl {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .announcement .announce-track {
+    animation: none;
+    width: 100%;
+    justify-content: center;
+  }
+  .announcement .announce-track span[aria-hidden="true"] { display: none; }
+  .announcement .announce-track span { padding: 0 12px; }
 }
 
 .header-top { grid-template-columns: 190px minmax(0, 1fr) auto; gap: 22px; }
@@ -232,6 +273,54 @@ html[data-theme="dark"] .renewed { color: #d8b6ff; }
 .categories h2 { font-size: 21px; letter-spacing: -.01em; }
 .cat-card { background: var(--surface-2); border: 1px solid transparent; }
 .cat-card:hover { background: var(--surface-3); border-color: var(--border); transform: translateY(-3px); }
+.cat-card .cat-count {
+  display: block;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  line-height: 1.2;
+}
+
+/* Category strip: appear + hover/focus without changing layout size (transform/opacity only). */
+@keyframes cat-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.cat-card {
+  animation: cat-in .4s ease both;
+  transition: background .18s, border-color .18s, transform .18s;
+}
+.cat-card:nth-child(1) { animation-delay: 0s; }
+.cat-card:nth-child(2) { animation-delay: .04s; }
+.cat-card:nth-child(3) { animation-delay: .08s; }
+.cat-card:nth-child(4) { animation-delay: .12s; }
+.cat-card:nth-child(5) { animation-delay: .16s; }
+.cat-card:nth-child(6) { animation-delay: .2s; }
+.cat-card:nth-child(7) { animation-delay: .24s; }
+.cat-card:nth-child(8) { animation-delay: .28s; }
+.cat-card:nth-child(9) { animation-delay: .32s; }
+.cat-card:nth-child(10) { animation-delay: .36s; }
+.cat-card:nth-child(11) { animation-delay: .4s; }
+.cat-card:nth-child(n + 12) { animation-delay: .44s; }
+.cat-card:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+  transform: translateY(-2px);
+}
+.cat-card:active { transform: scale(.98); }
+.cat-track { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  .cat-card,
+  .cat-card:nth-child(n) {
+    animation: none;
+    transition: none;
+  }
+  .cat-card:hover,
+  .cat-card:focus-visible,
+  .cat-card:active { transform: none; }
+  .cat-track { scroll-behavior: auto; }
+}
 .cat-arrow { background: var(--surface); border-color: var(--border); color: var(--text); }
 [dir="rtl"] .cat-arrow { right: auto; left: -10px; }
 [dir="rtl"] .cat-arrow svg { transform: rotate(180deg); }
@@ -421,6 +510,13 @@ html[data-theme="dark"] .card-battery { color: #4ade80; }
 .search-result img { background: var(--surface-2); }
 .search-empty { grid-column: 1 / -1; text-align: center; padding: 34px; color: var(--muted); font-size: 13px; }
 .btn-primary { background: var(--orange); }
+.product-actions { flex-direction: column; }
+.product-actions .btn,
+.card-buy {
+  width: 100%;
+  height: 48px;
+  border-radius: 8px;
+}
 .btn-dark { background: var(--ink); color: var(--bg); }
 .btn-outline { background: transparent; border-color: var(--border); color: var(--text); }
 .btn-whatsapp { background: #1faa59; color: #fff; gap: 8px; }
@@ -687,7 +783,7 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 }
 
 @media (max-width: 900px) {
-  .announcement span { animation-duration: 20s; }
+  .announcement .announce-track { animation-duration: 22s; }
   .lang-current span { display: none; } /* flag only on phones — keeps the centre free for the logo */
   .lang-current { padding: 0 6px; min-width: 36px; }
   .header-top { grid-template-columns: auto 1fr auto; }
@@ -720,7 +816,7 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 }
 
 @media (max-width: 640px) {
-  .announcement { display: block; font-size: 9px; padding: 6px 8px; }
+  .announcement { display: block; font-size: 9px; padding: 0; }
   .header-top { gap: 8px; }
   .logo img { max-width: 120px; max-height: 34px; }
   /* keep the language code visible on phones: a lone 19px flag was not recognised as a switch (demo1 feedback) */
@@ -883,29 +979,7 @@ html[data-theme="dark"] .account-wish-item img { background: #fff; }
   .header-actions .account-btn { padding: 5px 6px; }
 }
 
-/* ==========================================================================
-   Announcement bar animation
-   ========================================================================== */
-.announce-slide {
-  animation: announceSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes announceSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.announcement.is-closed {
-  animation: announceSlideOut 0.4s ease-in forwards;
-}
-@keyframes announceSlideOut {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-100%); height: 0; padding: 0; }
-}
+/* Announcement marquee lives with .announcement above. No slide-in: it caused layout shift. */
 
 /* ==========================================================================
    Currency Switch

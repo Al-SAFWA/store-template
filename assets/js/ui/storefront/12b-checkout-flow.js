@@ -57,7 +57,8 @@ export function isRateLimited(phone, lastOrderAt, rateLimitSeconds, now = Date.n
 export function validateCheckout({ form, open, blocklist, rateLimitSeconds, lastOrderAt, now }) {
   if (!open) return { ok: false, code: "storeClosed" };
   const missing = firstMissingField(form);
-  if (missing) return { ok: false, code: "required", focus: missing };
+  const requiredCode = { "co-name": "requiredName", "co-phone": "requiredPhone", "co-address": "requiredAddress" };
+  if (missing) return { ok: false, code: requiredCode[missing] || "required", focus: missing };
   const phone = normalizePhone(form.phone);
   if (phone.length !== 8) return { ok: false, code: "invalidPhone", focus: "co-phone" };
   if (isBlockedPhone(phone, blocklist)) return { ok: false, code: "blockedPhone" };

@@ -2,6 +2,10 @@
 /* app.js → Home sections
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 
+import { productInCollection, resolveCollectionHandle } from "../../domain/collection-aliases.js";
+import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
+import { applyReturnDays, isNoRiskVisible, isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
+
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, {
@@ -66,11 +70,36 @@ export function install(ctx) {
     </section>`;
   }
 
+  function policy(text) {
+    return applyReturnDays(text, ctx.SET.returnDays);
+  }
+
+  const TRUST_SETTING = { truck: "free_delivery", shield: "warranty_label", badgeCheck: "checked_experts" };
+
+  function trustItemLabel(item) {
+    if (item.icon === "return") {
+      if (!isReturnEnabled(ctx.SET)) return "";
+      return returnLabel(ctx.SET, ctx.R.lang) || policy(ctx.L(item.label));
+    }
+    const key = TRUST_SETTING[item.icon];
+    if (key) {
+      if (!siteSettingVisible(ctx.SET, key)) return "";
+      return siteText(ctx.SET, key, ctx.R.lang) || policy(ctx.L(item.label));
+    }
+    return policy(ctx.L(item.label));
+  }
+
   function trustBarHTML() {
+    const items = (ctx.SET.trustBar || []).filter((item) => trustItemLabel(item));
     return `<div class="trust-bar home-trust reveal">
       <div class="container trust-inner">
         <ul class="trust-list">
-          ${(ctx.SET.trustBar || []).map((item) => `<li><span class="trust-ico" data-icon="${ctx.esc(item.icon)}"></span>${ctx.esc(ctx.L(item.label))}</li>`).join("")}
+          ${items
+            .map((item) => {
+              const label = trustItemLabel(item);
+              return `<li><span class="trust-ico" data-icon="${ctx.esc(item.icon)}"></span>${ctx.esc(label)}</li>`;
+            })
+            .join("")}
         </ul>
         ${ctx.hasPaymentOffer() ? `<a class="bnpl" href="checkout.html">${ctx.ICON.bolt} ${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</a>` : ""}
       </div>
@@ -78,24 +107,69 @@ export function install(ctx) {
   }
 
   function renewedHTML() {
+    if (!siteSettingVisible(ctx.SET, "refurbished_label")) return "";
+    const word = siteText(ctx.SET, "refurbished_label", ctx.R.lang);
+    const text = word ? ctx.L(ctx.SET.renewalText) : ctx.L(ctx.SET.renewalText);
     return `<a class="renewed reveal" href="page.html?slug=renewed">
       <span class="info">i</span>
-      ${ctx.esc(ctx.L(ctx.SET.renewalText))}
+      ${ctx.esc(text)}
       <span data-icon="chevronRight" aria-hidden="true"></span>
     </a>`;
   }
 
+  function categoryCount(handle) {
+    return ctx.PRODUCTS.filter((product) => productInCollection(product, handle)).length;
+  }
+
+  function hiddenHandles() {
+    return new Set(
+      (ctx.S.collections || [])
+        .filter((collection) => collection.visible === false)
+        .map((collection) => resolveCollectionHandle(collection.handle))
+    );
+  }
+
+  function categoryLabel(handle, collection, entry) {
+    if (handle === "special-offers")
+      return siteText(ctx.SET, "offers_label", ctx.R.lang) || collection?.title || entry.label;
+    return collection?.title || entry.label;
+  }
+
+  function visibleCategoryCards() {
+    const hidden = hiddenHandles();
+    const seen = new Set();
+    const cards = [];
+    for (const entry of ctx.S.theme?.categories || []) {
+      const handle = resolveCollectionHandle(entry.handle);
+      if (!handle || handle === "all" || seen.has(handle) || hidden.has(handle)) continue;
+      seen.add(handle);
+      const collection = (ctx.S.collections || []).find((item) => item.handle === handle);
+      cards.push({
+        handle,
+        label: categoryLabel(handle, collection, entry),
+        image: entry.image || collection?.image || "assets/img/category-iphone.svg",
+        count: categoryCount(handle)
+      });
+    }
+    return cards;
+  }
+
   function categoriesHTML() {
-    return `<section class="categories reveal" aria-labelledby="cat-heading">
+    const cards = visibleCategoryCards();
+    if (!cards.length) return "";
+    const heading = siteSettingVisible(ctx.SET, "categories_title")
+      ? siteText(ctx.SET, "categories_title", ctx.R.lang) || ctx.L(ctx.SET.categoriesTitle)
+      : "";
+    return `<section class="categories reveal"${heading ? ` aria-labelledby="cat-heading"` : ""}>
       <div class="container">
-        <h2 id="cat-heading">${ctx.esc(ctx.L(ctx.SET.categoriesTitle))}</h2>
+        ${heading ? `<h2 id="cat-heading">${ctx.esc(heading)}</h2>` : ""}
         <div class="cat-wrap">
           <div class="cat-track" id="cat-track">
-            ${(ctx.S.theme?.categories || [])
+            ${cards
               .map(
-                (c) => `
-              <a class="cat-card" href="collection.html?handle=${encodeURIComponent(c.handle)}">
-                <img src="${c.image}" alt="${ctx.esc(ctx.L(c.label))}" width="150" height="150" loading="lazy" decoding="async"><span>${ctx.esc(ctx.L(c.label))}</span>
+                (card) => `
+              <a class="cat-card" href="collection.html?handle=${encodeURIComponent(card.handle)}">
+                <img src="${ctx.esc(card.image)}" alt="${ctx.esc(ctx.L(card.label))}" width="150" height="150" loading="lazy" decoding="async"><span>${ctx.esc(ctx.L(card.label))}</span><small class="cat-count">${card.count} ${ctx.esc(card.count === 1 ? ctx.t("product") : ctx.t("products"))}</small>
               </a>`
               )
               .join("")}
@@ -137,16 +211,18 @@ export function install(ctx) {
   }
 
   function productSectionHTML(section) {
+    const colHandle = resolveCollectionHandle(section.collection || "all");
     let items = (section.handles || []).map((h) => ctx.BY_HANDLE.get(h)).filter((p) => p && ctx.PRODUCTS.includes(p));
     if (!items.length) {
-      items = ctx.PRODUCTS.filter((p) => (p.collections || []).includes(section.collection)).slice(0, 10);
+      items = ctx.PRODUCTS.filter((p) => productInCollection(p, colHandle)).slice(0, 10);
     }
     if (!items.length) return "";
     const cards = items.slice(0, 12).map(ctx.cardHTML).join("");
+    const colHref = `collection.html?handle=${encodeURIComponent(colHandle)}`;
     const head = `
       <div class="section-head">
         <h2>${ctx.esc(ctx.L(section.title))}${section.flame ? '<span class="flame" data-icon="flame" aria-hidden="true"></span>' : ""}</h2>
-        <a class="see-all" href="collection.html?handle=${encodeURIComponent(section.collection || "all")}">${ctx.esc(ctx.t("seeAll"))}</a>
+        <a class="see-all" href="${colHref}">${ctx.esc(ctx.t("seeAll"))}</a>
       </div>`;
     if (section.layout === "plain") {
       return `<section class="product-section reveal"><div class="container">${head}
@@ -156,7 +232,7 @@ export function install(ctx) {
         </div></div></section>`;
     }
     const promo = section.promo
-      ? `<a class="promo" href="collection.html?handle=${encodeURIComponent(section.collection || "all")}"><img src="${ctx.esc(section.promo)}" alt="${ctx.esc(ctx.L(section.title))}" width="200" height="150" loading="lazy" decoding="async"></a>`
+      ? `<a class="promo" href="${colHref}"><img src="${ctx.esc(section.promo)}" alt="${ctx.esc(ctx.L(section.title))}" width="200" height="150" loading="lazy" decoding="async"></a>`
       : "";
     const panel = `<div class="carousel-wrap"><div class="carousel-panel"><div class="track">${cards}</div></div>
       <button class="carousel-arrow next" type="button" data-scroll="next" aria-label="${ctx.esc(ctx.t("seeAll"))}">${ctx.ICON.chevronRight}</button></div>`;
@@ -221,15 +297,30 @@ export function install(ctx) {
   }
 
   function serviceHTML() {
-    const items = ctx.SET.serviceItems || [];
+    const items = [...(ctx.SET.serviceItems || [])];
+    if (items[0]) {
+      if (!isNoRiskVisible(ctx.SET)) items.shift();
+      else {
+        const badge = ctx.SET.noRisk || {};
+        items[0] = {
+          ...items[0],
+          title: badge.title || items[0].title,
+          text: badge.text || items[0].text
+        };
+      }
+    }
     const feature = (item) => `<div class="feature">
       <span class="ico" data-icon="${ctx.esc(item.icon)}" aria-hidden="true"></span>
       <h3>${ctx.esc(ctx.L(item.title))}</h3>
-      <p>${ctx.esc(ctx.L(item.text))}</p>
+      <p>${ctx.esc(policy(ctx.L(item.text)))}</p>
     </div>`;
     return `<div class="container">
       <section class="service reveal" aria-labelledby="service-heading">
-        <h2 id="service-heading">${ctx.esc(ctx.L(ctx.SET.serviceTitle))}</h2>
+        ${
+          siteSettingVisible(ctx.SET, "service_title")
+            ? `<h2 id="service-heading">${ctx.esc(siteText(ctx.SET, "service_title", ctx.R.lang) || ctx.L(ctx.SET.serviceTitle))}</h2>`
+            : ""
+        }
         <div class="service-grid">
           <div>${items.slice(0, 2).map(feature).join("")}</div>
           <img class="service-img" src="assets/img/service-phones.svg" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="150" height="150" loading="lazy" decoding="async">
@@ -255,7 +346,7 @@ export function install(ctx) {
     ];
     return `<section class="video-section reveal" aria-labelledby="video-heading">
       <div class="container">
-        <h2 id="video-heading">${ctx.esc(ctx.L(ctx.SET.trustTitle))}</h2>
+        ${siteSettingVisible(ctx.SET, "trusted_by") ? `<h2 id="video-heading">${ctx.esc(siteText(ctx.SET, "trusted_by", ctx.R.lang) || ctx.L(ctx.SET.trustTitle))}</h2>` : ""}
         <div class="video-panel">
           <div class="community">
             <h3>${ctx.esc(ctx.L(ctx.SET.communityTitle))}</h3>
@@ -287,8 +378,7 @@ export function install(ctx) {
         <div class="reviews-head">
           <h2 id="reviews-heading">${ctx.esc(ctx.L(ctx.SET.reviewsTitle))}</h2>
           <div class="reviews-meta">
-            <span>${ctx.esc(ctx.L(ctx.SET.trustTitle))}</span>
-            <span class="sep">|</span>
+            ${siteSettingVisible(ctx.SET, "trusted_by") ? `<span>${ctx.esc(siteText(ctx.SET, "trusted_by", ctx.R.lang) || ctx.L(ctx.SET.trustTitle))}</span><span class="sep">|</span>` : ""}
             <span>${ctx.esc(ctx.t("excellent"))}</span>
             <span class="tp-stars" aria-label="5 / 5">${[1, 2, 3, 4, 5].map(() => `<span class="tp-star" data-icon="star"></span>`).join("")}</span>
             <span class="tp-logo"><span class="mark" data-icon="star"></span>${ctx.esc(ctx.L(ctx.SET.storeName))}</span>
@@ -334,24 +424,28 @@ export function install(ctx) {
 
   const COL = { handle: "all", q: "", brand: "all", sale: false, sort: "featured", shown: 10, items: [] };
 
+  function collectionProducts(col) {
+    if (col && col.visible === false) return [];
+    if (COL.handle === "all") return ctx.PRODUCTS.slice();
+    return ctx.PRODUCTS.filter((p) => productInCollection(p, COL.handle));
+  }
+
+  function collectionTitle(col) {
+    if (COL.q) return `${ctx.t("searchResults")}: “${COL.q}”`;
+    const offersTitle = COL.handle === "special-offers" ? siteText(ctx.SET, "offers_label", ctx.R.lang) : "";
+    if (offersTitle) return offersTitle;
+    if (col) return ctx.L(col.title);
+    return COL.handle === "all" ? ctx.t("allProducts") : ctx.t("collection");
+  }
+
   function renderCollection() {
     const params = new URLSearchParams(location.search);
-    COL.handle = params.get("handle") || "all";
+    COL.handle = resolveCollectionHandle(params.get("handle") || "all");
     COL.q = (params.get("q") || "").trim();
-    const col = ctx.S.collections.find((c) => c.handle === COL.handle);
-    const list =
-      COL.handle === "all"
-        ? ctx.PRODUCTS.slice()
-        : ctx.PRODUCTS.filter((p) => (p.collections || []).includes(COL.handle));
+    const col = ctx.S.collections.find((c) => resolveCollectionHandle(c.handle) === COL.handle);
+    const list = collectionProducts(col);
     COL.items = COL.q ? list.filter((p) => ctx.R.matchesQuery(p, COL.q)) : list;
-
-    const title = COL.q
-      ? `${ctx.t("searchResults")}: “${COL.q}”`
-      : col
-        ? ctx.L(col.title)
-        : COL.handle === "all"
-          ? ctx.t("allProducts")
-          : ctx.t("collection");
+    const title = collectionTitle(col);
     document.title = `${title} | ${ctx.L(ctx.SET.storeName)}`;
     document.getElementById("col-title").textContent = title;
     document.getElementById("col-count").textContent =
@@ -395,7 +489,10 @@ export function install(ctx) {
     if (COL.sort === "price-asc") items.sort((a, b) => ctx.R.effectivePrice(a) - ctx.R.effectivePrice(b));
     else if (COL.sort === "price-desc") items.sort((a, b) => ctx.R.effectivePrice(b) - ctx.R.effectivePrice(a));
     else if (COL.sort === "discount") items.sort((a, b) => b.discount - a.discount);
-    else if (COL.sort === "title") items.sort((a, b) => a.title.localeCompare(b.title));
+    else if (COL.sort === "title") {
+      const locale = ctx.R.lang === "ar" ? "ar" : "fr";
+      items.sort((a, b) => String(ctx.L(a.title)).localeCompare(String(ctx.L(b.title)), locale));
+    }
 
     const grid = document.getElementById("col-grid");
     const shown = items.slice(0, COL.shown);

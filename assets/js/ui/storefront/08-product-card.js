@@ -43,6 +43,7 @@ export function install(ctx) {
         </div>
         <div class="swatches">${swatches}${more}</div>
         <div class="card-price">${ctx.money(p.price)} ${p.compare > p.price ? `<s>${ctx.money(p.compare)}</s>` : ""}</div>
+        <button class="btn btn-primary btn-block card-buy" type="button" data-card-add="${ctx.esc(p.handle)}" ${Number(p.stock) <= 0 ? "disabled" : ""}>${ctx.esc(Number(p.stock) <= 0 ? ctx.t("soldOut") : ctx.t("addToCart"))}</button>
       </article>`;
   }
   Object.assign(ctx, { CONDITION_LABELS, conditionLabel });

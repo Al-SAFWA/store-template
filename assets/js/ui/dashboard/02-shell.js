@@ -23,6 +23,7 @@ export function install(ctx) {
       label: { ar: "متجري", fr: "Ma boutique" },
       items: [
         { id: "store-info", icon: "home", ar: "بيانات متجري", fr: "Ma boutique" },
+        { id: "texts", icon: "content", ar: "النصوص والشارات", fr: "Textes et badges" },
         { id: "payments", icon: "payment", ar: "الدفع والتوصيل", fr: "Paiement & livraison" }
       ]
     },
@@ -93,6 +94,11 @@ export function install(ctx) {
       ar: "بيانات متجري",
       fr: "Ma boutique",
       sub: { ar: "الاسم، واتساب، العنوان، أوقات العمل", fr: "Nom, WhatsApp, adresse, horaires" }
+    },
+    texts: {
+      ar: "النصوص والشارات",
+      fr: "Textes et badges",
+      sub: { ar: "الإرجاع، بدون مخاطرة، مجدد، العروض", fr: "Retours, sans risque, reconditionné, offres" }
     },
     payments: {
       ar: "الدفع والتوصيل",
@@ -245,6 +251,7 @@ export function install(ctx) {
     pages: "viewPages",
     payments: "viewPayments",
     "store-info": "viewStoreInfo",
+    texts: "viewSiteTexts",
     team: "viewTeam",
     settings: "viewSettings",
     audit: "viewAudit",

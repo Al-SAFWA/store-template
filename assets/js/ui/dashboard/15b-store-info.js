@@ -4,6 +4,8 @@
    Texts. Every input is a `[data-path]` field, so it writes straight into the draft like the rest of the dashboard;
    the preview card at the bottom mirrors what the storefront footer / "open now" badge will show. */
 
+import { CHANNEL_DEFS, mergeChannels } from "../../domain/channels.js";
+
 const DAY_LABELS = [
   { ar: "أحد", fr: "Dim" },
   { ar: "إثنين", fr: "Lun" },
@@ -59,21 +61,45 @@ export function install(ctx) {
     </section>`;
   }
 
-  /** Step 2 — contact. WhatsApp is where orders arrive, so it comes first and says so. */
-  function stepContact() {
-    const s = S();
+  function channelValuePath(def) {
+    if (def.id === "whatsapp") return "settings.whatsapp";
+    if (def.id === "phone") return "settings.phoneDisplay";
+    if (def.id === "email") return "settings.email";
+    return `settings.channels.${def.id}.value`;
+  }
+
+  function channelValueNow(def, item) {
+    if (def.id === "whatsapp") return S().whatsapp;
+    if (def.id === "phone") return S().phoneDisplay;
+    if (def.id === "email") return S().email;
+    return item.value;
+  }
+
+  function stepChannels() {
+    const channels = mergeChannels(S(), window.BRAND || {});
+    S().channels = channels;
+    const row = (def) => {
+      const item = channels[def.id] || { value: "", visible: false };
+      const path = `settings.channels.${def.id}`;
+      const valueField =
+        def.kind === "i18n"
+          ? `${labelled(ctx.dt("عربي", "Arabe"), input(`${path}.value.ar`, item.value?.ar || "", { dir: "rtl" }))}
+             ${labelled("Français", input(`${path}.value.fr`, item.value?.fr || "", { dir: "ltr" }))}`
+          : labelled(
+              ctx.dt(def.ar, def.fr),
+              input(channelValuePath(def), channelValueNow(def, item) || "", {
+                dir: "ltr",
+                type: def.kind === "email" ? "email" : def.kind === "url" ? "url" : "text",
+                inputmode: def.kind === "phone" ? "tel" : "",
+                placeholder: def.kind === "url" ? "https://" : ""
+              })
+            );
+      return `<div class="si-channel">${ctx.directToggle(ctx.dt("إظهار", "Afficher"), `${path}.visible`, item.visible !== false)}${valueField}</div>`;
+    };
     return `<section class="pe-step">
-      <h4>${ctx.dt("التواصل", "Contact")}</h4>
-      ${labelled(
-        ctx.dt("رقم واتساب — تصل إليه الطلبات", "Numéro WhatsApp — reçoit les commandes"),
-        input("settings.whatsapp", s.whatsapp, { dir: "ltr", inputmode: "tel", placeholder: "22244123456" }),
-        ctx.dt(
-          "بصيغة دولية بدون + ولا مسافات، مثل 22244123456",
-          "Format international sans + ni espaces, ex. 22244123456"
-        )
-      )}
-      ${labelled(ctx.dt("الهاتف الذي يظهر للزبون", "Téléphone affiché au client"), input("settings.phoneDisplay", s.phoneDisplay, { dir: "ltr", inputmode: "tel", placeholder: "+222 44 12 34 56" }))}
-      ${labelled(ctx.dt("البريد الإلكتروني (اختياري)", "E-mail (optionnel)"), input("settings.email", s.email, { type: "email", dir: "ltr", placeholder: "contact@…" }))}
+      <h4>${ctx.dt("حسابات التواصل", "Comptes de contact")}</h4>
+      <p class="form-note">${ctx.dt("الحساب الفارغ أو المخفي لا يظهر في الفوتر ولا في زر الطلب.", "Un compte vide ou masqué n’apparaît ni dans le pied de page ni sur le bouton de commande.")}</p>
+      ${CHANNEL_DEFS.map(row).join("")}
     </section>`;
   }
 
@@ -144,7 +170,7 @@ export function install(ctx) {
       </div>
       <div class="pe si">
         ${stepIdentity()}
-        ${stepContact()}
+        ${stepChannels()}
         ${stepAddress()}
         ${stepHours()}
         ${storeInfoPreviewHTML()}

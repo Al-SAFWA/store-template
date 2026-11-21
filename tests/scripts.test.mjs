@@ -67,7 +67,7 @@ test("new-client output: ALL_IN_ONE.sql = schema + every migration + seed, in or
     idx,
     [...idx].sort((a, b) => a - b)
   );
-  assert.equal((sql.match(/insert into public\.restore_products \(/g) || []).length, 21);
+  assert.equal((sql.match(/insert into public\.restore_products \(/g) || []).length, 51);
 });
 test("new-client output contains no secrets and no template brand leaks", () => {
   assert.ok(

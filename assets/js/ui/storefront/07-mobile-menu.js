@@ -16,7 +16,12 @@ export function install(ctx) {
           <button class="drawer-close" type="button" data-close-menu aria-label="${ctx.esc(ctx.t("close"))}">${ctx.ICON.close}</button>
         </div>
         <nav class="menu-links" aria-label="Mobile">
-          ${ctx.NAV.map((n) => `<a href="${ctx.esc(ctx.R.safeHref(n.href))}">${ctx.esc(ctx.L(n.label))}${n.flame ? '<span class="flame" data-icon="flame" aria-hidden="true"></span>' : ""}</a>`).join("")}
+          ${(ctx.navItems ? ctx.navItems() : ctx.NAV || [])
+            .map(
+              (n) =>
+                `<a href="${ctx.esc(ctx.R.safeHref(n.href))}">${ctx.esc(ctx.L(n.label))}${n.flame ? '<span class="flame" data-icon="flame" aria-hidden="true"></span>' : ""}</a>`
+            )
+            .join("")}
         </nav>
         <div class="menu-extra">
           <a href="account.html">${ctx.ICON.user} ${ctx.esc(ctx.t("myAccount"))}</a>

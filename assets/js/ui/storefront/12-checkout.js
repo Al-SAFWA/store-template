@@ -2,6 +2,7 @@
 /* app.js → Checkout
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js).
    The markup lives in 12a-checkout-markup.js and the pure rules in 12b-checkout-flow.js. */
+import { whatsappDigits } from "../../domain/channels.js";
 import { computeTotals, couponDiscount } from "../../domain/pricing.js";
 import { checkoutPageHTML, checkoutSuccessHTML, emptyCheckoutHTML, noPaymentHTML } from "./12a-checkout-markup.js";
 import {
@@ -164,13 +165,13 @@ export function install(ctx) {
     /** Persists the confirmed order through the existing service paths and paints the success screen. */
     function finalizeOrder(draft, phone, form, order) {
       const built = buildOrderMessage(ctx, order, draft, form);
-      if (!whatsappNumber(ctx.SET.whatsapp)) {
+      if (!whatsappNumber(whatsappDigits(ctx.SET))) {
         ctx.toast(
           ctx.R.lang === "ar" ? "أضف رقم واتساب من لوحة التحكم" : "Ajoutez le WhatsApp depuis le tableau de bord"
         );
         return;
       }
-      const link = whatsappLink(ctx.SET.whatsapp, built.message);
+      const link = whatsappLink(whatsappDigits(ctx.SET), built.message);
       if (order.whatsappUrl !== link && typeof ctx.R.updateOrder === "function")
         ctx.R.updateOrder(order.id, { whatsappUrl: link, message: built.message });
 
@@ -185,9 +186,27 @@ export function install(ctx) {
       }, 1100);
     }
 
+    function clearFieldErrors() {
+      root.querySelectorAll(".field.has-error").forEach((node) => {
+        node.classList.remove("has-error");
+        const err = node.querySelector(".field-error");
+        if (err) err.textContent = "";
+      });
+    }
+
     function rejectOrder(verdict) {
-      ctx.toast(ctx.t(verdict.code));
-      if (verdict.focus) $(verdict.focus)?.focus();
+      clearFieldErrors();
+      const message = ctx.t(verdict.code);
+      ctx.toast(message);
+      if (!verdict.focus) return;
+      const input = $(verdict.focus);
+      const field = input?.closest(".field");
+      if (field) {
+        field.classList.add("has-error");
+        const err = field.querySelector(".field-error");
+        if (err) err.textContent = message;
+      }
+      input?.focus();
     }
 
     function restoreButton(btn) {

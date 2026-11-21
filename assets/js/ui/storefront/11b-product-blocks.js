@@ -1,6 +1,7 @@
 // @ts-check
 /* app.js → Product page markup blocks (extracted verbatim from renderProduct)
    Pure template builders: each takes the data it needs and returns an HTML string. No DOM access. */
+import { applyReturnDays } from "../../domain/store-policies.js";
 
 /**
  * Gallery: main image, colour tint layer and the thumbnail strip.
@@ -30,7 +31,7 @@ export function productExtraHTML(ctx, p, reviews, productRating) {
         <section class="product-faq reveal" aria-labelledby="faq-heading">
           <div class="section-head"><h2 id="faq-heading">${ctx.esc(ctx.t("faqs"))}</h2></div>
           <div class="accordion faq-accordion">
-            ${(ctx.S.faqs || ctx.SET.faqs || []).map((faq) => `<details><summary>${ctx.esc(ctx.L(faq.q))}</summary><div class="acc-body"><p>${ctx.esc(ctx.L(faq.a))}</p></div></details>`).join("")}
+            ${(ctx.S.faqs || ctx.SET.faqs || []).map((faq) => `<details><summary>${ctx.esc(ctx.L(faq.q))}</summary><div class="acc-body"><p>${ctx.esc(applyReturnDays(ctx.L(faq.a), ctx.SET.returnDays))}</p></div></details>`).join("")}
           </div>
         </section>
         <section class="product-reviews reveal" aria-labelledby="product-reviews-heading">

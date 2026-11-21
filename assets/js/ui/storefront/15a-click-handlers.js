@@ -191,6 +191,17 @@ function addToCartAndOpen(ctx) {
   if (addToCart(ctx)) ctx.openCart();
 }
 
+function addCardToCart(ctx, e, el) {
+  e.preventDefault();
+  e.stopPropagation();
+  const handle = el.dataset.cardAdd;
+  const product = ctx.BY_HANDLE?.get(handle);
+  if (!product || Number(product.stock) <= 0) return;
+  const variant = product.variants?.[0];
+  ctx.addToCart(handle, variant ? variant.id : handle, 1, {});
+  ctx.openCart();
+}
+
 function buyNow(ctx) {
   if (addToCart(ctx)) location.href = "checkout.html";
 }
@@ -320,6 +331,7 @@ export function buildClickHandlers(ctx) {
     { match: (e) => pick(e, "[data-scroll]"), run: (e, el) => scrollTrack(e, el) },
     { match: (e) => pick(e, "[data-close-search]"), run: () => ctx.closeSearch() },
     { match: (e) => pick(e, "[data-close-cart]"), run: () => ctx.closeCart() },
+    { match: (e) => pick(e, "[data-card-add]"), run: (e, el) => addCardToCart(ctx, e, el) },
     { match: (e) => pick(e, "[data-add-cart]"), run: () => addToCartAndOpen(ctx) },
     { match: (e) => pick(e, "[data-buy-now]"), run: () => buyNow(ctx) },
     { match: (e) => pick(e, "[data-opt]"), run: (e, el) => pickOption(ctx, e, el) },

@@ -76,7 +76,8 @@ for (const f of [
   "migrations/0005_fix_create_order_v2.sql",
   "migrations/0006_stock_bumps_catalog.sql",
   "migrations/0007_security_hardening.sql",
-  "migrations/0008_restock_on_cancel.sql"
+  "migrations/0008_restock_on_cancel.sql",
+  "migrations/0009_site_settings.sql"
 ]) {
   await run(
     "apply " + f,

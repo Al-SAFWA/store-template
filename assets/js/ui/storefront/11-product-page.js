@@ -2,6 +2,8 @@
 /* app.js → Product page
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 import { createProductsRepo } from "../../data/repositories/products.repo.js";
+import { whatsappDigits } from "../../domain/channels.js";
+import { isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
 import { mapRepoProduct } from "./11a-product-mappers.js";
 import { galleryHTML, productExtraHTML, productNotFoundHTML, relatedHTML } from "./11b-product-blocks.js";
 
@@ -238,8 +240,8 @@ export function install(ctx) {
     const label = soldOut ? ctx.esc(ctx.t("soldOut")) : ctx.esc(ctx.t("addToCart"));
     const disabled = soldOut ? "disabled" : "";
     return `<div class="product-actions">
-          <button class="btn btn-primary" type="button" data-add-cart ${disabled}>${label}</button>
-          <button class="btn btn-dark" type="button" data-buy-now ${disabled}>${ctx.esc(ctx.t("buyNow"))}</button>
+          <button class="btn btn-primary btn-block" type="button" data-add-cart ${disabled}>${label}</button>
+          <button class="btn btn-dark btn-block" type="button" data-buy-now ${disabled}>${ctx.esc(ctx.t("buyNow"))}</button>
         </div>`;
   }
 
@@ -273,10 +275,16 @@ export function install(ctx) {
         ? "نواكشوط: توصيل مجاني · باقي المدن: رسوم حسب الولاية."
         : "Nouakchott : livraison offerte · Autres villes : frais selon la wilaya."
     );
+    const returnsOn = isReturnEnabled(ctx.SET);
+    const returnsBit = returnsOn ? returnLabel(ctx.SET, ctx.R.lang) : "";
     const warranty = ctx.esc(
       ctx.R.lang === "ar"
-        ? "ضمان 12 شهرًا يغطي الأعطال التقنية، وإرجاع خلال 10 أيام في حال وجود مشكلة."
-        : "Garantie 12 mois couvrant les pannes techniques et retour sous 10 jours en cas de problème."
+        ? returnsOn
+          ? `ضمان 12 شهرًا يغطي الأعطال التقنية، و${returnsBit} في حال وجود مشكلة.`
+          : "ضمان 12 شهرًا يغطي الأعطال التقنية."
+        : returnsOn
+          ? `Garantie 12 mois couvrant les pannes techniques et ${returnsBit.toLowerCase()} en cas de problème.`
+          : "Garantie 12 mois couvrant les pannes techniques."
     );
     return `<div class="accordion">
           <details open><summary>${ctx.esc(ctx.t("description"))}</summary><div class="acc-body"><p>${ctx.esc(ctx.L(p.description))}</p><p class="muted">${ctx.esc(ctx.L(ctx.SET.originalDevice))} · ${ctx.esc(ctx.t("warrantyMonths", { months: p.warrantyMonths || 12 }))}</p></div></details>
@@ -327,7 +335,11 @@ export function install(ctx) {
           <button type="button" data-qty="1" aria-label="+">+</button>
         </div>
         ${pdpActionsHTML(soldOut)}
-        <a class="whatsapp-order" href="https://wa.me/${ctx.esc(ctx.SET.whatsapp)}?text=${encodeURIComponent(whatsappQuestion(p, v))}" target="_blank" rel="noopener">${ctx.ICON.whatsapp} ${ctx.esc(ctx.t("orderWhatsApp"))}</a>
+        ${
+          whatsappDigits(ctx.SET)
+            ? `<a class="whatsapp-order" href="https://wa.me/${ctx.esc(whatsappDigits(ctx.SET))}?text=${encodeURIComponent(whatsappQuestion(p, v))}" target="_blank" rel="noopener">${ctx.ICON.whatsapp} ${ctx.esc(ctx.t("orderWhatsApp"))}</a>`
+            : ""
+        }
         ${pdpTrustHTML(p)}
         ${pdpIncludedHTML(p)}
         ${pdpAccordionHTML(p)}

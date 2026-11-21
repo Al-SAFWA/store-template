@@ -32,6 +32,7 @@ export function install(ctx) {
       reviewsTable: "restore_reviews",
       pagesTable: "restore_pages",
       staffTable: "restore_staff",
+      siteSettingsTable: "site_settings",
       mediaBucket: "restore-media",
       createStaffFunction: "admin-create-staff",
       pollMs: 5000

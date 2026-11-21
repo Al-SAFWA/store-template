@@ -2,6 +2,7 @@
 /* app.js → Checkout markup builders (extracted verbatim from 12-checkout.js)
    Pure functions of the passed data: no DOM access, no event wiring, no side effects. Keeping the templates
    here lets 12-checkout.js stay under the complexity and size budgets, and lets tests render the markup in jsdom. */
+import { whatsappDigits } from "../../domain/channels.js";
 
 /** @param {any} ctx @param {any} data */
 export function checkoutPageHTML(ctx, data) {
@@ -19,8 +20,8 @@ export function checkoutPageHTML(ctx, data) {
             <section class="checkout-block">
               <div class="checkout-block-head"><span>1</span><h2>${ctx.esc(ctx.t("contactInfo"))}</h2></div>
               <div class="field-row">
-                <div class="field"><label for="co-name">${ctx.esc(ctx.t("fullName"))} *</label><input id="co-name" autocomplete="name" required></div>
-                <div class="field"><label for="co-phone">${ctx.esc(ctx.t("phone"))} *</label><div class="phone-input"><span>+222</span><input id="co-phone" inputmode="tel" autocomplete="tel" placeholder="46 00 00 00" maxlength="14" required></div></div>
+                <div class="field"><label for="co-name">${ctx.esc(ctx.t("fullName"))} *</label><input id="co-name" autocomplete="name" required><p class="field-error" id="err-co-name"></p></div>
+                <div class="field"><label for="co-phone">${ctx.esc(ctx.t("phone"))} *</label><div class="phone-input"><span>+222</span><input id="co-phone" inputmode="tel" autocomplete="tel" placeholder="46 00 00 00" maxlength="14" required></div><p class="field-error" id="err-co-phone"></p></div>
               </div>
               <div class="field"><label for="co-email">${ctx.esc(ctx.t("email"))}</label><input id="co-email" type="email" autocomplete="email" placeholder="you@example.com"></div>
             </section>
@@ -30,7 +31,7 @@ export function checkoutPageHTML(ctx, data) {
                 <div class="field"><label for="co-city">${ctx.esc(ctx.t("city"))} *</label><select id="co-city">${cities.map((city) => `<option value="${ctx.esc(city.id)}" ${city.id === defaultCity?.id ? "selected" : ""}>${ctx.esc(ctx.L(city.name))} — ${Number(city.fee) ? ctx.money(city.fee) : ctx.t("free")}</option>`).join("")}</select></div>
                 <div class="field"><label>${ctx.esc(ctx.t("country"))}</label><div class="country-readonly"><img src="${ctx.SET.country.flag}" alt="" width="22" height="15">${ctx.esc(ctx.L(ctx.SET.country.name))}</div></div>
               </div>
-              <div class="field"><label for="co-address">${ctx.esc(ctx.t("address"))} *</label><input id="co-address" autocomplete="street-address" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "الحي، الشارع، رقم المنزل" : "Quartier, rue, numéro")}" required></div>
+              <div class="field"><label for="co-address">${ctx.esc(ctx.t("address"))} *</label><input id="co-address" autocomplete="street-address" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "الحي، الشارع، رقم المنزل" : "Quartier, rue, numéro")}" required><p class="field-error" id="err-co-address"></p></div>
               <div class="field"><label for="co-notes">${ctx.esc(ctx.t("notes"))}</label><textarea id="co-notes" rows="3" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "أي تفاصيل إضافية عن الطلب" : "Toute précision utile")}"></textarea></div>
               <p class="field-note">${ctx.ICON.truck} ${ctx.esc(ctx.L(ctx.SET.shippingNote))}</p>
             </section>
@@ -70,7 +71,7 @@ export function checkoutPageHTML(ctx, data) {
                 .map(
                   (it) => `<div class="sum-item">
                 <img src="${it.product.image}" alt="${ctx.esc(it.product.title)}" width="64" height="64" decoding="async">
-                <div><div class="t">${ctx.esc(it.product.title)}</div><div class="p">${ctx.esc(ctx.variantLabel(it.variant))}${it.specs && Object.keys(it.specs).length ? ` · ${ctx.esc(ctx.specsText(it.specs))}` : ""} × ${it.qty}</div><strong>${ctx.money(it.line)}</strong></div>
+                <div><div class="t">${ctx.esc(ctx.L(it.product.title))}</div><div class="p">${ctx.esc(ctx.variantLabel(it.variant))}${it.specs && Object.keys(it.specs).length ? ` · ${ctx.esc(ctx.specsText(it.specs))}` : ""} × ${it.qty}</div><strong>${ctx.money(it.line)}</strong></div>
               </div>`
                 )
                 .join("")}
@@ -85,7 +86,11 @@ export function checkoutPageHTML(ctx, data) {
             <button class="btn btn-primary btn-block btn-whatsapp" type="button" id="place-order" ${!open ? "disabled" : ""}>${ctx.ICON.whatsapp} ${ctx.esc(!open ? ctx.t("closedTitle") : ctx.t("placeOrder"))}</button>
             <p class="checkout-redirect-note">${ctx.esc(ctx.t("redirecting"))}</p>
             <div class="accepted-pay">${payments.map((payment) => `<span class="u-pay-rail" data-sv="pay:${ctx.esc(payment.color)}">${ctx.esc(ctx.L(payment.name))}</span>`).join("")}</div>
-            <div class="summary-help">${ctx.ICON.whatsapp}<span>${ctx.esc(ctx.t("contactUs"))}: <a class="phone-ltr" href="https://wa.me/${ctx.esc(ctx.SET.whatsapp)}" target="_blank" rel="noopener">${ctx.esc(ctx.SET.phoneDisplay)}</a></span></div>
+            ${
+              whatsappDigits(ctx.SET)
+                ? `<div class="summary-help">${ctx.ICON.whatsapp}<span>${ctx.esc(ctx.t("contactUs"))}: <a class="phone-ltr" href="https://wa.me/${ctx.esc(whatsappDigits(ctx.SET))}" target="_blank" rel="noopener">${ctx.esc(ctx.SET.phoneDisplay || whatsappDigits(ctx.SET))}</a></span></div>`
+                : ""
+            }
           </aside>
         </div>
       </div>`;

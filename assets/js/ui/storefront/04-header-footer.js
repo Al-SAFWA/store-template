@@ -2,10 +2,22 @@
 /* app.js → Header & footer
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 
+import { collectionHandleFromHref, isCollectionVisible } from "../../domain/collection-aliases.js";
+import { visibleChannel, whatsappDigits } from "../../domain/channels.js";
+import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
+
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
-  Object.assign(ctx, { renderHeader, renderCustomerAccount, renderFooter });
-  const NAV = (ctx.SET.navigation || []).filter((n) => n.visible !== false);
+  Object.assign(ctx, { renderHeader, renderCustomerAccount, renderFooter, navItems });
+
+  function navItems() {
+    return (ctx.SET.navigation || []).filter((item) => {
+      if (item.visible === false) return false;
+      const handle = collectionHandleFromHref(item.href);
+      if (!handle || handle === "all") return true;
+      return isCollectionVisible(ctx.S.collections, handle);
+    });
+  }
 
   const currencyLabel = () => {
     const lang = ctx.R.lang;
@@ -55,7 +67,14 @@ export function install(ctx) {
     const closed = !ctx.R.isStoreOpen();
     el.className = "site-header";
     el.innerHTML = `
-      <div class="announcement ${closed ? "is-closed" : ""} announce-slide"><span>${ctx.esc(closed ? ctx.t("storeClosed") : ctx.L(ctx.SET.announcement))}</span></div>
+      ${
+        closed
+          ? `<div class="announcement is-closed"><span>${ctx.esc(ctx.t("storeClosed"))}</span></div>`
+          : siteSettingVisible(ctx.SET, "announcement")
+            ? `<div class="announcement" aria-label="${ctx.esc(siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement))}"><div class="announce-track"><span>${ctx.esc(siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement))}</span><span aria-hidden="true">${ctx.esc(siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement))}</span></div></div>`
+            : ""
+      }
+      }
       <div class="container header-top">
         <button class="menu-btn" type="button" data-open-menu aria-label="${ctx.esc(ctx.t("menu"))}">${ctx.ICON.menu}</button>
         <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.SET.logo}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="420" height="96" decoding="async"></a>
@@ -75,7 +94,7 @@ export function install(ctx) {
       </div>
       <nav class="main-nav" aria-label="Main">
         <div class="container nav-inner">
-          ${NAV.map(navItemHTML).join("")}
+          ${navItems().map(navItemHTML).join("")}
         </div>
         <button class="nav-scroll" type="button" aria-label="${ctx.esc(ctx.t("seeAll"))}"><span data-icon="chevronRight" aria-hidden="true"></span></button>
       </nav>`;
@@ -202,9 +221,26 @@ export function install(ctx) {
             <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.SET.logoWhite}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="420" height="96" decoding="async"></a>
             <div class="footer-contact">
               <h4>${ctx.esc(ctx.t("contactUs"))}</h4>
-              <div class="row"><span>${ctx.ICON.mapPin} ${ctx.SET.mapUrl ? `<a href="${ctx.esc(ctx.SET.mapUrl)}" target="_blank" rel="noopener">${ctx.esc(ctx.L(ctx.SET.address))}</a>` : ctx.esc(ctx.L(ctx.SET.address))}</span></div>
-              <div class="row"><span>${ctx.ICON.whatsapp} <a href="https://wa.me/${ctx.esc(ctx.SET.whatsapp)}" target="_blank" rel="noopener" dir="ltr">${ctx.esc(ctx.SET.phoneDisplay)}</a></span><span>${ctx.esc(ctx.t("replyWithin"))}</span></div>
-              <div class="row"><span>${ctx.ICON.mail} <a href="mailto:${ctx.esc(ctx.SET.email)}">${ctx.esc(ctx.SET.email)}</a></span></div>
+              ${
+                visibleChannel(ctx.SET, "address")
+                  ? `<div class="row"><span>${ctx.ICON.mapPin} ${ctx.SET.mapUrl ? `<a href="${ctx.esc(ctx.SET.mapUrl)}" target="_blank" rel="noopener">${ctx.esc(ctx.L(ctx.SET.address))}</a>` : ctx.esc(ctx.L(ctx.SET.address))}</span></div>`
+                  : ""
+              }
+              ${
+                whatsappDigits(ctx.SET)
+                  ? `<div class="row"><span>${ctx.ICON.whatsapp} <a href="https://wa.me/${ctx.esc(whatsappDigits(ctx.SET))}" target="_blank" rel="noopener" dir="ltr">${ctx.esc(ctx.SET.phoneDisplay || whatsappDigits(ctx.SET))}</a></span><span>${ctx.esc(ctx.t("replyWithin"))}</span></div>`
+                  : ""
+              }
+              ${
+                visibleChannel(ctx.SET, "phone")
+                  ? `<div class="row"><span>${ctx.ICON.phone} <a href="tel:${ctx.esc(String(visibleChannel(ctx.SET, "phone").value).replace(/\s+/g, ""))}" dir="ltr">${ctx.esc(visibleChannel(ctx.SET, "phone").value)}</a></span></div>`
+                  : ""
+              }
+              ${
+                visibleChannel(ctx.SET, "email")
+                  ? `<div class="row"><span>${ctx.ICON.mail} <a href="mailto:${ctx.esc(ctx.SET.email)}">${ctx.esc(ctx.SET.email)}</a></span></div>`
+                  : ""
+              }
               <div class="row"><span>${ctx.ICON.clock} ${ctx.esc(hoursText())}</span></div>
             </div>
             <div class="footer-pay" aria-label="${ctx.esc(ctx.t("paymentMethods"))}">
@@ -252,5 +288,4 @@ export function install(ctx) {
     });
     ctx.hydrateIcons(el);
   }
-  Object.assign(ctx, { NAV });
 }

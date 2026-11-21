@@ -40,8 +40,10 @@ test("validateCheckout: missing name, phone and address are reported in order wi
   assert.equal(firstMissingField(FORM), "");
   const verdict = validateCheckout({ ...OK, form: { ...FORM, address: "" } });
   assert.equal(verdict.ok, false);
-  assert.equal(verdict.code, "required");
+  assert.equal(verdict.code, "requiredAddress");
   assert.equal(verdict.focus, "co-address");
+  assert.equal(validateCheckout({ ...OK, form: { ...FORM, name: "" } }).code, "requiredName");
+  assert.equal(validateCheckout({ ...OK, form: { ...FORM, phone: "" } }).code, "requiredPhone");
 });
 
 test("validateCheckout: a phone that is not 8 digits is rejected and refocused on the phone field", () => {
@@ -171,7 +173,9 @@ test("buildOrderMessage: renders the store template with order values", () => {
   assert.equal(payName, "Bankily");
   assert.match(message, /Bonjour Ma boutique/);
   assert.match(message, /#RS-1 Aicha \+22246000000/);
-  assert.match(message, /× 2 = 2400 MRU/);
+  assert.match(message, /Aicha/, "customer name is in the WhatsApp message");
+  assert.match(message, /Phone X/, "product name is in the WhatsApp message");
+  assert.match(message, /× 2 = 2400 MRU/, "quantity and line price are in the WhatsApp message");
   assert.match(message, /Total 2500 MRU/);
   assert.doesNotMatch(message, /\{[a-z_]+\}/, "no placeholder may survive");
 });

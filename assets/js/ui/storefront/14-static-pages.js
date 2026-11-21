@@ -1,10 +1,29 @@
 // @ts-check
 /* app.js → Static pages
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
+import { visibleChannel, whatsappDigits } from "../../domain/channels.js";
+import { applyReturnDays } from "../../domain/store-policies.js";
 
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { renderPage, renderAccount });
+
+  function contactActionsHTML() {
+    const wa = whatsappDigits(ctx.SET);
+    const email = visibleChannel(ctx.SET, "email");
+    return `<div class="page-contact-actions">
+      ${wa ? `<a class="btn btn-primary" href="https://wa.me/${ctx.esc(wa)}" target="_blank" rel="noopener">${ctx.ICON.whatsapp} ${ctx.esc(ctx.t("orderWhatsApp"))}</a>` : ""}
+      ${email ? `<a class="btn btn-outline" href="mailto:${ctx.esc(ctx.SET.email)}">${ctx.ICON.mail} ${ctx.esc(ctx.SET.email)}</a>` : ""}
+    </div>`;
+  }
+
+  function pagePhoneHTML() {
+    const phone = visibleChannel(ctx.SET, "phone");
+    const shown = phone?.value || (whatsappDigits(ctx.SET) ? ctx.SET.phoneDisplay || whatsappDigits(ctx.SET) : "");
+    if (!shown) return "";
+    return ` · <span class="phone-ltr">${ctx.esc(shown)}</span>`;
+  }
+
   function renderPage() {
     const slug = new URLSearchParams(location.search).get("slug") || "about-us";
     const page = ctx.R.getPage(slug);
@@ -24,20 +43,14 @@ export function install(ctx) {
       metaDescription.setAttribute("content", ctx.L(page.seoDescription) || String(ctx.L(page.body)).slice(0, 160));
     if (crumb)
       crumb.innerHTML = `<a href="index.html">${ctx.esc(ctx.t("homeCrumb"))}</a><span>/</span><span>${ctx.esc(ctx.L(page.title))}</span>`;
-    const paragraphs = String(ctx.L(page.body))
+    const paragraphs = String(applyReturnDays(ctx.L(page.body), ctx.SET.returnDays))
       .split("\n")
       .filter(Boolean)
       .map((line) => `<p>${ctx.esc(line)}</p>`)
       .join("");
-    const contact =
-      slug === "contact"
-        ? `<div class="page-contact-actions">
-      <a class="btn btn-primary" href="https://wa.me/${ctx.esc(ctx.SET.whatsapp)}" target="_blank" rel="noopener">${ctx.ICON.whatsapp} ${ctx.esc(ctx.t("orderWhatsApp"))}</a>
-      <a class="btn btn-outline" href="mailto:${ctx.esc(ctx.SET.email)}">${ctx.ICON.mail} ${ctx.esc(ctx.SET.email)}</a>
-    </div>`
-        : "";
+    const contact = slug === "contact" ? contactActionsHTML() : "";
     root.innerHTML = `<span class="eyebrow">${ctx.esc(ctx.L(ctx.SET.storeName))}</span><h1>${ctx.esc(ctx.L(page.title))}</h1>${paragraphs}${contact}
-      <p class="page-meta">${ctx.esc(ctx.L(ctx.SET.city))}, ${ctx.esc(ctx.L(ctx.SET.country.name))} · <span class="phone-ltr">${ctx.esc(ctx.SET.phoneDisplay)}</span></p>`;
+      <p class="page-meta">${ctx.esc(ctx.L(ctx.SET.city))}, ${ctx.esc(ctx.L(ctx.SET.country.name))}${pagePhoneHTML()}</p>`;
     ctx.observeReveals();
   }
 

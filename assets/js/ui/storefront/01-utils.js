@@ -112,7 +112,14 @@ export function install(ctx) {
     creditCard: svg('<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/>'),
     download: svg('<path d="M12 3v12M7 10l5 5 5-5M4 20h16"/>'),
     chevronUp: svg('<path d="M6 15l6-6 6 6"/>'),
-    logout: svg('<path d="M4 9h10a5 5 0 0 1 0 10H8"/><path d="M8 5L4 9l4 4"/>')
+    logout: svg('<path d="M4 9h10a5 5 0 0 1 0 10H8"/><path d="M8 5L4 9l4 4"/>'),
+    phone: svg(
+      '<path d="M7 3.5h3l1 4.2-2.1 1.2a12 12 0 0 0 5.2 5.2l1.2-2.1 4.2 1v3A2.2 2.2 0 0 1 17.3 18 15.5 15.5 0 0 1 6 6.7 2.2 2.2 0 0 1 7 3.5z"/>'
+    ),
+    snapchat: svg(
+      '<path d="M12 3.2c2.8 0 5 2 5 5.2 0 2-.6 3.1.7 4.2.5.4.3 1.1-.4 1.2-1.1.2-1.9.8-1.9 1.6 0 1.1 1.5 1.9 3 2.1.4 0 .6.5.4.8C18.2 19.6 15.4 20.2 12 20.2S5.8 19.6 5.2 18.3c-.2-.3 0-.8.4-.8 1.5-.2 3-1 3-2.1 0-.8-.8-1.4-1.9-1.6-.7-.1-.9-.8-.4-1.2 1.3-1.1.7-2.2.7-4.2 0-3.2 2.2-5.2 5-5.2z"/>',
+      true
+    )
   };
 
   function hydrateIcons(root = document) {

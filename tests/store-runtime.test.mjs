@@ -6,8 +6,8 @@ import { bootStorefront, ROOT } from "./helpers/boot.mjs";
 
 const { R, window: w } = await bootStorefront(ROOT);
 
-test("boot: demo catalog hydrated with 21 active products and bilingual titles", () => {
-  assert.equal(R.state.products.length, 21);
+test("boot: demo catalog hydrated with 51 active products and bilingual titles", () => {
+  assert.equal(R.state.products.length, 51);
   assert.ok(R.state.products.every((p) => p.active && p.price > 0 && p.price % 5 === 0));
   assert.ok(R.state.collections.length >= 10);
 });

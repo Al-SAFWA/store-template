@@ -199,7 +199,7 @@ export function createProductBuilders(ctx) {
   function buildProduct(raw, index) {
     const seed = hashHandle(raw.handle);
     const p = priceProduct(raw);
-    const stock = 2 + (seed % 17);
+    const stock = Number.isFinite(Number(raw.stock)) ? Math.max(0, Number(raw.stock)) : 2 + (seed % 17);
     const battery = p.type === "Smartphone" ? Math.min(100, 84 + (seed % 16)) : null;
     return {
       ...p,
@@ -211,7 +211,7 @@ export function createProductBuilders(ctx) {
       active: true,
       battery,
       condition: defaultCondition(p),
-      description: productDescriptions(p.type),
+      description: raw.description || productDescriptions(p.type),
       includes: includesFor(p),
       specs: specsFor(p, battery || 92),
       colorImages: colorImageMap(p),

@@ -266,12 +266,193 @@ const P = [
     400,
     ["accessories", "special-offers"],
     [{ name: "Model", values: ["Pro", "Lite"] }]
+  ),
+  mk(
+    "demo-phone-plus",
+    "Demo Phone Plus",
+    "Smartphone",
+    "Demo Mobile",
+    8500,
+    11200,
+    ["phones"],
+    [{ name: "Storage", values: ["128 GB"] }],
+    [{ name: "Black", hex: "#111827" }]
+  ),
+  mk(
+    "demo-laptop-office",
+    "Demo Office Laptop",
+    "Laptop",
+    "Demo Computers",
+    14500,
+    18900,
+    ["laptops"],
+    [{ name: "RAM", values: ["8 GB", "16 GB"] }]
+  ),
+  mk(
+    "demo-earbuds-pro",
+    "Demo Earbuds Pro",
+    "Audio",
+    "Demo Audio",
+    2200,
+    2900,
+    ["audio"],
+    [{ name: "Color", values: ["White", "Black"] }],
+    [
+      { name: "White", hex: "#f8fafc" },
+      { name: "Black", hex: "#111827" }
+    ]
+  ),
+  mk(
+    "demo-watch-sport",
+    "Demo Sport Watch",
+    "Watch",
+    "Demo Wear",
+    3800,
+    4900,
+    ["watches"],
+    [{ name: "Size", values: ["41 mm", "45 mm"] }]
+  ),
+  mk(
+    "demo-tablet-pro",
+    "Demo Tablet Pro",
+    "Tablets",
+    "Demo Tablets",
+    9200,
+    11900,
+    ["tablets"],
+    [{ name: "Storage", values: ["128 GB"] }]
   )
 ];
+const BATCH_25 = [
+  {
+    cat: "special-offers",
+    type: "Smartphone",
+    vendor: "Demo Offers",
+    prefix: "offer",
+    ar: "عرض",
+    fr: "Offre",
+    base: 4900
+  },
+  {
+    cat: "phones",
+    type: "Smartphone",
+    vendor: "Demo Mobile",
+    prefix: "phone",
+    ar: "هاتف",
+    fr: "Téléphone",
+    base: 7200
+  },
+  {
+    cat: "android",
+    type: "Smartphone",
+    vendor: "Demo Android",
+    prefix: "android",
+    ar: "أندرويد",
+    fr: "Android",
+    base: 6800
+  },
+  {
+    cat: "macbooks",
+    type: "Laptop",
+    vendor: "Demo Computers",
+    prefix: "creator",
+    ar: "حاسوب مبدع",
+    fr: "Portable créatif",
+    base: 15800
+  },
+  {
+    cat: "laptops",
+    type: "Laptop",
+    vendor: "Demo Computers",
+    prefix: "laptop",
+    ar: "حاسوب محمول",
+    fr: "Ordinateur portable",
+    base: 11200
+  }
+];
+const BATCH_AR = [
+  "جهاز تجريبي كامل الحقول: اسم وسعر ووصف عربي وصورة ومخزون، للاستخدام في العرض فقط.",
+  "منتج تجريبي مفحوص، مناسب للتجربة في نواكشوط، مع وصف عربي واضح ومخزون محدد.",
+  "عينة كتالوج بدون علامات تجارية محمية: أداء يومي وسعر بالأوقية وصورة بديلة.",
+  "جهاز عرض للوحة التحكم والمتجر، يُستبدل لاحقاً بمنتجك الحقيقي من لوحة التحكم.",
+  "وحدة تجريبية للتأكد من فلترة الفئة والسلة والطلب، مع مخزون وصورة SVG حرة."
+];
+const BATCH_FR = [
+  "Produit démo complet : nom, prix, description arabe, image et stock — à remplacer.",
+  "Article de démonstration contrôlé, pour Nouakchott, avec stock et visuel libre de droits.",
+  "Entrée catalogue sans marque protégée, prix en ouguiya et image SVG.",
+  "Échantillon pour le tableau de bord et la boutique, à remplacer par vos vrais produits.",
+  "Unité de test pour le filtre catégorie, le panier et la commande."
+];
+for (const group of BATCH_25) {
+  for (let i = 1; i <= 5; i++) {
+    const handle = `demo-${group.prefix}-${i}`;
+    const price = group.base + i * 350;
+    P.push(
+      mk(
+        handle,
+        `${group.ar} ${i}`,
+        group.type,
+        group.vendor,
+        price,
+        price + 1800,
+        [group.cat],
+        [{ name: "Condition", values: ["Excellent"] }]
+      )
+    );
+  }
+}
+const DEMO_EXTRAS = {
+  "demo-phone-plus": {
+    stock: 14,
+    description: {
+      ar: "هاتف تجريبي كامل الحقول: شاشة واضحة، بطارية تدوم، وكاميرا مناسبة للاستخدام اليومي في نواكشوط.",
+      fr: "Téléphone démo complet : écran lisible, batterie durable, caméra pour un usage quotidien à Nouakchott."
+    }
+  },
+  "demo-laptop-office": {
+    stock: 8,
+    description: {
+      ar: "حاسوب محمول للعمل والدراسة، خفيف ومفحوص، مع لوحة مفاتيح مريحة وأداء ثابت.",
+      fr: "Portable pour le travail et les études, léger et contrôlé, clavier confortable et performances stables."
+    }
+  },
+  "demo-earbuds-pro": {
+    stock: 22,
+    description: {
+      ar: "سماعات لاسلكية تجريبية بعزل جيد للضجيج وشحن سريع، مناسبة للتنقل.",
+      fr: "Écouteurs sans fil démo, isolation correcte et charge rapide, pensés pour les déplacements."
+    }
+  },
+  "demo-watch-sport": {
+    stock: 11,
+    description: {
+      ar: "ساعة رياضية تجريبية لتتبع النشاط والإشعارات، بشاشة واضحة وبطارية كافية لأسبوع الاستخدام.",
+      fr: "Montre sport démo pour l’activité et les notifications, écran lisible et autonomie pour une semaine."
+    }
+  },
+  "demo-tablet-pro": {
+    stock: 9,
+    description: {
+      ar: "جهاز لوحي تجريبي للقراءة والعمل والترفيه، شاشة عشر بوصات وتقسيم مريح للتطبيقات.",
+      fr: "Tablette démo pour lire, travailler et se divertir, écran 10 pouces et usage confortable des apps."
+    }
+  }
+};
+for (const group of BATCH_25) {
+  for (let i = 1; i <= 5; i++) {
+    DEMO_EXTRAS[`demo-${group.prefix}-${i}`] = {
+      stock: 6 + i,
+      description: { ar: `${group.ar} ${i}: ${BATCH_AR[i - 1]}`, fr: `${group.fr} ${i}: ${BATCH_FR[i - 1]}` }
+    };
+  }
+}
+P.forEach((p) => Object.assign(p, DEMO_EXTRAS[p.handle] || {}));
 let vid = 1000;
 P.forEach((p, i) => {
   const color = pal[i % pal.length];
-  fs.writeFileSync(p.image, svg(p.type, color, p.title.replace(/"/g, "")));
+  const titleLabel = typeof p.title === "object" ? p.title.fr || p.title.ar : p.title;
+  fs.writeFileSync(p.image, svg(p.type, color, String(titleLabel || p.handle).replace(/"/g, "")));
   const [o1, o2] = p.options;
   for (const a of o1.values)
     for (const b of o2?.values || [null]) {
@@ -366,3 +547,30 @@ try {
   fs.unlinkSync("assets/img/service-phones.webp");
 } catch {}
 console.log("decorative art regenerated");
+
+const sqlEsc = (value) => `'${String(value).replace(/'/g, "''")}'`;
+const sqlJson = (value) => `${sqlEsc(JSON.stringify(value))}::jsonb`;
+const batchHandles = new Set(BATCH_25.flatMap((group) => [1, 2, 3, 4, 5].map((i) => `demo-${group.prefix}-${i}`)));
+const seedLines = [
+  "-- 25 demo products (5 in each of the first 5 category-bar collections).",
+  "-- Idempotent: ON CONFLICT DO NOTHING. Does not delete or truncate existing rows.",
+  "begin;"
+];
+for (const product of P.filter((item) => batchHandles.has(item.handle))) {
+  const extra = DEMO_EXTRAS[product.handle] || {};
+  const stock = extra.stock ?? 8;
+  seedLines.push(
+    `insert into public.restore_products (id, handle, title, brand, price, compare_at, stock, condition, specs, images, active, sku, sort_order, extra) values (${sqlEsc(product.handle)}, ${sqlEsc(product.handle)}, ${sqlJson(typeof product.title === "object" ? product.title : { ar: product.title, fr: product.title })}, ${sqlEsc(product.vendor)}, ${product.price}, ${product.compare || "null"}, ${stock}, 'Excellent', '{}'::jsonb, ${sqlJson(product.images)}, true, ${sqlEsc(product.handle.toUpperCase())}, 80, ${sqlJson({ type: product.type, description: extra.description || { ar: "", fr: "" }, collections: product.collections, image: product.image, stock })}) on conflict (id) do nothing;`
+  );
+  seedLines.push(
+    `insert into public.restore_product_variants (id, product_id, sku, color, storage, price_delta, stock) values (${sqlEsc(product.handle + "_v1")}, ${sqlEsc(product.handle)}, ${sqlEsc(product.handle.toUpperCase())}, null, null, 0, ${stock}) on conflict (id) do nothing;`
+  );
+  product.collections.forEach((handle, index) => {
+    seedLines.push(
+      `insert into public.restore_collection_products (collection_id, product_id, sort_order) values (${sqlEsc(handle)}, ${sqlEsc(product.handle)}, ${index}) on conflict do nothing;`
+    );
+  });
+}
+seedLines.push("commit;");
+fs.writeFileSync("supabase/seed_25_products.sql", seedLines.join("\n") + "\n");
+console.log("supabase/seed_25_products.sql written");
