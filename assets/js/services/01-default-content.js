@@ -45,6 +45,12 @@ export function install(ctx) {
       if (!p.colorImages) p.colorImages = {};
       if (!p.colorRemote) p.colorRemote = {};
     });
+    // WhatsApp links need digits only (wa.me rejects "+", spaces and dashes); an 8-digit local number gets +222.
+    if (typeof out.settings.whatsapp === "string") {
+      let wa = out.settings.whatsapp.replace(/\D+/g, "");
+      if (wa.length === 8) wa = `222${wa}`;
+      out.settings.whatsapp = wa;
+    }
     return out;
   }
   // I18N moved to ./i18n/ar.js, ./i18n/fr.js (single source of truth)

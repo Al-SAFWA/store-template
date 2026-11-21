@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.17.7 — 2026-10-29
+
+- WhatsApp number is normalised whenever state is loaded or published: "+", spaces and dashes are dropped and an 8-digit local number gets the 222 prefix, so every `wa.me` link (product page, footer, checkout, contact page) works regardless of how the number was typed in the dashboard.
+- Test: `store-runtime` covers the normalisation.
+
 ## 1.17.6 — 2026-10-29
 
 - CI fix: `e2e/04-i18n-consent` still drove the old language dropdown; it now taps the one-tap header button and waits for the reload to settle. The storefront language flip also defers its reload until the page `load` event so a very fast tap cannot abort module requests.

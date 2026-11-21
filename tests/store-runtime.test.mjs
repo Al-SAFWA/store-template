@@ -138,3 +138,12 @@ test("remote order rows: bilingual item titles are localised and unitPrice becom
   assert.equal(item.price, 51940);
   assert.equal(item.variantTitle, "");
 });
+
+test("publish: settings.whatsapp is normalised to wa.me digits (+/spaces dropped, 8-digit local gets 222)", async () => {
+  const before = R.state.settings.whatsapp;
+  const plus = await R.publish({ ...R.state, settings: { ...R.state.settings, whatsapp: "+222 46 00 00 00" } });
+  assert.equal(plus.settings.whatsapp, "22246000000");
+  const local = await R.publish({ ...R.state, settings: { ...R.state.settings, whatsapp: "46-00-00-00" } });
+  assert.equal(local.settings.whatsapp, "22246000000");
+  await R.publish({ ...R.state, settings: { ...R.state.settings, whatsapp: before } });
+});
