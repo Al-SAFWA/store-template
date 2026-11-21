@@ -99,24 +99,35 @@ export function install(ctx) {
     ctx.tokenVault.refreshToken = "";
     location.reload();
   }
+  /** Server stamp of a published row (trigger-set updated_at, falling back to the publisher's clock). */
+  function remoteStampOf(remote) {
+    return remote.updated_at || remote.data?.updatedAt || "";
+  }
+  /** True when the published row is newer than the publish this browser last APPLIED. The comparison is
+      against publishedAt, never updatedAt: the built-in demo state, a stock decrement after an order and the
+      catalog overlay all stamp updatedAt with "now", which made every publish look older and left fresh
+      visitors on the demo WhatsApp/phone forever. */
+  function remoteIsNewer(remote) {
+    const remoteStamp = Date.parse(remoteStampOf(remote)) || 0;
+    const appliedStamp = Date.parse(ctx.state.publishedAt || 0) || 0;
+    return !appliedStamp || remoteStamp > appliedStamp;
+  }
+  /** Replaces the local state with the published row and records which publish was applied. */
+  function adoptRemoteState(remote) {
+    ctx.state = ctx.hydrate(remote.data);
+    // Adopt the SERVER stamp: data.updatedAt is the publishing browser's clock and is always older than the
+    // trigger-set updated_at, so keeping it would make the poll fire on every tick.
+    if (remote.updated_at) ctx.state.updatedAt = remote.updated_at;
+    ctx.state.publishedAt = remoteStampOf(remote) || ctx.nowISO();
+    ctx.writeJSON(ctx.LS_STATE, ctx.state);
+  }
   async function loadRemoteState() {
     if (!ctx.REMOTE) return false;
     try {
       const rows = await ctx.supa(`/rest/v1/${ctx.CFG.stateTable}?id=eq.main&select=id,data,updated_at`);
       const remote = Array.isArray(rows) ? rows[0] : null;
-      if (!remote?.data) return false;
-      const remoteStamp = Date.parse(remote.updated_at || remote.data.updatedAt || 0) || 0;
-      // Compare against the publish we last APPLIED (publishedAt), never against updatedAt: the built-in demo
-      // state, a stock decrement after an order and the catalog overlay all stamp updatedAt with "now", which
-      // made every publish look older and left fresh visitors on the demo WhatsApp/phone forever.
-      const appliedStamp = Date.parse(ctx.state.publishedAt || 0) || 0;
-      if (appliedStamp && remoteStamp <= appliedStamp) return false;
-      ctx.state = ctx.hydrate(remote.data);
-      // Adopt the SERVER stamp: data.updatedAt is the publishing browser's clock and is always older than the
-      // trigger-set updated_at, so keeping it would make this branch fire on every poll.
-      if (remote.updated_at) ctx.state.updatedAt = remote.updated_at;
-      ctx.state.publishedAt = remote.updated_at || remote.data.updatedAt || ctx.nowISO();
-      ctx.writeJSON(ctx.LS_STATE, ctx.state);
+      if (!remote?.data || !remoteIsNewer(remote)) return false;
+      adoptRemoteState(remote);
       if (ctx.catalogInfo.source !== "state")
         await ctx.loadCatalog({ staff: ctx.session?.mode === "supabase", silent: true });
       ctx.applyDocument();
