@@ -136,6 +136,8 @@ if (!RAW) {
     customerDeleteAddress: ctx.customerDeleteAddress,
     getCustomerOrders: ctx.getCustomerOrders,
     getOrders: ctx.getOrders,
+    mergeOrderRows: ctx.mergeOrderRows,
+    saveOrders: ctx.saveOrders,
     addOrder: ctx.addOrder,
     submitOrder: ctx.submitOrder,
     updateOrder: ctx.updateOrder,

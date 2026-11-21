@@ -12,6 +12,7 @@ export function install(ctx) {
     addOrder,
     updateOrder,
     normalizeRemoteOrder,
+    mergeOrderRows,
     refreshOrders,
     getAudit,
     addAudit
@@ -235,20 +236,37 @@ export function install(ctx) {
     );
   }
 
-  /** Merges remote rows into the local list, newest `updatedAt` wins. */
-  function mergeOrderRows(rows) {
+  /** Local orders younger than this may still be in flight to the database; never drop them. */
+  const ORDER_INFLIGHT_MS = 2 * 60 * 1000;
+
+  /** Merges remote rows into the local list, newest `updatedAt` wins. With `authoritative` (staff view, which
+      lists the whole table) local copies that no longer exist remotely are dropped too — otherwise orders deleted
+      in Supabase would live on in the browser cache forever. */
+  function mergeOrderRows(rows, { authoritative = false } = {}) {
     const map = new Map(getOrders().map((order) => [order.id, order]));
     let changed = false;
+    const remoteIds = new Set();
     rows
       .map(normalizeRemoteOrder)
       .filter(Boolean)
       .forEach((remoteOrder) => {
+        remoteIds.add(remoteOrder.id);
         const existing = map.get(remoteOrder.id);
         if (!existing || Date.parse(remoteOrder.updatedAt || 0) > Date.parse(existing.updatedAt || 0)) {
           map.set(remoteOrder.id, remoteOrder);
           changed = true;
         }
       });
+    if (authoritative) {
+      const now = Date.now();
+      [...map.keys()].forEach((id) => {
+        if (remoteIds.has(id)) return;
+        const createdAt = Date.parse(map.get(id)?.createdAt || 0) || 0;
+        if (now - createdAt < ORDER_INFLIGHT_MS) return;
+        map.delete(id);
+        changed = true;
+      });
+    }
     if (!changed) return;
     saveOrders([...map.values()]);
   }
@@ -262,8 +280,9 @@ export function install(ctx) {
       console.warn("Restore: order refresh failed", error);
       return getOrders();
     }
-    if (!Array.isArray(rows) || !rows.length) return getOrders();
-    mergeOrderRows(rows);
+    if (!Array.isArray(rows)) return getOrders();
+    // Staff fetch the whole table, so the database is the source of truth (an empty table means no orders).
+    mergeOrderRows(rows, { authoritative: ctx.session?.mode === "supabase" });
     return getOrders();
   }
 

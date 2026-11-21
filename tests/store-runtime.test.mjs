@@ -147,3 +147,22 @@ test("publish: settings.whatsapp is normalised to wa.me digits (+/spaces dropped
   assert.equal(local.settings.whatsapp, "22246000000");
   await R.publish({ ...R.state, settings: { ...R.state.settings, whatsapp: before } });
 });
+
+test("mergeOrderRows (staff/authoritative): orders deleted in the database disappear from the local cache; in-flight ones stay", () => {
+  const old = new Date(Date.now() - 3600 * 1000).toISOString();
+  const fresh = new Date().toISOString();
+  R.saveOrders([
+    { id: "RS-OLD", createdAt: old, updatedAt: old, status: "new", items: [] },
+    { id: "RS-NEW", createdAt: fresh, updatedAt: fresh, status: "new", items: [] }
+  ]);
+  R.mergeOrderRows([], { authoritative: true });
+  assert.deepEqual(
+    R.getOrders().map((o) => o.id),
+    ["RS-NEW"]
+  );
+  // customer view (not authoritative) never drops local orders
+  R.saveOrders([{ id: "RS-OLD", createdAt: old, updatedAt: old, status: "new", items: [] }]);
+  R.mergeOrderRows([]);
+  assert.equal(R.getOrders().length, 1);
+  R.saveOrders([]);
+});

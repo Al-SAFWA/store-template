@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.17.8 — 2026-10-29
+
+- Orders deleted in Supabase now disappear from the dashboard: the staff order list treats the database as the source of truth and drops cached copies that no longer exist remotely (orders younger than 2 minutes are kept in case they are still being written). Previously the browser cache merged forever, so a cleared `restore_orders` table still showed every old order.
+- Test: `store-runtime` covers authoritative vs. customer merges.
+
 ## 1.17.7 — 2026-10-29
 
 - WhatsApp number is normalised whenever state is loaded or published: "+", spaces and dashes are dropped and an 8-digit local number gets the 222 prefix, so every `wa.me` link (product page, footer, checkout, contact page) works regardless of how the number was typed in the dashboard.
