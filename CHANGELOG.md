@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.17.9 — 2026-10-29
+
+- **Critical:** new visitors never received the published settings. The storefront compared the published `updated_at` with the local `updatedAt`, which the built-in demo state (and a stock decrement, and the catalog overlay) stamps with "now" — so the publish always looked older and was skipped; the visitor stayed on the demo WhatsApp/phone/e-mail forever. The comparison now uses `publishedAt`, the stamp of the publish last applied, which local activity never touches. Existing visitors pick up the published state on their next visit automatically.
+
 ## 1.17.8 — 2026-10-29
 
 - Orders deleted in Supabase now disappear from the dashboard: the staff order list treats the database as the source of truth and drops cached copies that no longer exist remotely (orders younger than 2 minutes are kept in case they are still being written). Previously the browser cache merged forever, so a cleared `restore_orders` table still showed every old order.

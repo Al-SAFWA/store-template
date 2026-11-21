@@ -41,6 +41,7 @@ export function install(ctx) {
         ctx.catalogInfo.source === "tables" ? ctx.stripCatalog(candidate) : candidate
       );
       if (stamp) candidate.updatedAt = stamp;
+      candidate.publishedAt = candidate.updatedAt;
     }
     if (ctx.catalogInfo.source === "tables") {
       // keep the in-memory/published copy consistent with the tables, not with the draft
@@ -105,12 +106,16 @@ export function install(ctx) {
       const remote = Array.isArray(rows) ? rows[0] : null;
       if (!remote?.data) return false;
       const remoteStamp = Date.parse(remote.updated_at || remote.data.updatedAt || 0) || 0;
-      const localStamp = Date.parse(ctx.state.updatedAt || 0) || 0;
-      if (remoteStamp <= localStamp) return false;
+      // Compare against the publish we last APPLIED (publishedAt), never against updatedAt: the built-in demo
+      // state, a stock decrement after an order and the catalog overlay all stamp updatedAt with "now", which
+      // made every publish look older and left fresh visitors on the demo WhatsApp/phone forever.
+      const appliedStamp = Date.parse(ctx.state.publishedAt || 0) || 0;
+      if (appliedStamp && remoteStamp <= appliedStamp) return false;
       ctx.state = ctx.hydrate(remote.data);
       // Adopt the SERVER stamp: data.updatedAt is the publishing browser's clock and is always older than the
       // trigger-set updated_at, so keeping it would make this branch fire on every poll.
       if (remote.updated_at) ctx.state.updatedAt = remote.updated_at;
+      ctx.state.publishedAt = remote.updated_at || remote.data.updatedAt || ctx.nowISO();
       ctx.writeJSON(ctx.LS_STATE, ctx.state);
       if (ctx.catalogInfo.source !== "state")
         await ctx.loadCatalog({ staff: ctx.session?.mode === "supabase", silent: true });
