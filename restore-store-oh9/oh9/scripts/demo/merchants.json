@@ -1,0 +1,30 @@
+{
+  "comment": "Example merchant copies. Isolation is one Git/Supabase/domain copy per merchant (`npm run new-client`). This app is not multi-tenant: staff on one deployment share that store. Passwords are never stored here — generate them locally and keep them in .env / the QA report.",
+  "mechanism": "npm run new-client",
+  "merchants": [
+    {
+      "key": "merchant-nord",
+      "ar": "متجر الشمال",
+      "fr": "Boutique Nord",
+      "email": "nord@example.com",
+      "phone": "22241111111",
+      "color": "#0f766e"
+    },
+    {
+      "key": "merchant-centre",
+      "ar": "متجر الوسط",
+      "fr": "Boutique Centre",
+      "email": "centre@example.com",
+      "phone": "22242222222",
+      "color": "#7c3aed"
+    },
+    {
+      "key": "merchant-sud",
+      "ar": "متجر الجنوب",
+      "fr": "Boutique Sud",
+      "email": "sud@example.com",
+      "phone": "22243333333",
+      "color": "#b45309"
+    }
+  ]
+}
