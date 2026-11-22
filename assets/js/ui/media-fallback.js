@@ -6,9 +6,11 @@ import { FALLBACK_PHOTO } from "../domain/category-images.js";
 const SLOT =
   ".ct-thumb, .ct-pick, .ct-current, .cat-card, .card-media, .product-card, .cart-item-img, .cell-main, .search-result, .account-wish-item, .order-item-row, .hero-visual, .payment-mark, .pay-badge, .gallery, .promo";
 
+let bound = false;
+
 export function bindBrokenImages() {
-  if (window.__restoreImgFb) return;
-  window.__restoreImgFb = true;
+  if (bound) return;
+  bound = true;
   document.addEventListener(
     "error",
     (event) => {

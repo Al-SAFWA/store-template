@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.6 — 2026-11-22
+
+- Typecheck: image 404 fallback no longer writes a missing Window property (CI green).
+
 ## 1.18.5 — 2026-11-22
 
 - Category cards (home + dashboard) use real product photos, including leftover Restore collection handles.
