@@ -47,8 +47,9 @@ test("orders on a phone: groups, next-step button, WhatsApp link, cancel", async
   await expect(card).toBeVisible();
   // Cards are the phone layout; the desktop table is hidden.
   await expect(page.locator(".orders-desk")).toBeHidden();
-  // "New" tab is selected and carries an urgent counter.
+  // Open orders tab is selected and carries an urgent counter while the order is still new.
   await expect(page.locator('[data-order-filter="new"].active .oc-count.urgent')).toBeVisible();
+  await expect(page.locator('[data-order-filter="active"]')).toHaveCount(0);
   // Customer, place, total and a WhatsApp link with a prefilled message.
   await expect(card).toContainText("زبون الهاتف");
   await expect(card).toContainText("تفرغ زينة");
@@ -57,11 +58,9 @@ test("orders on a phone: groups, next-step button, WhatsApp link, cancel", async
   expect(decodeURIComponent(wa)).toContain(id);
   const statusOf = () => page.evaluate((i) => window.RESTORE.getOrders().find((o) => o.id === i).status, id);
 
-  // new → confirmed: the card leaves "new" and shows up under "active".
+  // new → confirmed stays on the open-orders tab (the in-progress tab was removed).
   await card.locator('[data-action="order-next"]').click();
   expect(await statusOf()).toBe("confirmed");
-  await expect(card).toHaveCount(0);
-  await page.click('[data-order-filter="active"]');
   await expect(card).toBeVisible();
   await expect(card.locator('[data-action="order-next"]')).toContainText("جاهز للشحن");
   await card.locator('[data-action="order-next"]').click();

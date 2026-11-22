@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.7 — 2026-11-22
+
+- E2E: orders phone spec follows the two-tab list (open / done) after dropping the in-progress tab.
+
 ## 1.18.6 — 2026-11-22
 
 - Typecheck: image 404 fallback no longer writes a missing Window property (CI green).
