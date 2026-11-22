@@ -22,79 +22,91 @@ export function install(ctx) {
     return (document.querySelector(sel)?.textContent || "").replace(/\s+/g, " ").trim();
   }
 
-  function buildReport(c) {
-    const page = document.body?.dataset.page || "";
+  function pageName() {
+    return document.body?.dataset.page || "";
+  }
+
+  function brandCheck(c) {
     const name = c.L(c.SET.storeName);
     const legacyAr = String.fromCharCode(0x0631, 0x064a, 0x0633, 0x062a, 0x0648, 0x0631);
-    const cats = [...document.querySelectorAll(".cat-card")];
-    const anim = cats[0] ? getComputedStyle(cats[0]).animationName : "";
-    const animDur = cats[0] ? getComputedStyle(cats[0]).animationDuration : "";
-    const socials = [...document.querySelectorAll(".socials a[href]")]
+    return row(Boolean(name) && !name.includes(legacyAr), "brand-name", name);
+  }
+
+  function catCardsCheck() {
+    const page = pageName();
+    const cats = document.querySelectorAll(".cat-card");
+    return row(
+      cats.length > 0 || page !== "home",
+      "cat-cards",
+      page === "home" ? `${cats.length} on home` : `n/a on ${page}`
+    );
+  }
+
+  function catAnimCheck() {
+    const page = pageName();
+    const card = document.querySelector(".cat-card");
+    const anim = card ? getComputedStyle(card).animationName : "";
+    const ready = Boolean(document.querySelector(".categories.is-in")) && Boolean(anim) && anim !== "none";
+    return row(page !== "home" || ready, "cat-animation", page === "home" ? anim || "none" : `n/a on ${page}`);
+  }
+
+  function socialCheck() {
+    const hrefs = [...document.querySelectorAll(".socials a[href]")]
       .map((a) => `${a.getAttribute("aria-label") || "social"}=${a.getAttribute("href")}`)
-      .filter((s) => !s.endsWith("="));
+      .join(" ");
+    const ok =
+      pageName() === "dashboard" || (/facebook/i.test(hrefs) && /instagram/i.test(hrefs) && /tiktok/i.test(hrefs));
+    return row(ok, "socials", hrefs || "none");
+  }
+
+  function dashCatCheck() {
+    const page = pageName();
+    const edit = document.querySelector(".ct-edit");
+    const ok =
+      page !== "dashboard" || !document.querySelector(".ct") || Boolean(edit && document.querySelector(".ct-del"));
+    return row(ok, "dash-cat-buttons", edit ? "edit+delete" : page === "dashboard" ? "open #categories" : "n/a");
+  }
+
+  function probeRows(c) {
+    const page = pageName();
     const nav = textOf(".main-nav");
     const trust = textOf(".trust-bar") || textOf(".home-trust");
-    const returnDays = c.SET.returnDays;
-    const sections = (c.SET.pageSections || []).filter((s) => s.visible !== false).map((s) => s.id);
-    const collections = (c.S.collections || []).filter((x) => x.visible !== false);
     const forms = document.querySelectorAll("#checkout-form").length;
-    const rows = [
-      row(Boolean(name) && !name.includes(legacyAr) && !/Resto\u0072e/i.test(name), "brand-name", name),
-      row(
-        cats.length > 0 || page !== "home",
-        "cat-cards",
-        page === "home" ? `${cats.length} on home` : `n/a on ${page}`
-      ),
-      row(
-        page !== "home" || (Boolean(document.querySelector(".categories.is-in")) && Boolean(anim) && anim !== "none"),
-        "cat-animation",
-        page === "home"
-          ? `in=${Boolean(document.querySelector(".categories.is-in"))} ${anim || "none"} ${animDur}`
-          : `n/a on ${page}`
-      ),
-      row(!document.querySelector("a.renewed"), "no-renewed-strip", `pageSections=${sections.join(",")}`),
+    const collections = (c.S.collections || []).filter((x) => x.visible !== false);
+    return [
+      brandCheck(c),
+      catCardsCheck(),
+      catAnimCheck(),
+      row(!document.querySelector("a.renewed"), "no-renewed-strip", "ok"),
       row(!/anniversary/i.test(nav), "nav-offers", nav.slice(0, 120) || "(empty nav)"),
-      row(
-        page !== "home" || /إرجاع|retour|return/i.test(trust),
-        "return-days",
-        `returnDays=${returnDays} trust="${trust.slice(0, 80)}"`
-      ),
+      row(page !== "home" || /إرجاع|retour|return/i.test(trust), "return-days", String(c.SET.returnDays)),
       row(collections.length > 0, "collections", collections.map((x) => x.handle).join(",") || "none"),
-      row(
-        page === "dashboard" ||
-          (/facebook/i.test(socials.join(" ")) &&
-            /instagram/i.test(socials.join(" ")) &&
-            /tiktok/i.test(socials.join(" "))),
-        "socials",
-        socials.join(" | ") || "none"
-      ),
+      socialCheck(),
       row(
         page !== "checkout" || forms === 1,
         "checkout-one-form",
-        page === "checkout" ? `forms=${forms}` : "open checkout.html to verify"
+        page === "checkout" ? `forms=${forms}` : "open checkout.html"
       ),
       row(!document.body.innerHTML.includes("RESTORE10"), "no-restore-coupon", window.BRAND?.couponPrefix || ""),
       row(
-        Boolean(document.querySelector(".site-header")) && Boolean(document.querySelector(".footer")),
+        Boolean(document.querySelector(".site-header") && document.querySelector(".footer")),
         "header-footer",
         "present"
       ),
       row(c.PRODUCTS.length > 0, "products", String(c.PRODUCTS.length)),
-      row(
-        page !== "dashboard" ||
-          !document.querySelector(".ct") ||
-          Boolean(document.querySelector(".ct-edit") && document.querySelector(".ct-del")),
-        "dash-cat-buttons",
-        document.querySelector(".ct-edit") ? "edit+delete" : page === "dashboard" ? "open #categories" : "n/a"
-      )
+      dashCatCheck()
     ];
+  }
+
+  function buildReport(c) {
+    const rows = probeRows(c);
     const pass = rows.filter((r) => r.pass).length;
-    const fail = rows.filter((r) => !r.pass).length;
+    const fail = rows.length - pass;
     const lines = [
       "STORE PROBE",
       `time ${new Date().toISOString()}`,
-      `page ${page}  url ${location.href}`,
-      `brand ${name}`,
+      `page ${pageName()}  url ${location.href}`,
+      `brand ${c.L(c.SET.storeName)}`,
       `score ${pass}/${rows.length}  fail ${fail}`,
       "",
       ...rows.map((r) => `${r.pass ? "PASS" : "FAIL"}  ${r.id}  ${r.detail}`),
@@ -141,16 +153,12 @@ export function install(ctx) {
       const area = document.createElement("textarea");
       area.value = text;
       area.setAttribute("readonly", "");
-      wrapSafe(area);
+      area.className = "store-probe-clip";
+      document.body.appendChild(area);
       area.select();
       document.execCommand("copy");
       area.remove();
     }
     if (btn) btn.textContent = ctx.R.lang === "ar" ? "تم النسخ" : "Copié";
-  }
-
-  function wrapSafe(area) {
-    area.className = "store-probe-clip";
-    document.body.appendChild(area);
   }
 }

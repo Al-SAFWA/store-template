@@ -50,32 +50,40 @@ export function isCollectionVisible(collections, handle) {
   return !row || row.visible !== false;
 }
 
-/**
- * Category-bar cards: only collections that exist in `collections` and are not hidden.
- * Hidden rows are either `visible === false` (JSON draft) or omitted entirely (tables: active=false
- * is filtered by RLS, so a missing row must not fall back to the stale `theme.categories` entry).
- */
-export function visibleBarEntries(themeCategories, collections) {
+function barHandle(value) {
+  const handle = resolveCollectionHandle(value);
+  if (!handle || handle === "all") return "";
+  return handle;
+}
+
+function collectionMap(collections) {
   const byHandle = new Map();
   for (const collection of collections || []) {
-    const handle = resolveCollectionHandle(collection.handle);
-    if (!handle || handle === "all") continue;
-    byHandle.set(handle, collection);
+    const handle = barHandle(collection.handle);
+    if (handle) byHandle.set(handle, collection);
   }
+  return byHandle;
+}
+
+function themeCards(themeCategories, byHandle) {
   const seen = new Set();
   const out = [];
   for (const entry of themeCategories || []) {
-    const handle = resolveCollectionHandle(entry.handle);
-    if (!handle || handle === "all" || seen.has(handle)) continue;
-    const collection = byHandle.get(handle);
-    if (!collection || collection.visible === false) continue;
+    const handle = barHandle(entry.handle);
+    const collection = handle ? byHandle.get(handle) : null;
+    if (!handle || seen.has(handle) || !collection || collection.visible === false) continue;
     seen.add(handle);
     out.push({ handle, entry, collection });
   }
-  if (out.length) return out;
+  return out;
+}
+
+function tableCards(collections) {
+  const seen = new Set();
+  const out = [];
   for (const collection of collections || []) {
-    const handle = resolveCollectionHandle(collection.handle);
-    if (!handle || handle === "all" || seen.has(handle) || collection.visible === false) continue;
+    const handle = barHandle(collection.handle);
+    if (!handle || seen.has(handle) || collection.visible === false) continue;
     seen.add(handle);
     out.push({
       handle,
@@ -84,4 +92,15 @@ export function visibleBarEntries(themeCategories, collections) {
     });
   }
   return out;
+}
+
+/**
+ * Category-bar cards: only collections that exist in `collections` and are not hidden.
+ * Hidden rows are either `visible === false` (JSON draft) or omitted entirely (tables: active=false
+ * is filtered by RLS, so a missing row must not fall back to the stale `theme.categories` entry).
+ */
+export function visibleBarEntries(themeCategories, collections) {
+  const fromTheme = themeCards(themeCategories, collectionMap(collections));
+  if (fromTheme.length) return fromTheme;
+  return tableCards(collections);
 }

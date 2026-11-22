@@ -202,7 +202,15 @@ export function createDefaultState(ctx) {
     };
   }
 
+  function brandSocial() {
+    const social = B.social || {};
+    return ["facebook", "instagram", "tiktok"]
+      .map((id) => ({ id, href: social[id] || "", icon: id }))
+      .filter((row) => row.href);
+  }
+
   function footerSettings() {
+    const social = brandSocial();
     return {
       footerColumns: [
         {
@@ -232,22 +240,14 @@ export function createDefaultState(ctx) {
           ]
         }
       ],
-      social: [
-        { id: "facebook", href: B.social?.facebook || "", icon: "facebook" },
-        { id: "instagram", href: B.social?.instagram || "", icon: "instagram" },
-        { id: "tiktok", href: B.social?.tiktok || "", icon: "tiktok" }
-      ].filter((row) => row.href),
+      social,
       channels: defaultChannels(
         {
           whatsapp: B.whatsapp || "",
           phoneDisplay: B.phoneDisplay || B.phone || "",
           email: B.email || "",
           address: B.address || { ar: "", fr: "" },
-          social: [
-            { id: "facebook", href: B.social?.facebook || "" },
-            { id: "instagram", href: B.social?.instagram || "" },
-            { id: "tiktok", href: B.social?.tiktok || "" }
-          ].filter((row) => row.href)
+          social
         },
         B
       )

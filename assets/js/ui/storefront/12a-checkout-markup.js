@@ -4,6 +4,12 @@
    here lets 12-checkout.js stay under the complexity and size budgets, and lets tests render the markup in jsdom. */
 import { whatsappDigits } from "../../domain/channels.js";
 
+function couponPlaceholder() {
+  const brand = globalThis.window && globalThis.window.BRAND;
+  const prefix = brand && brand.couponPrefix;
+  return `${prefix || "WELCOME"}10`;
+}
+
 /** @param {any} ctx @param {any} data */
 export function checkoutPageHTML(ctx, data) {
   const { items, subtotal, cities, payments, open, defaultCity, selectedPayment } = data;
@@ -58,7 +64,7 @@ export function checkoutPageHTML(ctx, data) {
                 <button class="btn btn-outline btn-sm" type="button" id="pay-account-copy">${ctx.ICON.copy || ""} ${ctx.R.lang === "ar" ? "نسخ" : "Copier"}</button>
               </div>
               <div class="coupon-row">
-                <div class="field"><label for="co-coupon">${ctx.esc(ctx.t("coupon"))}</label><input id="co-coupon" placeholder="${ctx.esc((window.BRAND?.couponPrefix || "WELCOME") + "10")}"></div>
+                <div class="field"><label for="co-coupon">${ctx.esc(ctx.t("coupon"))}</label><input id="co-coupon" placeholder="${ctx.esc(couponPlaceholder())}"></div>
                 <button class="btn btn-outline" type="button" id="apply-coupon">${ctx.esc(ctx.t("apply"))}</button>
               </div>
               <p class="field-note">${ctx.ICON.info} ${ctx.esc(ctx.R.lang === "ar" ? "الدفع يتم تأكيده عبر واتساب. لا يتم سحب أي مبلغ من هذا الموقع." : "Le paiement est confirmé sur WhatsApp. Aucun paiement n’est débité sur ce site.")}</p>

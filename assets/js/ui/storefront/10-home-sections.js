@@ -195,7 +195,7 @@ export function install(ctx) {
     </section>`;
   }
 
-  function productSectionHTML(section) {
+  function sectionItems(section) {
     const colHandle = resolveCollectionHandle(section.collection || "all");
     const seen = new Set();
     const items = [];
@@ -205,14 +205,17 @@ export function install(ctx) {
       seen.add(product.handle);
       items.push(product);
     }
-    if (items.length < 5) {
-      for (const product of ctx.PRODUCTS) {
-        if (items.length >= 5) break;
-        if (seen.has(product.handle) || !productInCollection(product, colHandle)) continue;
-        seen.add(product.handle);
-        items.push(product);
-      }
+    for (const product of ctx.PRODUCTS) {
+      if (items.length >= 5) break;
+      if (seen.has(product.handle) || !productInCollection(product, colHandle)) continue;
+      seen.add(product.handle);
+      items.push(product);
     }
+    return { items, colHandle };
+  }
+
+  function productSectionHTML(section) {
+    const { items, colHandle } = sectionItems(section);
     if (!items.length) return "";
     const cards = items.slice(0, 12).map(ctx.cardHTML).join("");
     const colHref = `collection.html?handle=${encodeURIComponent(colHandle)}`;

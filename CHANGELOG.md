@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.3 — 2026-11-22
+
+- CI fix: split probe, checkout, home, footer, and category-bar helpers so eslint complexity stays at 15. Storefront behaviour is unchanged.
+
 ## 1.18.2 — 2026-11-21
 
 - Dashboard categories: labeled Edit and Delete.
