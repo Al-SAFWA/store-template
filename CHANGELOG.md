@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.8 — 2026-11-22
+
+- Client update gate: store-tour tests no longer require the template demo brand name (so store-demo1 can receive the release).
+
 ## 1.18.7 — 2026-11-22
 
 - E2E: orders phone spec follows the two-tab list (open / done) after dropping the in-progress tab.

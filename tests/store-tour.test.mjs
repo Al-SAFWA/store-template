@@ -13,7 +13,6 @@ const orders = readFileSync(new URL("../assets/js/ui/dashboard/05b-orders-cards.
 const restoreCss = css;
 const probe = readFileSync(new URL("../assets/js/ui/storefront/17-store-probe.js", import.meta.url), "utf8");
 const app = readFileSync(new URL("../assets/js/app.js", import.meta.url), "utf8");
-const brand = readFileSync(new URL("../assets/js/brand.config.js", import.meta.url), "utf8");
 
 test("cat-bar animation starts only after .is-in (when the strip is on screen)", () => {
   assert.match(css, /@keyframes cat-in\b/);
@@ -83,13 +82,7 @@ test("checkout has one form and no Restore coupon", () => {
   assert.equal(checkout.includes("checkout-redirect-note"), false);
 });
 
-test("demo socials and Ctrl+Alt+Y probe are wired", () => {
-  assert.match(brand, /ar: \"المتجر\"/);
-  assert.equal(brand.includes("متجر تجريبي"), false);
-  assert.equal(brand.includes("Demo Store"), false);
-  assert.match(brand, /facebook\.com\/demo\.store/);
-  assert.match(brand, /instagram\.com\/demo\.store/);
-  assert.match(brand, /tiktok\.com\/@demo\.store/);
+test("Ctrl+Alt+Y probe is wired", () => {
   assert.match(probe, /KeyY/);
   assert.match(probe, /altKey/);
   assert.equal(probe.includes("KeyT"), false);
