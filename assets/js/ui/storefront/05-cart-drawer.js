@@ -2,6 +2,8 @@
 /* app.js → Cart drawer
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 
+import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
+
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { mountCart, openCart, closeCart, renderCart });
@@ -60,7 +62,7 @@ export function install(ctx) {
       .map(
         (it) => `
       <div class="cart-item">
-        <a class="cart-item-img" href="product.html?handle=${encodeURIComponent(it.handle)}"><img src="${it.product.image}" alt="${ctx.esc(it.product.title)}" width="72" height="72" decoding="async"></a>
+        <a class="cart-item-img" href="product.html?handle=${encodeURIComponent(it.handle)}"><img src="${displayImage(it.product)}" alt="${ctx.esc(it.product.title)}" width="72" height="72" decoding="async" data-fb="${FALLBACK_PHOTO}"></a>
         <div>
           <a class="cart-item-title" href="product.html?handle=${encodeURIComponent(it.handle)}">${ctx.esc(it.product.title)}</a>
           <div class="cart-item-var">${ctx.esc(ctx.variantLabel(it.variant) || "")}</div>

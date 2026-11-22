@@ -333,37 +333,37 @@ export function createDefaultTexts(ctx) {
       {
         label: ctx.txt("عروض", "Offres"),
         handle: "special-offers",
-        image: "assets/img/category-special-offers.svg"
+        image: "assets/img/cats/offers.jpg"
       },
-      { label: ctx.txt("هواتف ذكية", "Smartphones"), handle: "phones", image: "assets/img/category-phones.svg" },
-      { label: ctx.txt("أندرويد", "Android"), handle: "android", image: "assets/img/category-android.svg" },
+      { label: ctx.txt("هواتف ذكية", "Smartphones"), handle: "phones", image: "assets/img/cats/phones.jpg" },
+      { label: ctx.txt("أندرويد", "Android"), handle: "android", image: "assets/img/cats/android.jpg" },
       {
         label: ctx.txt("حواسيب للمبدعين", "Creator Laptops"),
         handle: "macbooks",
-        image: "assets/img/category-macbooks.svg"
+        image: "assets/img/cats/macbooks.jpg"
       },
       {
         label: ctx.txt("حواسيب محمولة", "Laptops"),
         handle: "laptops",
-        image: "assets/img/category-laptops.svg"
+        image: "assets/img/cats/laptops.jpg"
       },
-      { label: ctx.txt("أجهزة لوحية", "Tablets"), handle: "tablets", image: "assets/img/category-tablets.svg" },
+      { label: ctx.txt("أجهزة لوحية", "Tablets"), handle: "tablets", image: "assets/img/cats/tablets.jpg" },
       {
         label: ctx.txt("ساعات ذكية", "Smartwatches"),
         handle: "watches",
-        image: "assets/img/category-watches.svg"
+        image: "assets/img/cats/watches.jpg"
       },
-      { label: ctx.txt("صوتيات", "Audio"), handle: "audio", image: "assets/img/category-audio.svg" },
+      { label: ctx.txt("صوتيات", "Audio"), handle: "audio", image: "assets/img/cats/audio.jpg" },
       {
         label: ctx.txt("شواحن وكابلات", "Chargeurs et câbles"),
         handle: "chargers",
-        image: "assets/img/category-chargers.svg"
+        image: "assets/img/cats/chargers.jpg"
       },
-      { label: ctx.txt("ألعاب", "Gaming"), handle: "gaming", image: "assets/img/category-gaming.svg" },
+      { label: ctx.txt("ألعاب", "Gaming"), handle: "gaming", image: "assets/img/cats/gaming.jpg" },
       {
         label: ctx.txt("ملحقات", "Accessoires"),
         handle: "accessories",
-        image: "assets/img/category-accessories.svg"
+        image: "assets/img/cats/accessories.jpg"
       }
     ];
   }
@@ -374,6 +374,7 @@ export function createDefaultTexts(ctx) {
         id: "bankily",
         name: ctx.txt("بنكيلي", "Bankily"),
         color: "#00a651",
+        image: "assets/img/payments/bankily.png",
         active: true,
         discount: 0,
         account: "",
@@ -383,6 +384,7 @@ export function createDefaultTexts(ctx) {
         id: "masrvi",
         name: ctx.txt("مصرفي", "Masrvi"),
         color: "#0b6fb8",
+        image: "assets/img/payments/masrvi.jpg",
         active: true,
         discount: 0,
         note: ctx.txt("تحويل فوري عبر مصرفي", "Paiement instantané via Masrvi")
@@ -391,6 +393,7 @@ export function createDefaultTexts(ctx) {
         id: "sedad",
         name: ctx.txt("سداد", "Sedad"),
         color: "#6f42c1",
+        image: "assets/img/payments/sedad.png",
         active: true,
         discount: 0,
         note: ctx.txt("الدفع عبر تطبيق سداد", "Paiement avec l’application Sedad")
@@ -399,6 +402,7 @@ export function createDefaultTexts(ctx) {
         id: "click",
         name: ctx.txt("كليك", "Click"),
         color: "#e67e22",
+        image: "assets/img/payments/click.png",
         active: true,
         discount: 0,
         note: ctx.txt("الدفع عبر كليك", "Paiement avec Click")
@@ -407,6 +411,7 @@ export function createDefaultTexts(ctx) {
         id: "cod",
         name: ctx.txt("الدفع عند الاستلام", "Paiement à la livraison"),
         color: "#2d3436",
+        image: "assets/img/payments/cod.svg",
         active: true,
         discount: 0,
         note: ctx.txt("ادفع نقدًا عند استلام طلبك", "Payez en espèces à la réception")

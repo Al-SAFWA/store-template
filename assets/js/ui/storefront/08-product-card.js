@@ -2,6 +2,8 @@
 /* app.js → Product card
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 
+import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
+
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { cardHTML });
@@ -19,7 +21,7 @@ export function install(ctx) {
     const badge = p.discount > 0 ? `<span class="badge">-${p.discount}%</span>` : "";
     const colors = (p.colors || []).slice(0, 4);
     const firstColor = p.colors?.[0];
-    const initialImage = (firstColor && p.colorImages?.[firstColor.name]) || p.image;
+    const initialImage = (firstColor && p.colorImages?.[firstColor.name]) || displayImage(p);
     const swatches = colors
       .map(
         (c, i) =>
@@ -32,7 +34,7 @@ export function install(ctx) {
     return `
       <article class="product-card" data-handle="${ctx.esc(p.handle)}">
         <a class="card-media" href="product.html?handle=${encodeURIComponent(p.handle)}" aria-label="${ctx.esc(title)}">
-          ${badge}<img src="${initialImage}" alt="${ctx.esc(title)}" width="300" height="300" loading="lazy" decoding="async" data-card-main>
+          ${badge}<img src="${initialImage}" alt="${ctx.esc(title)}" width="300" height="300" loading="lazy" decoding="async" data-card-main data-fb="${FALLBACK_PHOTO}">
           <span class="card-tint" data-card-tint aria-hidden="true"></span>
           ${Number(p.stock) <= 0 ? `<span class="sold-out-badge">${ctx.esc(ctx.t("soldOut"))}</span>` : ""}
         </a>

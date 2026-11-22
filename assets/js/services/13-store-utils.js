@@ -1,6 +1,7 @@
 // @ts-check
 /* state.js → Query, pricing and store utilities
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see state.js). */
+import { displayImage } from "../domain/category-images.js";
 import { effectiveUnitPrice } from "../domain/pricing.js";
 
 export function install(ctx) {
@@ -64,7 +65,7 @@ export function install(ctx) {
     return Math.min(effectiveUnitPrice(product), ...variants.map((v) => effectiveUnitPrice(product, v)));
   }
   function bestCardImage(product) {
-    return product.image || product.images?.[0] || "";
+    return displayImage(product);
   }
   function isStoreOpen(date = new Date()) {
     const hours = ctx.state.settings.hours || {};

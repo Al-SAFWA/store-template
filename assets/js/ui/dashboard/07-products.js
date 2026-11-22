@@ -2,6 +2,8 @@
 /* dashboard.js → Products
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see dashboard.js). */
 
+import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
+
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, {
@@ -9,8 +11,6 @@ export function install(ctx) {
     viewProducts,
     productEditor,
     saveProductEditor,
-    bulkPriceModal,
-    applyBulkPrice,
     deleteProduct
   });
   function filteredProducts() {
@@ -41,7 +41,7 @@ export function install(ctx) {
     return `${ctx.catalogBanner()}
       <div class="dash-view-head">
         <div><h2>${ctx.dt("المنتجات", "Produits")}</h2><p>${list.length} ${ctx.dt("منتج في المخزون", "produits en stock")} · ${ctx.lowStockProducts().length} ${ctx.dt("بحاجة لتعبئة", "à réapprovisionner")}</p></div>
-        <div class="dash-view-actions"><button class="btn btn-soft" data-action="bulk-price">${ctx.icon("edit")} ${ctx.dt("تعديل أسعار جماعي", "Prix groupés")}</button><button class="btn btn-primary" data-action="add-product">${ctx.icon("plus")} ${ctx.dt("منتج جديد", "Nouveau produit")}</button></div>
+        <div class="dash-view-actions"><button class="btn btn-primary" data-action="add-product">${ctx.icon("plus")} ${ctx.dt("منتج جديد", "Nouveau produit")}</button></div>
       </div>
       <div class="dash-toolbar">
         <label class="field u-min-210"><input id="product-search" placeholder="${ctx.dt("بحث عن منتج...", "Rechercher un produit...")}" value="${ctx.esc(ctx.productSearch)}"></label>
@@ -133,7 +133,7 @@ export function install(ctx) {
     const productIndex = ctx.model.products.indexOf(product);
     const isLow = Number(product.stock) <= Number(ctx.model.settings.lowStockThreshold || 2);
     return `<tr>
-              <td><div class="cell-main"><img src="${ctx.esc(product.image)}" alt=""><div><strong>${ctx.esc(ctx.lng(product.title))}</strong><small>${ctx.esc(product.type || "")} · ${ctx.esc(product.condition || "")}</small></div></div></td>
+              <td><div class="cell-main"><img src="${ctx.esc(displayImage(product))}" alt="" data-fb="${FALLBACK_PHOTO}"><div><strong>${ctx.esc(ctx.lng(product.title))}</strong><small>${ctx.esc(product.type || "")} · ${ctx.esc(product.condition || "")}</small></div></div></td>
               <td>${ctx.esc(productCategoryLabel(product))}</td>
               <td class="price">${ctx.money(product.price)}${productCompareLabel(product)}</td>
               <td><div class="u-flex u-col u-gap-3"><strong class="u-fs-9 u-tint-text" data-sv="fg:${ctx.esc(stockColor(product, isLow))}">${product.stock}</strong><div class="mini-bar" data-sv="bar:${isLow ? "#e67e22" : "#25a55f"};min-width:50px"><i class="u-w-pct" data-sv="w:${stockBarPercent(product)}"></i></div></div></td>
@@ -285,52 +285,6 @@ export function install(ctx) {
     }
     if (ctx.tablesMode()) return saveProductToTables(ctx, item);
     return saveProductToDraft(ctx, item);
-  }
-
-  function bulkPriceModal() {
-    ctx.openModal(
-      ctx.dt("تعديل الأسعار الجماعي", "Modification groupée des prix"),
-      `
-      <div class="field"><label>${ctx.dt("الفئة", "Catégorie")}</label><select id="bulk-category"><option value="all">${ctx.dt("كل الفئات", "Toutes")}</option>${ctx.model.collections.map((collection) => `<option value="${ctx.esc(collection.handle)}">${ctx.esc(ctx.lng(collection.title))}</option>`).join("")}</select></div>
-      <div class="form-grid u-mt-10"><div class="field"><label>${ctx.dt("نسبة التغيير %", "Pourcentage")}</label><input id="bulk-percent" type="number" value="5" placeholder="5"></div><div class="field"><label>${ctx.dt("الاتجاه", "Sens")}</label><select id="bulk-direction"><option value="up">${ctx.dt("زيادة", "Augmenter")}</option><option value="down">${ctx.dt("تخفيض", "Diminuer")}</option></select></div></div>
-      <p class="form-note u-mt-10">${ctx.dt("سيتم تحديث السعر الأخير مع الحفاظ على السعر المشطوب كما هو. يمكنك التراجع بعدم النشر.", "Le prix sera ajusté. Le prix barré reste inchangé. Vous pouvez annuler avant publication.")}</p>`,
-      {
-        footer: `<button class="btn btn-soft btn-sm" data-action="close-modal">${ctx.dt("إلغاء", "Annuler")}</button><button class="btn btn-primary btn-sm" data-action="apply-bulk-price">${ctx.dt("تطبيق", "Appliquer")}</button>`
-      }
-    );
-  }
-
-  function applyBulkPrice() {
-    const category = ctx.$("#bulk-category")?.value || "all";
-    const percent = Number(ctx.$("#bulk-percent")?.value) || 0;
-    const direction = ctx.$("#bulk-direction")?.value || "up";
-    if (ctx.tablesMode()) {
-      let n = 0;
-      ctx
-        .catalogWrite(ctx.dt("تم تحديث الأسعار في قاعدة البيانات", "Prix mis à jour en base"), async () => {
-          n = await ctx.CAT.bulkPrice({ collection: category, percent, direction });
-        })
-        .then((ok) => {
-          if (ok) {
-            ctx.closeModal();
-            ctx.renderRoute();
-            ctx.toast(`${n} ${ctx.dt("منتجًا تم تحديث سعره", "produits mis à jour")}`, "good");
-          }
-        });
-      return;
-    }
-    let count = 0;
-    ctx.model.products.forEach((product) => {
-      if (product.active === false) return;
-      if (category !== "all" && !(product.collections || []).includes(category)) return;
-      const factor = direction === "up" ? 1 + percent / 100 : 1 - percent / 100;
-      product.price = Math.max(0, Math.round((Number(product.price) * factor) / 5) * 5);
-      count += 1;
-    });
-    ctx.saveDraftNow();
-    ctx.closeModal();
-    ctx.renderRoute();
-    ctx.toast(`${count} ${ctx.dt("منتجًا تم تحديث سعره", "produits mis à jour")}`, "good");
   }
 
   function deleteProduct(index, fromBuffer = false) {

@@ -4,6 +4,7 @@
    ========================================================================== */
 
 import { watchStyleVars } from "./ui/style-vars.js";
+import { bindBrokenImages } from "./ui/media-fallback.js";
 import { install as s0 } from "./ui/storefront/00-context.js";
 import { install as s1 } from "./ui/storefront/01-utils.js";
 import { install as s2 } from "./ui/storefront/02-cart.js";
@@ -57,4 +58,5 @@ const _initStorefront = () => {
 };
 
 _initStorefront();
+bindBrokenImages();
 watchStyleVars(); // CSP: data-driven values reach CSS custom properties, never a style attribute

@@ -2,6 +2,7 @@
 /* app.js → Product page
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 import { createProductsRepo } from "../../data/repositories/products.repo.js";
+import { displayImage, isBrokenProductImage } from "../../domain/category-images.js";
 import { whatsappDigits } from "../../domain/channels.js";
 import { isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
 import { mapRepoProduct } from "./11a-product-mappers.js";
@@ -495,9 +496,13 @@ export function install(ctx) {
   }
 
   function galleryImages(p) {
-    const images = [...new Set([p.image, ...(p.images || []), ...Object.values(p.colorImages || {})].filter(Boolean))];
-    const initialImage = p.colorImages?.[p.colors?.[0]?.name] || images[0];
-    return { images, initialImage };
+    const raw = [...new Set([p.image, ...(p.images || []), ...Object.values(p.colorImages || {})].filter(Boolean))];
+    const images = raw.filter((url) => !isBrokenProductImage(url));
+    const fallback = displayImage(p);
+    const list = images.length ? images : [fallback];
+    const color = p.colorImages?.[p.colors?.[0]?.name];
+    const initialImage = color && !isBrokenProductImage(color) ? color : list[0];
+    return { images: list, initialImage };
   }
 
   /** The product page shell is a `page-*` custom element so no HTML string is parsed into it (CSP: no inline CSS). */

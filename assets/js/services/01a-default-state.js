@@ -3,6 +3,7 @@
    Pure builders: no DOM access, no storage. `hydrate` in 01-default-content.js merges saved data over these. */
 
 import { createProductBuilders } from "./01b-default-products.js";
+import { categoryPhoto } from "../domain/category-images.js";
 import { defaultSiteSettings } from "../domain/site-settings.js";
 import { defaultChannels } from "../domain/channels.js";
 
@@ -130,7 +131,7 @@ export function createDefaultState(ctx) {
         "توصيل مجاني داخل نواكشوط • الدفع عند الاستلام أو عبر بنكيلي",
         "Livraison gratuite à Nouakchott • Paiement à la livraison ou Bankily"
       ),
-      renewalText: bt("جودة مفحوصة من {brand}", "Qualité contrôlée chez {brand}"),
+      renewalText: ctx.txt("", ""),
       categoriesTitle: ctx.txt("تسوق الإلكترونيات", "Électronique"),
       serviceTitle: ctx.txt(
         "كل أجهزتنا أصلية ومفحوصة من طرف خبراء",
@@ -276,7 +277,7 @@ export function createDefaultState(ctx) {
           collection: "phones",
           handles: ctx.RAW.home.iphones,
           layout: "left",
-          promo: "assets/img/restore/promo-iphone.svg",
+          promo: "assets/img/cats/phones.jpg",
           flame: false
         },
         {
@@ -287,7 +288,7 @@ export function createDefaultState(ctx) {
           collection: "android",
           handles: ctx.RAW.home.samsung,
           layout: "right",
-          promo: "assets/img/restore/promo-samsung.svg",
+          promo: "assets/img/cats/android.jpg",
           flame: false
         },
         {
@@ -298,7 +299,7 @@ export function createDefaultState(ctx) {
           collection: "laptops",
           handles: ctx.RAW.home.laptops,
           layout: "left",
-          promo: "assets/img/restore/promo-laptops.svg",
+          promo: "assets/img/cats/laptops.jpg",
           flame: false
         }
       ],
@@ -420,7 +421,8 @@ export function createDefaultState(ctx) {
     return ctx.RAW.collections.map((c) => ({
       handle: c.handle,
       title: COLLECTION_TITLES[c.handle] || ctx.txt(c.title, c.title),
-      visible: true
+      visible: true,
+      image: categoryPhoto(c.handle) || c.image || ""
     }));
   }
 

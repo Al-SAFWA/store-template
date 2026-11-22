@@ -4,6 +4,7 @@
 
 import { collectionHandleFromHref, isCollectionVisible } from "../../domain/collection-aliases.js";
 import { visibleChannel, whatsappDigits } from "../../domain/channels.js";
+import { paymentIcon } from "../../domain/payments.js";
 import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
 import { applyReturnDays, isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
 
@@ -266,11 +267,13 @@ export function install(ctx) {
             <div class="footer-pay" aria-label="${ctx.esc(ctx.t("paymentMethods"))}">
               ${(ctx.SET.payments || [])
                 .filter((p) => p.active)
-                .map((p) =>
-                  p.image || p.logo
-                    ? `<span class="pay-badge pay-image u-pay-rail" data-sv="pay:${ctx.esc(p.color)}"><img src="${ctx.esc(p.image || p.logo)}" alt="${ctx.esc(ctx.L(p.name))}" loading="lazy"></span>`
-                    : `<span class="pay-badge pay-text u-pay-rail" data-sv="pay:${ctx.esc(p.color)}">${ctx.esc(ctx.L(p.name))}</span>`
-                )
+                .map((p) => {
+                  const icon = paymentIcon(p);
+                  const name = ctx.esc(ctx.L(p.name));
+                  return icon
+                    ? `<span class="pay-badge pay-image" title="${name}"><img src="${ctx.esc(icon)}" alt="${name}" width="40" height="40" loading="lazy"></span>`
+                    : `<span class="pay-badge pay-text">${name}</span>`;
+                })
                 .join("")}
             </div>
             <form class="newsletter" id="newsletter-form">

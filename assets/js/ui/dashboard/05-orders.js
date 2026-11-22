@@ -2,6 +2,8 @@
 /* dashboard.js → Orders
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see dashboard.js). */
 
+import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
+
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, {
@@ -179,7 +181,7 @@ export function install(ctx) {
 
   function orderItemRow(item) {
     const specs = item.specsText ? `· ${ctx.esc(item.specsText)}` : "";
-    return `<div class="order-item-row"><img src="${ctx.esc(item.image || "assets/img/favicon.svg")}" alt=""><div class="grow"><strong>${ctx.esc(ctx.lng(item.title))}</strong><small>${ctx.esc(item.variantTitle || "")} ${specs}</small></div><span>×${item.qty}</span><strong>${ctx.money(item.line)}</strong></div>`;
+    return `<div class="order-item-row"><img src="${ctx.esc(displayImage(item))}" alt="" data-fb="${FALLBACK_PHOTO}"><div class="grow"><strong>${ctx.esc(ctx.lng(item.title))}</strong><small>${ctx.esc(item.variantTitle || "")} ${specs}</small></div><span>×${item.qty}</span><strong>${ctx.money(item.line)}</strong></div>`;
   }
 
   function orderTotalsHTML(order) {

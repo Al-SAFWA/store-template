@@ -151,8 +151,6 @@ function catalogActions(ctx) {
     },
     "delete-product": ({ index }) => ctx.deleteProduct(index),
     "delete-product-buffer": () => ctx.deleteProduct(null, true),
-    "bulk-price": () => ctx.bulkPriceModal(),
-    "apply-bulk-price": () => ctx.applyBulkPrice(),
     "add-category": () => {
       ctx.editorKind = "category";
       ctx.categoryEditor(null);

@@ -3,6 +3,8 @@
    Pure functions of the passed data: no DOM access, no event wiring, no side effects. Keeping the templates
    here lets 12-checkout.js stay under the complexity and size budgets, and lets tests render the markup in jsdom. */
 import { whatsappDigits } from "../../domain/channels.js";
+import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
+import { paymentIcon } from "../../domain/payments.js";
 
 function couponPlaceholder() {
   const brand = globalThis.window && globalThis.window.BRAND;
@@ -51,7 +53,7 @@ export function checkoutPageHTML(ctx, data) {
                       i
                     ) => `<label class="payment-card ${i === 0 ? "active" : ""} u-pay-rail" data-sv="pay:${ctx.esc(payment.color)}">
                   <input type="radio" name="co-payment" value="${ctx.esc(payment.id)}" ${i === 0 ? "checked" : ""}>
-                  <span class="payment-mark">${payment.image || payment.logo ? `<img src="${ctx.esc(payment.image || payment.logo)}" alt="${ctx.esc(ctx.L(payment.name))}" width="48" height="32" decoding="async">` : ctx.esc(ctx.L(payment.name).slice(0, 2))}</span>
+                  <span class="payment-mark">${paymentIcon(payment) ? `<img src="${ctx.esc(paymentIcon(payment))}" alt="${ctx.esc(ctx.L(payment.name))}" width="40" height="40" decoding="async">` : ctx.esc(ctx.L(payment.name).slice(0, 2))}</span>
                   <span class="payment-copy"><strong>${ctx.esc(ctx.L(payment.name))}</strong><small>${ctx.esc(ctx.paymentNote(payment))}</small></span>
                   ${payment.discount ? `<span class="payment-discount">-${payment.discount}%</span>` : ""}
                 </label>`
@@ -76,7 +78,7 @@ export function checkoutPageHTML(ctx, data) {
               ${items
                 .map(
                   (it) => `<div class="sum-item">
-                <img src="${it.product.image}" alt="${ctx.esc(ctx.L(it.product.title))}" width="64" height="64" decoding="async">
+                <img src="${displayImage(it.product)}" alt="${ctx.esc(ctx.L(it.product.title))}" width="64" height="64" decoding="async" data-fb="${FALLBACK_PHOTO}">
                 <div><div class="t">${ctx.esc(ctx.L(it.product.title))}</div><div class="p">${ctx.esc(ctx.variantLabel(it.variant))}${it.specs && Object.keys(it.specs).length ? ` · ${ctx.esc(ctx.specsText(it.specs))}` : ""} × ${it.qty}</div><strong>${ctx.money(it.line)}</strong></div>
               </div>`
                 )

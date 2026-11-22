@@ -8,6 +8,9 @@ const sections = readFileSync(new URL("../assets/js/ui/storefront/10-home-sectio
 const cats = readFileSync(new URL("../assets/js/ui/dashboard/08-categories.js", import.meta.url), "utf8");
 const header = readFileSync(new URL("../assets/js/ui/storefront/04-header-footer.js", import.meta.url), "utf8");
 const checkout = readFileSync(new URL("../assets/js/ui/storefront/12a-checkout-markup.js", import.meta.url), "utf8");
+const products = readFileSync(new URL("../assets/js/ui/dashboard/07-products.js", import.meta.url), "utf8");
+const orders = readFileSync(new URL("../assets/js/ui/dashboard/05b-orders-cards.js", import.meta.url), "utf8");
+const restoreCss = css;
 const probe = readFileSync(new URL("../assets/js/ui/storefront/17-store-probe.js", import.meta.url), "utf8");
 const app = readFileSync(new URL("../assets/js/app.js", import.meta.url), "utf8");
 const brand = readFileSync(new URL("../assets/js/brand.config.js", import.meta.url), "utf8");
@@ -39,6 +42,39 @@ test("renewed strip is cancelled and anniversary nav uses offers_label", () => {
   assert.match(sections, /function renewedHTML\(\) \{\s*return "";/);
   assert.match(header, /offers_label/);
   assert.match(header, /navLabel/);
+  assert.equal(header.includes("ما معنى مجدد"), false);
+});
+
+test("hero photo sits on the left and footer uses payment app icons", () => {
+  const heroInner = sections.slice(sections.indexOf("hero-inner"), sections.indexOf("hero-copy"));
+  assert.match(heroInner, /hero-visual/);
+  assert.match(header, /paymentIcon/);
+  assert.match(header, /pay-badge pay-image/);
+  assert.match(restoreCss, /direction:\s*ltr/);
+  assert.match(checkout, /paymentIcon/);
+});
+
+test("category cards and payment methods use real image files", () => {
+  const payments = readFileSync(new URL("../assets/js/domain/payments.js", import.meta.url), "utf8");
+  assert.match(payments, /bankily\.png/);
+  assert.match(payments, /masrvi\.jpg/);
+  assert.match(payments, /sedad\.png/);
+  assert.match(payments, /click\.png/);
+  const photos = readFileSync(new URL("../assets/js/domain/category-images.js", import.meta.url), "utf8");
+  assert.match(photos, /assets\/img\/cats\/phones\.jpg/);
+  assert.match(photos, /restore-anniversary/);
+  assert.match(photos, /stampCatalogImages/);
+  assert.match(sections, /categoryPhoto/);
+  const dash = readFileSync(new URL("../assets/js/dashboard.js", import.meta.url), "utf8");
+  assert.match(dash, /bindBrokenImages/);
+});
+
+test("dashboard drops bulk prices and the in-progress orders tab", () => {
+  assert.equal(products.includes("bulk-price"), false);
+  assert.equal(products.includes("تعديل أسعار جماعي"), false);
+  assert.equal(orders.includes("جارٍ"), false);
+  assert.equal(orders.includes("En cours"), false);
+  assert.match(orders, /الطلبات/);
 });
 
 test("checkout has one form and no Restore coupon", () => {
@@ -48,6 +84,9 @@ test("checkout has one form and no Restore coupon", () => {
 });
 
 test("demo socials and Ctrl+Alt+Y probe are wired", () => {
+  assert.match(brand, /ar: \"المتجر\"/);
+  assert.equal(brand.includes("متجر تجريبي"), false);
+  assert.equal(brand.includes("Demo Store"), false);
   assert.match(brand, /facebook\.com\/demo\.store/);
   assert.match(brand, /instagram\.com\/demo\.store/);
   assert.match(brand, /tiktok\.com\/@demo\.store/);

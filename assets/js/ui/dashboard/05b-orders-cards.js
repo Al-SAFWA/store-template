@@ -3,6 +3,8 @@
    Three groups replace the seven status tabs; the status machine itself is unchanged (statuses live in state.js,
    labels/colours in 13-store-utils.js). 05-orders.js renders this list next to the desktop table; CSS picks one. */
 
+import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
+
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, {
@@ -17,8 +19,7 @@ export function install(ctx) {
 
   /** Tab → statuses it contains. */
   const GROUPS = {
-    new: ["new"],
-    active: ["confirmed", "preparing", "shipped"],
+    new: ["new", "confirmed", "preparing", "shipped"],
     done: ["delivered", "cancelled", "returned"]
   };
   /** Status → the one action a merchant takes from there. */
@@ -41,8 +42,7 @@ export function install(ctx) {
     const orders = ctx.orderList();
     const count = (ids) => orders.filter((o) => ids.includes(o.status)).length;
     return [
-      { id: "new", label: ctx.dt("جديد", "Nouvelles"), count: count(GROUPS.new), urgent: true },
-      { id: "active", label: ctx.dt("جارٍ", "En cours"), count: count(GROUPS.active) },
+      { id: "new", label: ctx.dt("الطلبات", "Commandes"), count: count(GROUPS.new), urgent: count(["new"]) > 0 },
       { id: "done", label: ctx.dt("منتهٍ", "Terminées"), count: count(GROUPS.done) }
     ];
   }
@@ -101,7 +101,7 @@ export function install(ctx) {
     const variant = first.variantTitle ? ` · ${first.variantTitle}` : "";
     const qty = Number(first.qty || 1) > 1 ? ` ×${first.qty}` : "";
     return {
-      thumb: first.image ? `<img src="${ctx.esc(first.image)}" alt="">` : ctx.icon("box"),
+      thumb: `<img src="${ctx.esc(displayImage(first))}" alt="" data-fb="${FALLBACK_PHOTO}">`,
       title: ctx.esc(`${first.title || ""}${variant}${qty}`),
       extra: [extra, order.payment?.name || ""]
         .filter(Boolean)

@@ -4,6 +4,8 @@
    Cities are cards too: the fee is edited in place, the switch disables a city, "+ city" opens a 3-field editor.
    Data shape is unchanged except one new optional field per payment: `account` (the number the customer pays to). */
 
+import { paymentIcon } from "../../domain/payments.js";
+
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { viewPayments, paymentEditor, viewPaymentSave, cityEditor, viewCitySave, setCityFee });
@@ -29,10 +31,10 @@ export function install(ctx) {
   }
 
   function paymentCard(payment, index) {
-    const mark =
-      payment.image || payment.logo
-        ? `<img src="${ctx.esc(payment.image || payment.logo)}" alt="">`
-        : `<span class="u-tint" data-sv="bg:${ctx.esc(payment.color || "#0b6fb8")}">${ctx.esc(String(ctx.lng(payment.name) || "?").slice(0, 1))}</span>`;
+    const icon = paymentIcon(payment);
+    const mark = icon
+      ? `<img src="${ctx.esc(icon)}" alt="">`
+      : `<span class="u-tint" data-sv="bg:${ctx.esc(payment.color || "#0b6fb8")}">${ctx.esc(String(ctx.lng(payment.name) || "?").slice(0, 1))}</span>`;
     return `<article class="pc-card${payment.active === false ? " is-off" : ""}">
       <button type="button" class="pc-main" data-action="edit-payment" data-index="${index}" aria-label="${ctx.esc(ctx.lng(payment.name))}">
         <span class="pc-mark">${mark}</span>

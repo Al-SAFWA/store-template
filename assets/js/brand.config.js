@@ -5,8 +5,8 @@
    ============================================================================ */
 window.BRAND = {
   key: "demo", // short slug: folder / subdomain / repo name
-  name: { ar: "متجر تجريبي", fr: "Demo Store" }, // store name shown everywhere
-  legalName: { ar: "متجر تجريبي ش.ذ.م.م", fr: "Demo Store SARL" },
+  name: { ar: "المتجر", fr: "Boutique" }, // store name shown everywhere
+  legalName: { ar: "المتجر ش.ذ.م.م", fr: "Boutique SARL" },
   tagline: { ar: "منتجات أصلية وتوصيل سريع", fr: "Produits authentiques, livraison rapide" },
   logo: "assets/img/brand-logo.svg",
   logoWhite: "assets/img/brand-logo-white.svg",

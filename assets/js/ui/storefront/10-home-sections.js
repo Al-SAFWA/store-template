@@ -3,6 +3,7 @@
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 
 import { productInCollection, resolveCollectionHandle, visibleBarEntries } from "../../domain/collection-aliases.js";
+import { categoryPhoto, FALLBACK_PHOTO, pickCategoryImage } from "../../domain/category-images.js";
 import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
 import { applyReturnDays, isNoRiskVisible, isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
 
@@ -41,16 +42,16 @@ export function install(ctx) {
           const light = slide.dark === false;
           return `<div class="hero-slide hero-banner ${light ? "hero-light" : "hero-dark"}${i === 0 ? " active" : ""} u-tint" data-sv="bg:${ctx.esc(slide.bg || "linear-gradient(135deg,#1e3a8a,#2563eb)")}">
           <div class="container hero-inner">
+            <div class="hero-visual">
+              <div class="hero-glow"></div>
+              <img class="${slide.imageStyle === "card" ? "hero-img-card" : ""}" src="${ctx.esc(image)}" alt="${ctx.esc(ctx.L(slide.title))}" width="514" height="300" loading="${i === 0 ? "eager" : "lazy"}" decoding="async">
+            </div>
             <div class="hero-copy">
               <span class="hero-eyebrow">${ctx.esc(ctx.L(ctx.SET.storeName))} · ${ctx.esc(ctx.L(ctx.SET.city))}</span>
               <h1>${ctx.esc(ctx.L(slide.title))}</h1>
               <p>${ctx.esc(ctx.L(slide.subtitle))}</p>
               <a class="btn ${light ? "btn-dark" : "btn-primary"}" href="${ctx.esc(ctx.R.safeHref(slide.href || "collection.html?handle=all"))}">${ctx.esc(ctx.L(slide.cta) || ctx.t("shopNow"))} ${ctx.ICON.arrowRight}</a>
               ${heroPillsHTML()}
-            </div>
-            <div class="hero-visual">
-              <div class="hero-glow"></div>
-              <img class="${slide.imageStyle === "card" ? "hero-img-card" : ""}" src="${ctx.esc(image)}" alt="${ctx.esc(ctx.L(slide.title))}" width="514" height="300" loading="${i === 0 ? "eager" : "lazy"}" decoding="async">
             </div>
           </div>
         </div>`;
@@ -133,7 +134,7 @@ export function install(ctx) {
     return visibleBarEntries(ctx.S.theme?.categories, ctx.S.collections).map(({ handle, entry, collection }) => ({
       handle,
       label: categoryLabel(handle, collection, entry),
-      image: entry.image || collection?.image || "assets/img/category-iphone.svg",
+      image: pickCategoryImage(entry.image, collection?.image, categoryPhoto(handle)) || FALLBACK_PHOTO,
       count: categoryCount(handle)
     }));
   }
@@ -153,7 +154,7 @@ export function install(ctx) {
               .map(
                 (card) => `
               <a class="cat-card" href="collection.html?handle=${encodeURIComponent(card.handle)}">
-                <img src="${ctx.esc(card.image)}" alt="${ctx.esc(ctx.L(card.label))}" width="150" height="150" loading="lazy" decoding="async"><span>${ctx.esc(ctx.L(card.label))}</span><small class="cat-count">${card.count} ${ctx.esc(card.count === 1 ? ctx.t("product") : ctx.t("products"))}</small>
+                <img src="${ctx.esc(card.image)}" alt="${ctx.esc(ctx.L(card.label))}" width="150" height="150" loading="lazy" decoding="async" data-fb="${ctx.esc(categoryPhoto(card.handle) || FALLBACK_PHOTO)}"><span>${ctx.esc(ctx.L(card.label))}</span><small class="cat-count">${card.count} ${ctx.esc(card.count === 1 ? ctx.t("product") : ctx.t("products"))}</small>
               </a>`
               )
               .join("")}

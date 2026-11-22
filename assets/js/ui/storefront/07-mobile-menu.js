@@ -2,6 +2,8 @@
 /* app.js → Mobile menu
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 
+import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
+
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { mountMenu, openMenu, closeMenu, runSearch });
@@ -89,7 +91,7 @@ export function install(ctx) {
           .map(
             (p) => `
       <a class="search-result" href="product.html?handle=${encodeURIComponent(p.handle)}">
-        <img src="${p.image}" alt="${ctx.esc(p.title)}" width="64" height="64" loading="lazy" decoding="async">
+        <img src="${displayImage(p)}" alt="${ctx.esc(p.title)}" width="64" height="64" loading="lazy" decoding="async" data-fb="${FALLBACK_PHOTO}">
         <div><div class="t">${ctx.esc(p.title)}</div><div class="p">${ctx.money(p.price)}</div></div>
       </a>`
           )

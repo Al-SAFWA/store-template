@@ -21,7 +21,7 @@ export function install(ctx) {
   function viewHomepage() {
     // 1.17.5 — "press" was removed from the storefront; hide it from stores that still carry it in their settings
     const sections = [...(ctx.model.settings.pageSections || [])]
-      .filter((section) => section.id !== "press")
+      .filter((section) => section.id !== "press" && section.id !== "renewed")
       .sort((a, b) => Number(a.order) - Number(b.order));
     const productSections = [...(ctx.model.settings.homeSections || [])].sort(
       (a, b) => Number(a.order) - Number(b.order)

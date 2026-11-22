@@ -6,8 +6,9 @@
    never edits three lists. Products are never deleted with a category. Shared state lives on `ctx`. */
 
 import { productInCollection, resolveCollectionHandle } from "../../domain/collection-aliases.js";
+import { categoryPhoto, FALLBACK_PHOTO, pickCategoryImage } from "../../domain/category-images.js";
 
-const PLACEHOLDER = "assets/img/category-iphone.svg";
+const PLACEHOLDER = FALLBACK_PHOTO;
 
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
@@ -35,11 +36,12 @@ export function install(ctx) {
   const onMenu = (handle) => navList().some((item) => item.href === navHref(handle));
 
   function categoryImage(collection) {
-    if (collection.image) return collection.image;
-    const home = homeList().find((item) => item.handle === collection.handle);
-    if (home?.image) return home.image;
-    const first = membersOf(collection.handle).find((product) => product.image || product.images?.[0]);
-    return first ? first.image || first.images[0] : PLACEHOLDER;
+    const handle = resolveCollectionHandle(collection.handle);
+    const home = homeList().find((item) => item.handle === collection.handle || item.handle === handle);
+    return (
+      pickCategoryImage(collection.image, home?.image, categoryPhoto(handle), categoryPhoto(collection.handle)) ||
+      PLACEHOLDER
+    );
   }
 
   /* ---------- list ---------- */
@@ -62,7 +64,7 @@ export function install(ctx) {
         <button type="button" class="ct-move" data-action="move-category" data-index="${index}" data-dir="1" ${index === total - 1 ? "disabled" : ""} aria-label="${ctx.dt("أسفل", "Descendre")}">▼</button>
       </div>
       <button type="button" class="ct-main" data-action="edit-category" data-index="${index}">
-        <span class="ct-thumb"><img src="${ctx.esc(categoryImage(collection))}" alt=""></span>
+        <span class="ct-thumb"><img src="${ctx.esc(categoryImage(collection))}" alt="" data-fb="${ctx.esc(categoryPhoto(collection.handle) || PLACEHOLDER)}"></span>
         <span class="ct-text"><strong>${ctx.esc(ctx.lng(collection.title))}</strong><small>${ctx.esc(cardMeta(collection))}</small></span>
       </button>
       <label class="toggle"><input type="checkbox" data-action="toggle-category-visible" data-index="${index}" ${collection.visible !== false ? "checked" : ""}><span></span></label>
@@ -129,6 +131,11 @@ export function install(ctx) {
   function imageStep(buffer) {
     const seen = new Set();
     const pics = [];
+    const cover = categoryImage(buffer);
+    if (cover) {
+      seen.add(cover);
+      pics.push(cover);
+    }
     for (const product of products()) {
       const url = product.image || product.images?.[0];
       if (!url || seen.has(url) || !ctx.categoryDraft.members.has(product.handle)) continue;

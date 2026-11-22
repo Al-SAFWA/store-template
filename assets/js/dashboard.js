@@ -8,6 +8,7 @@
    original top-to-bottom order of the former monolith. See docs/ARCHITECTURE.md. */
 
 import { watchStyleVars } from "./ui/style-vars.js";
+import { bindBrokenImages } from "./ui/media-fallback.js";
 import { install as s0 } from "./ui/dashboard/00-context.js";
 import { install as s1 } from "./ui/dashboard/01-auth-screens.js";
 import { install as s2 } from "./ui/dashboard/02-shell.js";
@@ -80,4 +81,5 @@ const _initDashboard = () => {
 };
 
 _initDashboard();
+bindBrokenImages();
 watchStyleVars(); // CSP: data-driven values reach CSS custom properties, never a style attribute

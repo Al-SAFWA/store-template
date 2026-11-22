@@ -209,16 +209,8 @@ function copyVisibleI18n(settings, ss, key, field) {
   if (row?.is_visible !== false && row?.value) settings[field] = row.value;
 }
 
-function copyRenewal(settings, ss, lang) {
-  const word = siteText(settings, "refurbished_label", lang);
-  if (!word) return;
-  const brand = settings.storeName || { ar: "", fr: "" };
-  const arWord = ss.refurbished_label.value?.ar || word;
-  const frWord = ss.refurbished_label.value?.fr || word;
-  settings.renewalText = {
-    ar: `${arWord} من ${brand.ar || ""}`.trim(),
-    fr: `${frWord} chez ${brand.fr || ""}`.trim()
-  };
+function copyRenewal(settings) {
+  settings.renewalText = { ar: "", fr: "" };
 }
 
 function copyOffersTitle(settings, ss) {
@@ -231,7 +223,7 @@ function copyOffersTitle(settings, ss) {
 }
 
 /** Copy siteSettings onto the legacy fields the rest of the app already reads. */
-export function applySiteSettingsToState(settings, lang) {
+export function applySiteSettingsToState(settings, _lang) {
   if (!settings) return settings;
   settings.siteSettings = mergeSiteSettings(settings.siteSettings);
   const ss = settings.siteSettings;
@@ -247,7 +239,7 @@ export function applySiteSettingsToState(settings, lang) {
   copyVisibleI18n(settings, ss, "categories_title", "categoriesTitle");
   copyVisibleI18n(settings, ss, "service_title", "serviceTitle");
   if (ss.trusted_by?.value) settings.trustTitle = ss.trusted_by.value;
-  copyRenewal(settings, ss, lang);
+  copyRenewal(settings);
   copyOffersTitle(settings, ss);
   return settings;
 }

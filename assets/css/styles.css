@@ -703,7 +703,7 @@ svg { display: block; }
 .footer-contact .row { display: flex; gap: 10px; margin-bottom: 12px; }
 .footer-contact .row span:first-child { min-width: 128px; color: #d6d6d6; }
 .footer-contact .row span:last-child { color: #8f8f8f; }
-.footer-pay { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+.footer-pay { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; align-items: center; }
 .pay-badge {
   height: 27px; min-width: 38px;
   display: inline-flex; align-items: center; justify-content: center;

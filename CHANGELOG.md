@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.18.5 — 2026-11-22
+
+- Category cards (home + dashboard) use real product photos, including leftover Restore collection handles.
+- Footer and checkout show the actual Bankily, Masrvi, Sedad, and Click app marks.
+- Empty or dead image URLs fall back to a photo instead of the broken-image glyph.
+- Storefront polish: renewed bandeau removed, hero photo on the left, demo shop renamed.
+
 ## 1.18.4 — 2026-11-22
 
 - Hero editor: the default blue gradient is a named swatch, so the first slide matches a preset.

@@ -3,6 +3,7 @@
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see state.js). */
 import { t as tI18n, L as LI18n } from "../i18n/index.js";
 import { applyChannelsToSettings } from "../domain/channels.js";
+import { stampCatalogImages } from "../domain/category-images.js";
 import { applySiteSettingsToState, mergeSiteSettings } from "../domain/site-settings.js";
 import { createDefaultState } from "./01a-default-state.js";
 
@@ -56,6 +57,7 @@ export function install(ctx) {
     out.settings.siteSettings = mergeSiteSettings(out.settings.siteSettings, out.settings);
     applySiteSettingsToState(out.settings, ctx.lang);
     applyChannelsToSettings(out.settings, window.BRAND || {});
+    stampCatalogImages(out);
     return out;
   }
   // I18N moved to ./i18n/ar.js, ./i18n/fr.js (single source of truth)

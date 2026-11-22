@@ -1,6 +1,7 @@
 // @ts-check
 /* app.js → Product page markup blocks (extracted verbatim from renderProduct)
    Pure template builders: each takes the data it needs and returns an HTML string. No DOM access. */
+import { FALLBACK_PHOTO } from "../../domain/category-images.js";
 import { applyReturnDays } from "../../domain/store-policies.js";
 
 /**
@@ -12,7 +13,7 @@ export function galleryHTML(ctx, p, images, initialImage, makeInfo) {
   return `
       <div class="gallery">
         <div class="gallery-main">
-          <img id="gallery-main-img" src="${initialImage}" alt="${ctx.esc(ctx.L(p.title))}" width="600" height="600" decoding="async">
+          <img id="gallery-main-img" src="${initialImage}" alt="${ctx.esc(ctx.L(p.title))}" width="600" height="600" decoding="async" data-fb="${FALLBACK_PHOTO}">
           <span class="color-tint" id="gallery-tint" aria-hidden="true"></span>
         </div>
         <div class="thumbs">
