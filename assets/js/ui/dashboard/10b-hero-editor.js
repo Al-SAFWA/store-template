@@ -16,6 +16,13 @@ export function install(ctx) {
       fr: "Nuit"
     },
     {
+      id: "blue",
+      bg: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 55%,#60a5fa 130%)",
+      dark: true,
+      ar: "أزرق",
+      fr: "Bleu"
+    },
+    {
       id: "sky",
       bg: "linear-gradient(135deg,#eef3ff 0%,#d9e5ff 45%,#f7c7ff 120%)",
       dark: false,

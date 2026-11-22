@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.4 — 2026-11-22
+
+- Hero editor: the default blue gradient is a named swatch, so the first slide matches a preset.
+
 ## 1.18.3 — 2026-11-22
 
 - CI fix: split probe, checkout, home, footer, and category-bar helpers so eslint complexity stays at 15. Storefront behaviour is unchanged.

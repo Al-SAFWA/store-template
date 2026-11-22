@@ -37,7 +37,7 @@ test("hero slides: list preview, editor steps, presets, destination, reorder", a
   await expect(modal.locator('input[data-edit-path="bg"]')).toHaveCount(0);
   await expect(modal.locator(".hs-custom-href")).toBeHidden();
   // The current gradient is matched to a preset swatch.
-  await expect(modal.locator(".hs-swatch.is-on")).toHaveAttribute("data-hero-bg", "night");
+  await expect(modal.locator(".hs-swatch.is-on")).toHaveAttribute("data-hero-bg", "blue");
 
   // Typing the title updates the live preview.
   await modal.locator('input[data-edit-path="title.ar"]').fill("هواتف مضمونة لسنة");
