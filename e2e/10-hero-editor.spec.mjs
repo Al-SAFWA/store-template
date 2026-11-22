@@ -40,8 +40,8 @@ test("hero slides: list preview, editor steps, presets, destination, reorder", a
   await expect(modal.locator(".hs-swatch.is-on")).toHaveAttribute("data-hero-bg", "night");
 
   // Typing the title updates the live preview.
-  await modal.locator('input[data-edit-path="title.ar"]').fill("هواتف مجددة بضمان سنة");
-  await expect(modal.locator(".hs-image-field .hs-preview strong")).toHaveText("هواتف مجددة بضمان سنة");
+  await modal.locator('input[data-edit-path="title.ar"]').fill("هواتف مضمونة لسنة");
+  await expect(modal.locator(".hs-image-field .hs-preview strong")).toHaveText("هواتف مضمونة لسنة");
 
   // Picking the light preset flips the preview to dark text.
   await modal.locator('[data-hero-bg="sky"]').click();
@@ -59,11 +59,11 @@ test("hero slides: list preview, editor steps, presets, destination, reorder", a
   await modal.locator('[data-action="save-editor"]').click();
   await expect(modal).toBeHidden();
   const saved = await page.evaluate(() => window.RESTORE.useDraft().settings.heroSlides[0]);
-  expect(saved.title.ar).toBe("هواتف مجددة بضمان سنة");
+  expect(saved.title.ar).toBe("هواتف مضمونة لسنة");
   expect(saved.dark).toBe(false);
   expect(saved.bg).toContain("#eef3ff");
   expect(saved.href).toBe(collectionValue);
-  await expect(page.locator(".hs-card").nth(0)).toContainText("هواتف مجددة بضمان سنة");
+  await expect(page.locator(".hs-card").nth(0)).toContainText("هواتف مضمونة لسنة");
 
   // Reorder: slide 2 moves up.
   const secondTitle = await page.locator(".hs-card").nth(1).locator(".hs-copy strong").textContent();

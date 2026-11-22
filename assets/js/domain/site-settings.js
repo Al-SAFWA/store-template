@@ -15,8 +15,8 @@ export const SITE_SETTING_DEFS = [
     defaultVisible: true,
     ar: "مدة الإرجاع (أيام)",
     fr: "Délai de retour (jours)",
-    hintAr: "الافتراضي 10. كل موضع يذكر الإرجاع يقرأ هذه القيمة.",
-    hintFr: "Défaut 10. Tous les textes de retour lisent cette valeur."
+    hintAr: "الافتراضي 10. غيّر الرقم ثم احفظ المسودة واضغط نشر. يظهر في شريط الثقة، صفحة المنتج، والدفع.",
+    hintFr: "Défaut 10. Enregistrez puis publiez. Lu sur la barre de confiance, la fiche produit et le paiement."
   },
   {
     key: "no_risk",
@@ -40,12 +40,12 @@ export const SITE_SETTING_DEFS = [
   {
     key: "refurbished_label",
     kind: "i18n",
-    defaultValue: { ar: "مجدد", fr: "reconditionné" },
-    defaultVisible: true,
-    ar: "كلمة «مجدد»",
-    fr: "Mot « reconditionné »",
-    hintAr: "تظهر في شريط «ما معنى مجدد» وصفحات السياسة.",
-    hintFr: "Affiché dans le bandeau « que signifie reconditionné »."
+    defaultValue: { ar: "مفحوص", fr: "contrôlé" },
+    defaultVisible: false,
+    ar: "شريط الجودة",
+    fr: "Bandeau qualité",
+    hintAr: "مخفي افتراضياً. إن أظهرته يظهر شريط تحت شريط الثقة.",
+    hintFr: "Masqué par défaut. S’il est visible, un bandeau s’affiche sous la barre de confiance."
   },
   {
     key: "offers_label",
@@ -81,7 +81,7 @@ export const SITE_SETTING_DEFS = [
   {
     key: "categories_title",
     kind: "i18n",
-    defaultValue: { ar: "تسوق الإلكترونيات المجددة", fr: "Électronique reconditionnée" },
+    defaultValue: { ar: "تسوق الإلكترونيات", fr: "Électronique" },
     defaultVisible: true,
     ar: "عنوان شريط الفئات",
     fr: "Titre du ruban catégories"
@@ -216,8 +216,8 @@ function copyRenewal(settings, ss, lang) {
   const arWord = ss.refurbished_label.value?.ar || word;
   const frWord = ss.refurbished_label.value?.fr || word;
   settings.renewalText = {
-    ar: `ما معنى ${arWord} من ${brand.ar || ""}؟`,
-    fr: `Que signifie ${frWord} chez ${brand.fr || ""} ?`
+    ar: `${arWord} من ${brand.ar || ""}`.trim(),
+    fr: `${frWord} chez ${brand.fr || ""}`.trim()
   };
 }
 

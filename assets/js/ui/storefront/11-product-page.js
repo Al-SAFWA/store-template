@@ -144,29 +144,37 @@ export function install(ctx) {
     return SPEC_KEYS[p.type] || DEFAULT_SPEC_KEYS;
   }
 
+  function optionCoversSpec(p, key) {
+    const needle = String(key).toLowerCase();
+    return (p.options || []).some((o) => {
+      const n = String(o.name).toLowerCase();
+      return n === needle || n.includes(needle) || needle.includes(n);
+    });
+  }
+
   function pdpSpecsHTML(p) {
     const specs = p.specs || {};
-    const keys = specKeysFor(p).filter((key) => specs[key]);
+    const keys = specKeysFor(p).filter((key) => {
+      const spec = specs[key];
+      if (!spec || key === "battery") return false;
+      if (optionCoversSpec(p, key)) return false;
+      return [...new Set((spec.choices || []).filter(Boolean))].length > 0;
+    });
     if (!keys.length) return "";
-    return `<div class="specs-section">
-      <div class="specs-head"><span>${ctx.esc(ctx.t("personalization"))}</span><small>${ctx.esc(ctx.t("chooseSpecs"))}</small></div>
-      <div class="specs-grid">
-        ${keys
-          .map((key) => {
-            const spec = specs[key];
-            const value = PDP.specs[key] ?? spec.value;
-            const choices = [...new Set((spec.choices || []).filter(Boolean))];
-            const isBattery = key === "battery";
-            if (!choices.length || isBattery) {
-              return `<div class="spec-field static"><span>${ctx.esc(ctx.L(spec.label))}</span><strong dir="auto">${ctx.esc(value)}</strong>${isBattery ? `<em class="battery-pill">${ctx.ICON.bolt}${p.battery ? `${p.battery}%` : value}</em>` : ""}</div>`;
-            }
-            return `<div class="spec-field"><label>${ctx.esc(ctx.L(spec.label))}</label>
-            <select dir="ltr" data-spec="${ctx.esc(key)}">${choices.map((choice) => `<option value="${ctx.esc(choice)}" ${String(choice) === String(value) ? "selected" : ""}>${ctx.esc(choice)}</option>`).join("")}</select>
-          </div>`;
+    return keys
+      .map((key) => {
+        const spec = specs[key];
+        const value = PDP.specs[key] ?? spec.value;
+        const choices = [...new Set((spec.choices || []).filter(Boolean))];
+        const buttons = choices
+          .map((choice) => {
+            const active = String(choice) === String(value);
+            return `<button class="opt-btn ${active ? "active" : ""}" type="button" dir="auto" data-spec="${ctx.esc(key)}" data-value="${ctx.esc(choice)}">${ctx.esc(choice)}</button>`;
           })
-          .join("")}
-      </div>
-    </div>`;
+          .join("");
+        return `<div class="opt-label">${ctx.esc(ctx.L(spec.label))} <span dir="auto">${ctx.esc(value || "")}</span></div><div class="opt-values">${buttons}</div>`;
+      })
+      .join("");
   }
 
   /** Variants saved by the dashboard carry {color, storage}; the page matches the shopper's picks on o1/o2 — fill
@@ -250,10 +258,14 @@ export function install(ctx) {
       p.type === "Macbook"
         ? `<div>${ctx.ICON.badgeCheck}<span>${ctx.esc(ctx.t("macos"))}<small>${ctx.esc(ctx.t("checkedSub"))}</small></span></div>`
         : `<div>${ctx.ICON.badgeCheck}<span>${ctx.esc(ctx.t("checked"))}<small>${ctx.esc(ctx.t("checkedSub"))}</small></span></div>`;
+    const returnsOn = isReturnEnabled(ctx.SET);
+    const returnsBit = returnsOn
+      ? `<div>${ctx.ICON.return}<span>${ctx.esc(returnLabel(ctx.SET, ctx.R.lang) || ctx.t("returns"))}<small>${ctx.esc(ctx.t("returnsSub"))}</small></span></div>`
+      : "";
     return `<div class="trust-mini">
           <div>${ctx.ICON.truck}<span>${ctx.esc(ctx.t("freeDelivery"))}<small>${ctx.esc(ctx.t("freeDeliverySub"))}</small></span></div>
           <div>${ctx.ICON.shield}<span>${ctx.esc(ctx.t("warranty"))}<small>${ctx.esc(ctx.t("warrantySub"))}</small></span></div>
-          <div>${ctx.ICON.return}<span>${ctx.esc(ctx.t("returns"))}<small>${ctx.esc(ctx.t("returnsSub"))}</small></span></div>
+          ${returnsBit}
           ${last}
         </div>`;
   }
@@ -300,10 +312,14 @@ export function install(ctx) {
   }
 
   function whatsappQuestion(p, v) {
-    const hello = ctx.R.lang === "ar" ? "مرحباً" : "Bonjour";
-    const intent = ctx.R.lang === "ar" ? "أريد الاستفسار عن" : "je voudrais des informations sur";
+    const title = ctx.L(p.title);
     const variantTitle = ctx.L(v?.title) || (v ? ctx.variantLabel(v) : "");
-    return `${hello} ${ctx.L(ctx.SET.storeName)}، ${intent} ${ctx.L(p.title)}${variantTitle ? ` (${variantTitle})` : ""}.`;
+    const qty = Number(PDP.qty) || 1;
+    const price = ctx.money(Number(v?.price ?? p.price) * qty);
+    const named = `${title}${variantTitle ? ` (${variantTitle})` : ""}`;
+    return ctx.R.lang === "ar"
+      ? `مرحباً، أريد طلب: ${named} × ${qty} — ${price}`
+      : `Bonjour, je souhaite commander : ${named} × ${qty} — ${price}`;
   }
 
   function pdpInfoHTML() {
@@ -321,7 +337,7 @@ export function install(ctx) {
     return `
       <div class="product-info" id="product-info">
         <div class="vendor">${ctx.esc(p.vendor || ctx.L(ctx.SET.storeName))}</div>
-        <h1>${ctx.esc(p.title)}</h1>
+        <h1>${ctx.esc(ctx.L(p.title))}</h1>
         <div class="rating">${[1, 2, 3, 4, 5].map((n) => `<span class="tp-star${n > Math.round(Number(rating)) ? " off" : ""}" data-icon="star"></span>`).join("")}<span>${rating} · ${productReviews(p).length} ${ctx.esc(ctx.t("reviews"))}</span></div>
         ${pdpBadges(p, currentConditionLabel(p))}
         ${pdpPriceRow(price, compare, ctx.discountFor(price, compare))}

@@ -264,6 +264,14 @@ function pickOption(ctx, e, el) {
   ctx.hydrateIcons();
 }
 
+function pickSpec(ctx, e, el) {
+  if (!ctx.PDP.p || !el.dataset.spec) return;
+  ctx.PDP.specs[el.dataset.spec] = el.dataset.value;
+  const info = document.getElementById("product-info");
+  if (info) info.outerHTML = ctx.pdpInfoHTML();
+  ctx.hydrateIcons();
+}
+
 function changeQty(ctx, e, el) {
   const variant = ctx.pdpVariant();
   const cap = Math.max(1, ctx.maxOrderable(ctx.PDP.p?.handle, variant?.id));
@@ -335,6 +343,7 @@ export function buildClickHandlers(ctx) {
     { match: (e) => pick(e, "[data-add-cart]"), run: () => addToCartAndOpen(ctx) },
     { match: (e) => pick(e, "[data-buy-now]"), run: () => buyNow(ctx) },
     { match: (e) => pick(e, "[data-opt]"), run: (e, el) => pickOption(ctx, e, el) },
+    { match: (e) => pick(e, "[data-spec]"), run: (e, el) => pickSpec(ctx, e, el) },
     { match: (e) => pick(e, "[data-qty]"), run: (e, el) => changeQty(ctx, e, el) },
     { match: (e) => pick(e, DOT_SELECTOR), run: (e, el) => pickDot(ctx, e, el) },
     { match: (e) => pick(e, "[data-thumb]"), run: (e, el) => pickThumb(ctx, e, el) }

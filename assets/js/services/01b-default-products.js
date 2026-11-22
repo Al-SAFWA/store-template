@@ -15,8 +15,8 @@ export function createProductBuilders(ctx) {
     return (
       TYPE_DESCRIPTIONS[type] ||
       bt(
-        "جهاز مجدد تم فحصه واختباره من طرف خبراء {brand}، ويأتي بضمان 12 شهرًا.",
-        "Appareil reconditionné, inspecté et testé par les experts {brand}, avec 12 mois de garantie."
+        "جهاز تم فحصه واختباره من طرف خبراء {brand}، ويأتي بضمان 12 شهرًا.",
+        "Appareil inspecté et testé par les experts {brand}, avec 12 mois de garantie."
       )
     );
   }

@@ -5,7 +5,7 @@
 export function install(ctx) {
   Object.assign(ctx, { applyDocument });
   const FONT_STACKS = {
-    Montserrat: '"Montserrat", "Noto Sans Arabic", system-ui, sans-serif',
+    Montserrat: '"Cairo", "Montserrat", "Noto Sans Arabic", system-ui, sans-serif',
     Inter: '"Inter", "Noto Sans Arabic", system-ui, sans-serif',
     Roboto: '"Roboto", "Noto Sans Arabic", system-ui, sans-serif',
     "Open Sans": '"Open Sans", "Noto Sans Arabic", system-ui, sans-serif',
@@ -39,11 +39,26 @@ export function install(ctx) {
     html.style.setProperty("--font-main", fontStack);
   }
 
+  function isStaleRestoreDemo(saved) {
+    if (!saved || !ctx.LOCAL_DEV || ctx.REMOTE) return false;
+    if ((window.BRAND?.key || "") !== "demo") return false;
+    const name = `${saved.settings?.storeName?.ar || ""} ${saved.settings?.storeName?.fr || ""}`;
+    const legacyAr = String.fromCharCode(0x0631, 0x064a, 0x0633, 0x062a, 0x0648, 0x0631);
+    return name.includes(legacyAr) || /\bRestore\b/i.test(name);
+  }
+
   const savedState = ctx.readJSON(ctx.LS_STATE, null);
-  ctx.state = ctx.hydrate(savedState);
+  const dropSaved = isStaleRestoreDemo(savedState);
+  ctx.state = ctx.hydrate(dropSaved ? null : savedState);
+  if (dropSaved) {
+    ctx.writeJSON(ctx.LS_STATE, ctx.state);
+    try {
+      localStorage.removeItem(ctx.LS_DRAFT);
+    } catch {}
+  }
   ctx.draft = null;
   {
-    const savedDraft = ctx.readJSON(ctx.LS_DRAFT, null);
+    const savedDraft = dropSaved ? null : ctx.readJSON(ctx.LS_DRAFT, null);
     if (savedDraft) ctx.draft = ctx.hydrate(savedDraft);
   }
   const startedAt = Date.now();

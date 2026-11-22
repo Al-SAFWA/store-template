@@ -49,3 +49,39 @@ export function isCollectionVisible(collections, handle) {
   const row = (collections || []).find((item) => resolveCollectionHandle(item.handle) === want);
   return !row || row.visible !== false;
 }
+
+/**
+ * Category-bar cards: only collections that exist in `collections` and are not hidden.
+ * Hidden rows are either `visible === false` (JSON draft) or omitted entirely (tables: active=false
+ * is filtered by RLS, so a missing row must not fall back to the stale `theme.categories` entry).
+ */
+export function visibleBarEntries(themeCategories, collections) {
+  const byHandle = new Map();
+  for (const collection of collections || []) {
+    const handle = resolveCollectionHandle(collection.handle);
+    if (!handle || handle === "all") continue;
+    byHandle.set(handle, collection);
+  }
+  const seen = new Set();
+  const out = [];
+  for (const entry of themeCategories || []) {
+    const handle = resolveCollectionHandle(entry.handle);
+    if (!handle || handle === "all" || seen.has(handle)) continue;
+    const collection = byHandle.get(handle);
+    if (!collection || collection.visible === false) continue;
+    seen.add(handle);
+    out.push({ handle, entry, collection });
+  }
+  if (out.length) return out;
+  for (const collection of collections || []) {
+    const handle = resolveCollectionHandle(collection.handle);
+    if (!handle || handle === "all" || seen.has(handle) || collection.visible === false) continue;
+    seen.add(handle);
+    out.push({
+      handle,
+      entry: { handle, label: collection.title, image: collection.image },
+      collection
+    });
+  }
+  return out;
+}

@@ -164,7 +164,7 @@ export function install(ctx) {
 
         <section class="pe-step">
           <h4>${ctx.dt("النص", "Texte")}</h4>
-          <div class="pe-field pe-title"><label>${ctx.dt("العنوان", "Titre")}</label><input data-edit-path="title.ar" data-hero-live="title" value="${ctx.esc(buffer.title.ar || "")}" placeholder="${ctx.dt("مثال: هواتف مجددة بضمان سنة", "Ex. : téléphones garantis 1 an")}"></div>
+          <div class="pe-field pe-title"><label>${ctx.dt("العنوان", "Titre")}</label><input data-edit-path="title.ar" data-hero-live="title" value="${ctx.esc(buffer.title.ar || "")}" placeholder="${ctx.dt("مثال: هواتف مضمونة لسنة", "Ex. : téléphones garantis 1 an")}"></div>
           <div class="pe-field"><label>${ctx.dt("سطر تحت العنوان (اختياري)", "Sous-titre (facultatif)")}</label><textarea data-edit-path="subtitle.ar" data-hero-live="subtitle" rows="2">${ctx.esc(buffer.subtitle.ar || "")}</textarea></div>
           <details class="pe-more"><summary>${ctx.dt("النص بالفرنسية", "Texte en français")}</summary>
             <div class="pe-more-body">

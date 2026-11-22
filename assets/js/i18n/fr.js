@@ -7,7 +7,7 @@ export const fr = {
   wishlist: "Favoris",
   cart: "Panier",
   checkout: "Commander",
-  searchPlaceholder: "Rechercher iPhone, Galaxy, MacBook...",
+  searchPlaceholder: "Rechercher un téléphone, un ordinateur...",
   close: "Fermer",
   menu: "Menu",
   language: "Langue",

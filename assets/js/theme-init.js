@@ -18,6 +18,20 @@
   html.dataset.lang = lang;
   html.dataset.theme = theme;
 
+  const preconnect = (href, cross) => {
+    const link = document.createElement("link");
+    link.rel = "preconnect";
+    link.href = href;
+    if (cross) link.crossOrigin = "anonymous";
+    document.head.appendChild(link);
+  };
+  preconnect("https://fonts.googleapis.com");
+  preconnect("https://fonts.gstatic.com", true);
+  const cairo = document.createElement("link");
+  cairo.rel = "stylesheet";
+  cairo.href = "https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap";
+  document.head.appendChild(cairo);
+
   // Expose for other scripts
   window.RESTORE_THEME_INIT = { lang, theme };
 })();

@@ -58,19 +58,19 @@ export function checkoutPageHTML(ctx, data) {
                 <button class="btn btn-outline btn-sm" type="button" id="pay-account-copy">${ctx.ICON.copy || ""} ${ctx.R.lang === "ar" ? "نسخ" : "Copier"}</button>
               </div>
               <div class="coupon-row">
-                <div class="field"><label for="co-coupon">${ctx.esc(ctx.t("coupon"))}</label><input id="co-coupon" placeholder="RESTORE10"></div>
+                <div class="field"><label for="co-coupon">${ctx.esc(ctx.t("coupon"))}</label><input id="co-coupon" placeholder="${ctx.esc((window.BRAND?.couponPrefix || "WELCOME") + "10")}"></div>
                 <button class="btn btn-outline" type="button" id="apply-coupon">${ctx.esc(ctx.t("apply"))}</button>
               </div>
               <p class="field-note">${ctx.ICON.info} ${ctx.esc(ctx.R.lang === "ar" ? "الدفع يتم تأكيده عبر واتساب. لا يتم سحب أي مبلغ من هذا الموقع." : "Le paiement est confirmé sur WhatsApp. Aucun paiement n’est débité sur ce site.")}</p>
             </section>
-          </div>
+          </form>
           <aside class="order-summary">
             <h2>${ctx.esc(ctx.t("orderSummary"))}</h2>
             <div class="sum-items">
               ${items
                 .map(
                   (it) => `<div class="sum-item">
-                <img src="${it.product.image}" alt="${ctx.esc(it.product.title)}" width="64" height="64" decoding="async">
+                <img src="${it.product.image}" alt="${ctx.esc(ctx.L(it.product.title))}" width="64" height="64" decoding="async">
                 <div><div class="t">${ctx.esc(ctx.L(it.product.title))}</div><div class="p">${ctx.esc(ctx.variantLabel(it.variant))}${it.specs && Object.keys(it.specs).length ? ` · ${ctx.esc(ctx.specsText(it.specs))}` : ""} × ${it.qty}</div><strong>${ctx.money(it.line)}</strong></div>
               </div>`
                 )
@@ -84,8 +84,6 @@ export function checkoutPageHTML(ctx, data) {
               <div class="sum-row total"><span>${ctx.esc(ctx.t("total"))}</span><span id="sum-total">${ctx.money(subtotal)}</span></div>
             </div>
             <button class="btn btn-primary btn-block btn-whatsapp" type="button" id="place-order" ${!open ? "disabled" : ""}>${ctx.ICON.whatsapp} ${ctx.esc(!open ? ctx.t("closedTitle") : ctx.t("placeOrder"))}</button>
-            <p class="checkout-redirect-note">${ctx.esc(ctx.t("redirecting"))}</p>
-            <div class="accepted-pay">${payments.map((payment) => `<span class="u-pay-rail" data-sv="pay:${ctx.esc(payment.color)}">${ctx.esc(ctx.L(payment.name))}</span>`).join("")}</div>
             ${
               whatsappDigits(ctx.SET)
                 ? `<div class="summary-help">${ctx.ICON.whatsapp}<span>${ctx.esc(ctx.t("contactUs"))}: <a class="phone-ltr" href="https://wa.me/${ctx.esc(whatsappDigits(ctx.SET))}" target="_blank" rel="noopener">${ctx.esc(ctx.SET.phoneDisplay || whatsappDigits(ctx.SET))}</a></span></div>`

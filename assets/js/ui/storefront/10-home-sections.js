@@ -2,7 +2,7 @@
 /* app.js → Home sections
    Extracted mechanically from the former monolith; shared state lives on `ctx` (see app.js). */
 
-import { productInCollection, resolveCollectionHandle } from "../../domain/collection-aliases.js";
+import { productInCollection, resolveCollectionHandle, visibleBarEntries } from "../../domain/collection-aliases.js";
 import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
 import { applyReturnDays, isNoRiskVisible, isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
 
@@ -39,18 +39,14 @@ export function install(ctx) {
         .map((slide, i) => {
           const image = LEGACY_HERO[slide.image] || slide.image || "assets/products/smartphone-pro-128.svg";
           const light = slide.dark === false;
-          return `<div class="hero-slide hero-banner ${light ? "hero-light" : "hero-dark"}${i === 0 ? " active" : ""} u-tint" data-sv="bg:${ctx.esc(slide.bg || "linear-gradient(135deg,#1f1f2e,#39255b)")}">
+          return `<div class="hero-slide hero-banner ${light ? "hero-light" : "hero-dark"}${i === 0 ? " active" : ""} u-tint" data-sv="bg:${ctx.esc(slide.bg || "linear-gradient(135deg,#1e3a8a,#2563eb)")}">
           <div class="container hero-inner">
             <div class="hero-copy">
               <span class="hero-eyebrow">${ctx.esc(ctx.L(ctx.SET.storeName))} · ${ctx.esc(ctx.L(ctx.SET.city))}</span>
               <h1>${ctx.esc(ctx.L(slide.title))}</h1>
               <p>${ctx.esc(ctx.L(slide.subtitle))}</p>
               <a class="btn ${light ? "btn-dark" : "btn-primary"}" href="${ctx.esc(ctx.R.safeHref(slide.href || "collection.html?handle=all"))}">${ctx.esc(ctx.L(slide.cta) || ctx.t("shopNow"))} ${ctx.ICON.arrowRight}</a>
-              <div class="hero-pills">
-                <span>${ctx.ICON.shield} ${ctx.esc(ctx.t("warranty"))}</span>
-                <span>${ctx.ICON.truck} ${ctx.esc(ctx.t("freeDelivery"))}</span>
-                <span>${ctx.ICON.badgeCheck} ${ctx.esc(ctx.t("checked"))}</span>
-              </div>
+              ${heroPillsHTML()}
             </div>
             <div class="hero-visual">
               <div class="hero-glow"></div>
@@ -75,6 +71,19 @@ export function install(ctx) {
   }
 
   const TRUST_SETTING = { truck: "free_delivery", shield: "warranty_label", badgeCheck: "checked_experts" };
+
+  function heroPillsHTML() {
+    const pills = [];
+    const add = (key, icon, fallback) => {
+      if (!siteSettingVisible(ctx.SET, key)) return;
+      const label = siteText(ctx.SET, key, ctx.R.lang) || fallback;
+      if (label) pills.push(`<span>${icon} ${ctx.esc(label)}</span>`);
+    };
+    add("warranty_label", ctx.ICON.shield, ctx.t("warranty"));
+    add("free_delivery", ctx.ICON.truck, ctx.t("freeDelivery"));
+    add("checked_experts", ctx.ICON.badgeCheck, ctx.t("checked"));
+    return pills.length ? `<div class="hero-pills">${pills.join("")}</div>` : "";
+  }
 
   function trustItemLabel(item) {
     if (item.icon === "return") {
@@ -107,26 +116,11 @@ export function install(ctx) {
   }
 
   function renewedHTML() {
-    if (!siteSettingVisible(ctx.SET, "refurbished_label")) return "";
-    const word = siteText(ctx.SET, "refurbished_label", ctx.R.lang);
-    const text = word ? ctx.L(ctx.SET.renewalText) : ctx.L(ctx.SET.renewalText);
-    return `<a class="renewed reveal" href="page.html?slug=renewed">
-      <span class="info">i</span>
-      ${ctx.esc(text)}
-      <span data-icon="chevronRight" aria-hidden="true"></span>
-    </a>`;
+    return "";
   }
 
   function categoryCount(handle) {
     return ctx.PRODUCTS.filter((product) => productInCollection(product, handle)).length;
-  }
-
-  function hiddenHandles() {
-    return new Set(
-      (ctx.S.collections || [])
-        .filter((collection) => collection.visible === false)
-        .map((collection) => resolveCollectionHandle(collection.handle))
-    );
   }
 
   function categoryLabel(handle, collection, entry) {
@@ -136,22 +130,12 @@ export function install(ctx) {
   }
 
   function visibleCategoryCards() {
-    const hidden = hiddenHandles();
-    const seen = new Set();
-    const cards = [];
-    for (const entry of ctx.S.theme?.categories || []) {
-      const handle = resolveCollectionHandle(entry.handle);
-      if (!handle || handle === "all" || seen.has(handle) || hidden.has(handle)) continue;
-      seen.add(handle);
-      const collection = (ctx.S.collections || []).find((item) => item.handle === handle);
-      cards.push({
-        handle,
-        label: categoryLabel(handle, collection, entry),
-        image: entry.image || collection?.image || "assets/img/category-iphone.svg",
-        count: categoryCount(handle)
-      });
-    }
-    return cards;
+    return visibleBarEntries(ctx.S.theme?.categories, ctx.S.collections).map(({ handle, entry, collection }) => ({
+      handle,
+      label: categoryLabel(handle, collection, entry),
+      image: entry.image || collection?.image || "assets/img/category-iphone.svg",
+      count: categoryCount(handle)
+    }));
   }
 
   function categoriesHTML() {
@@ -160,7 +144,7 @@ export function install(ctx) {
     const heading = siteSettingVisible(ctx.SET, "categories_title")
       ? siteText(ctx.SET, "categories_title", ctx.R.lang) || ctx.L(ctx.SET.categoriesTitle)
       : "";
-    return `<section class="categories reveal"${heading ? ` aria-labelledby="cat-heading"` : ""}>
+    return `<section class="categories"${heading ? ` aria-labelledby="cat-heading"` : ""}>
       <div class="container">
         ${heading ? `<h2 id="cat-heading">${ctx.esc(heading)}</h2>` : ""}
         <div class="cat-wrap">
@@ -175,6 +159,7 @@ export function install(ctx) {
               .join("")}
           </div>
           <button class="cat-arrow" type="button" aria-label="${ctx.esc(ctx.t("seeAll"))}"><span data-icon="chevronRight"></span></button>
+          <div class="cat-indicator" aria-hidden="true"><span></span></div>
         </div>
       </div>
     </section>`;
@@ -212,9 +197,21 @@ export function install(ctx) {
 
   function productSectionHTML(section) {
     const colHandle = resolveCollectionHandle(section.collection || "all");
-    let items = (section.handles || []).map((h) => ctx.BY_HANDLE.get(h)).filter((p) => p && ctx.PRODUCTS.includes(p));
-    if (!items.length) {
-      items = ctx.PRODUCTS.filter((p) => productInCollection(p, colHandle)).slice(0, 10);
+    const seen = new Set();
+    const items = [];
+    for (const handle of section.handles || []) {
+      const product = ctx.BY_HANDLE.get(handle);
+      if (!product || !ctx.PRODUCTS.includes(product) || seen.has(product.handle)) continue;
+      seen.add(product.handle);
+      items.push(product);
+    }
+    if (items.length < 5) {
+      for (const product of ctx.PRODUCTS) {
+        if (items.length >= 5) break;
+        if (seen.has(product.handle) || !productInCollection(product, colHandle)) continue;
+        seen.add(product.handle);
+        items.push(product);
+      }
     }
     if (!items.length) return "";
     const cards = items.slice(0, 12).map(ctx.cardHTML).join("");
@@ -254,8 +251,8 @@ export function install(ctx) {
       icon: "recycle",
       title: { ar: "تقنية تدوم أطول", fr: "Une tech qui dure plus longtemps" },
       text: {
-        ar: "كل جهاز مجدد يقلل النفايات الإلكترونية ويؤخر الحاجة إلى جهاز جديد.",
-        fr: "Chaque appareil reconditionné réduit les déchets électroniques et repousse l’achat d’un appareil neuf."
+        ar: "كل جهاز نبيعه يُفحص ليعيش أطول ويؤخر الحاجة إلى جهاز جديد.",
+        fr: "Chaque appareil vendu est contrôlé pour durer plus longtemps et retarder un nouvel achat."
       }
     },
     {
@@ -263,8 +260,8 @@ export function install(ctx) {
       icon: "leaf",
       title: { ar: "أثر بيئي أقل", fr: "Moins d’impact environnemental" },
       text: {
-        ar: "نستخدم تغليفًا بسيطًا ونقلل الموارد المستهلكة في كل عملية تجديد.",
-        fr: "Nous utilisons un emballage simple et réduisons les ressources consommées à chaque reconditionnement."
+        ar: "نستخدم تغليفًا بسيطًا ونقلل الموارد المستهلكة في كل شحنة.",
+        fr: "Nous utilisons un emballage simple et réduisons les ressources consommées à chaque envoi."
       }
     },
     {
@@ -332,9 +329,10 @@ export function install(ctx) {
 
   function videoHTML() {
     const socials = (ctx.SET.social || [])
+      .filter((s) => s.href)
       .map(
         (s) =>
-          `<a href="${ctx.esc(ctx.R.safeHref(s.href, ""))}" target="_blank" rel="noopener" aria-label="${ctx.esc(s.id)}">${ctx.ICON[s.icon] || ctx.ICON.instagram}</a>`
+          `<a href="${ctx.esc(ctx.R.safeHref(s.href, ""))}" target="_blank" rel="noopener noreferrer" aria-label="${ctx.esc(s.id)}">${ctx.ICON[s.icon] || ctx.ICON.instagram}</a>`
       )
       .join("");
     const images = [

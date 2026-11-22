@@ -42,6 +42,31 @@ test("renderHeader: .header-actions keeps its 6 children (no stray </div>)", () 
   assert.ok(!inner.includes("<nav"), "nav must not be inside header-actions");
 });
 
+test("renderHeader: announcement interpolation closes once before header-top", () => {
+  assert.match(tpl, /: \"\"\s*\}\s*<div class="container header-top">/);
+});
+
+test("renderHeader: anniversary nav uses offers_label", () => {
+  assert.ok(src.includes("offers_label"));
+  assert.ok(src.includes("navLabel"));
+});
+
+test("renderHeader: announcement is a single span (no duplicated marquee)", () => {
+  assert.equal(tpl.includes("announce-track"), false);
+  assert.doesNotMatch(tpl, /announcement"[^`]{0,500}<span[^>]*>[^<]*<\/span>\s*<span/);
+});
+
+test("pdpSpecsHTML: extra specs are chips, not the boxed grid", () => {
+  const pdp = readFileSync(new URL("../assets/js/ui/storefront/11-product-page.js", import.meta.url), "utf8");
+  const start = pdp.indexOf("function pdpSpecsHTML");
+  assert.ok(start > -1);
+  const fn = pdp.slice(start, pdp.indexOf("function withVariantAxes", start));
+  assert.equal(fn.includes("specs-section"), false);
+  assert.equal(fn.includes("<select"), false);
+  assert.ok(fn.includes("opt-btn"));
+  assert.ok(fn.includes("data-spec"));
+});
+
 test("renderHeader: balanced <div> tags in the whole template", () => {
   const opens = (tpl.match(/<div\b/g) || []).length;
   const closes = (tpl.match(/<\/div>/g) || []).length;

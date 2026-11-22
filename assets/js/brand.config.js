@@ -12,7 +12,7 @@ window.BRAND = {
   logoWhite: "assets/img/brand-logo-white.svg",
   favicon: "assets/img/favicon.svg",
   colors: { primary: "#2563eb", ink: "#0f172a", purple: "#7c3aed", lavender: "#eef2ff" },
-  font: "Montserrat",
+  font: "Cairo",
   country: {
     code: "MR",
     name: { ar: "موريتانيا", fr: "Mauritanie" },
@@ -31,6 +31,13 @@ window.BRAND = {
   email: "contact@example.com",
   staffEmailDomain: "example.com", // username login "ali" → ali@staffEmailDomain (must match the Auth user e-mail)
   domain: "", // e.g. "demo.pages.dev" — used for canonical URLs / sitemap
-  social: { facebook: "", instagram: "", tiktok: "", snapchat: "", youtube: "", x: "" },
+  social: {
+    facebook: "https://facebook.com/demo.store",
+    instagram: "https://instagram.com/demo.store",
+    tiktok: "https://www.tiktok.com/@demo.store",
+    snapchat: "",
+    youtube: "",
+    x: ""
+  },
   couponPrefix: "WELCOME" // demo coupon code = WELCOME10
 };

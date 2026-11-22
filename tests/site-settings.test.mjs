@@ -15,8 +15,10 @@ test("defaults include required keys; trusted_by is hidden", () => {
     assert.ok(ss[key], key);
   }
   assert.equal(ss.trusted_by.is_visible, false);
+  assert.equal(ss.refurbished_label.is_visible, false);
   assert.equal(ss.return_days.value, 10);
   assert.equal(ss.offers_label.value.ar, "عروض");
+  assert.equal(ss.categories_title.value.ar.includes("مجدد"), false);
   assert.equal(SITE_SETTING_DEFS.length >= 8, true);
 });
 

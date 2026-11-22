@@ -1,4 +1,4 @@
-# Restore — متجر إلكترونيات مجددة في موريتانيا
+# Restore — متجر إلكترونيات في موريتانيا
 
 Restore is a complete, bilingual (Arabic / French) electronics storefront and admin
 dashboard for Nouakchott, Mauritania. It is a static site: no framework, no build step

@@ -98,7 +98,7 @@ export function install(ctx) {
     texts: {
       ar: "النصوص والشارات",
       fr: "Textes et badges",
-      sub: { ar: "الإرجاع، بدون مخاطرة، مجدد، العروض", fr: "Retours, sans risque, reconditionné, offres" }
+      sub: { ar: "الإرجاع، بدون مخاطرة، العروض والشارات", fr: "Retours, sans risque, offres et badges" }
     },
     payments: {
       ar: "الدفع والتوصيل",

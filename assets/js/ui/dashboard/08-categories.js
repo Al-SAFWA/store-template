@@ -5,6 +5,8 @@
    Home strip = `theme.categories`, top menu = `settings.navigation`; both are kept in sync from here so the merchant
    never edits three lists. Products are never deleted with a category. Shared state lives on `ctx`. */
 
+import { productInCollection, resolveCollectionHandle } from "../../domain/collection-aliases.js";
+
 const PLACEHOLDER = "assets/img/category-iphone.svg";
 
 /** @param {DashboardCtx} ctx */
@@ -27,7 +29,7 @@ export function install(ctx) {
   const homeList = () => (ctx.model.theme.categories = ctx.model.theme.categories || []);
   const navList = () => (ctx.model.settings.navigation = ctx.model.settings.navigation || []);
   const navHref = (handle) => `collection.html?handle=${handle}`;
-  const inCategory = (product, handle) => (product.collections || []).includes(handle);
+  const inCategory = (product, handle) => productInCollection(product, handle);
   const membersOf = (handle) => products().filter((product) => inCategory(product, handle));
   const onHome = (handle) => homeList().some((item) => item.handle === handle);
   const onMenu = (handle) => navList().some((item) => item.href === navHref(handle));
@@ -55,6 +57,7 @@ export function install(ctx) {
   function categoryCard(collection, index, total) {
     return `<article class="ct-card ${collection.visible === false ? "is-off" : ""}">
       <div class="ct-order">
+        <span class="ct-num">${index + 1}</span>
         <button type="button" class="ct-move" data-action="move-category" data-index="${index}" data-dir="-1" ${index === 0 ? "disabled" : ""} aria-label="${ctx.dt("أعلى", "Monter")}">▲</button>
         <button type="button" class="ct-move" data-action="move-category" data-index="${index}" data-dir="1" ${index === total - 1 ? "disabled" : ""} aria-label="${ctx.dt("أسفل", "Descendre")}">▼</button>
       </div>
@@ -63,6 +66,10 @@ export function install(ctx) {
         <span class="ct-text"><strong>${ctx.esc(ctx.lng(collection.title))}</strong><small>${ctx.esc(cardMeta(collection))}</small></span>
       </button>
       <label class="toggle"><input type="checkbox" data-action="toggle-category-visible" data-index="${index}" ${collection.visible !== false ? "checked" : ""}><span></span></label>
+      <div class="ct-actions">
+        <button type="button" class="ct-edit" data-action="edit-category" data-index="${index}">${ctx.icon("edit")} ${ctx.dt("تعديل", "Modifier")}</button>
+        <button type="button" class="ct-del" data-action="delete-category" data-index="${index}">${ctx.icon("trash")} ${ctx.dt("حذف", "Supprimer")}</button>
+      </div>
     </article>`;
   }
 
@@ -233,9 +240,10 @@ export function install(ctx) {
       const had = inCategory(product, handle);
       const want = members.has(product.handle);
       if (had === want) continue;
+      const wantHandle = resolveCollectionHandle(handle);
       product.collections = want
         ? [...(product.collections || []), handle]
-        : (product.collections || []).filter((entry) => entry !== handle);
+        : (product.collections || []).filter((entry) => resolveCollectionHandle(entry) !== wantHandle);
       changed.push(product);
     }
     return changed;
@@ -301,13 +309,16 @@ export function install(ctx) {
       );
       if (!ok) return;
     } else collections().splice(index, 1);
+    const want = resolveCollectionHandle(item.handle);
     for (const product of products()) {
-      if (inCategory(product, item.handle)) product.collections = product.collections.filter((h) => h !== item.handle);
+      if (inCategory(product, item.handle))
+        product.collections = (product.collections || []).filter((h) => resolveCollectionHandle(h) !== want);
     }
     syncPlacement(item, { home: false, menu: false });
     ctx.saveDraftNow();
     ctx.closeModal();
     ctx.renderRoute();
+    ctx.toast(ctx.dt("تم حذف الفئة", "Catégorie supprimée"), "good");
   }
 
   function syncHomeOrder() {

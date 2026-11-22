@@ -11,9 +11,9 @@ export function install(ctx) {
       "من نحن",
       "À propos",
       BN.ar +
-        " متجر موريتاني متخصص في الإلكترونيات المجددة. نشتري الأجهزة المستعملة، نفحصها ونعيد تأهيلها ثم نبيعها بأسعار عادلة مع ضمان واضح.\nنعمل من نواكشوط ونوصل إلى جميع ولايات موريتانيا.\nهدفنا أن يحصل كل شخص على تقنية موثوقة بدون أن يدفع ثمن جهاز جديد.",
+        " متجر موريتاني للإلكترونيات. نفحص الأجهزة ونبيعها بأسعار عادلة مع ضمان واضح.\nنعمل من نواكشوط ونوصل إلى جميع ولايات موريتانيا.\nهدفنا أن يحصل كل شخص على تقنية موثوقة بدون أن يدفع ثمن جهاز جديد.",
       BN.fr +
-        " est une boutique mauritanienne spécialisée dans l’électronique reconditionnée. Nous rachetons, contrôlons et remettons en état les appareils avant de les revendre à un prix juste avec une garantie claire.\nNous travaillons depuis Nouakchott et livrons dans toutes les wilayas de Mauritanie.\nNotre objectif : rendre la technologie fiable accessible sans payer le prix du neuf."
+        " est une boutique mauritanienne d’électronique. Nous contrôlons les appareils et les vendons à un prix juste avec une garantie claire.\nNous travaillons depuis Nouakchott et livrons dans toutes les wilayas de Mauritanie.\nNotre objectif : rendre la technologie fiable accessible sans payer le prix du neuf."
     ],
     [
       "help",
@@ -65,9 +65,9 @@ export function install(ctx) {
       "السياسة القانونية",
       "Mentions légales",
       BN.ar +
-        " اسم تجاري لمتجر إلكترونيات مجدد في موريتانيا. جميع العلامات التجارية المذكورة مملوكة لأصحابها.\nمحتوى هذا الموقع وصوره وبياناته قابلة للتعديل من لوحة التحكم. يجب مراجعة النصوص القانونية مع مستشار مختص قبل الإطلاق التجاري.",
+        " اسم تجاري لمتجر إلكترونيات في موريتانيا. جميع العلامات التجارية المذكورة مملوكة لأصحابها.\nمحتوى هذا الموقع وصوره وبياناته قابلة للتعديل من لوحة التحكم. يجب مراجعة النصوص القانونية مع مستشار مختص قبل الإطلاق التجاري.",
       BN.fr +
-        " est une enseigne d’électronique reconditionnée en Mauritanie. Toutes les marques citées appartiennent à leurs propriétaires.\nLe contenu, les images et les données du site peuvent être modifiés depuis le tableau de bord. Faites réviser les textes juridiques par un professionnel avant un lancement commercial."
+        " est une enseigne d’électronique en Mauritanie. Toutes les marques citées appartiennent à leurs propriétaires.\nLe contenu, les images et les données du site peuvent être modifiés depuis le tableau de bord. Faites réviser les textes juridiques par un professionnel avant un lancement commercial."
     ],
     [
       "privacy",
@@ -112,15 +112,15 @@ export function install(ctx) {
       "for-businesses",
       "حلول للشركات",
       "Solutions entreprises",
-      "نوفر أجهزة مجددة للشركات والمدارس والمنظمات بأسعار خاصة وضمان موحد.\nاطلب عرض سعر لكمية من 10 أجهزة أو أكثر.",
-      "Nous fournissons des appareils reconditionnés aux entreprises, écoles et organisations à tarifs préférentiels avec une garantie unique.\nDemandez un devis pour 10 appareils ou plus."
+      "نوفر أجهزة مفحوصة للشركات والمدارس والمنظمات بأسعار خاصة وضمان موحد.\nاطلب عرض سعر لكمية من 10 أجهزة أو أكثر.",
+      "Nous fournissons des appareils contrôlés aux entreprises, écoles et organisations à tarifs préférentiels avec une garantie unique.\nDemandez un devis pour 10 appareils ou plus."
     ],
     [
       "renewed",
-      "ما معنى مجدد من " + BN.ar + "؟",
-      "Que signifie reconditionné chez " + BN.fr + " ?",
-      "الجهاز المجدد هو جهاز مستعمل تم فحصه وتنظيفه وإصلاح ما يلزم فيه ليعمل كجهاز جديد.\nنفحص الشاشة، البطارية، الكاميرا، الصوت، المنافذ والاتصال، ثم نمسح البيانات ونثبت النظام.\nكل جهاز يأتي بضمان 12 شهرًا، توصيل مجاني داخل نواكشوط، وإمكانية الإرجاع خلال {returnDays} أيام.",
-      "Un appareil reconditionné est un appareil d’occasion contrôlé, nettoyé et réparé si nécessaire pour fonctionner comme neuf.\nNous vérifions l’écran, la batterie, les caméras, le son, les ports et la connectivité, puis nous effaçons les données et installons le système.\nChaque appareil est livré avec 12 mois de garantie, la livraison gratuite à Nouakchott et un retour possible sous {returnDays} jours."
+      "الجودة والفحص في " + BN.ar,
+      "Qualité et contrôle chez " + BN.fr,
+      "كل جهاز يُفحص ويُنظف ويُختبر قبل البيع.\nنفحص الشاشة، البطارية، الكاميرا، الصوت، المنافذ والاتصال، ثم نمسح البيانات ونثبت النظام.\nكل جهاز يأتي بضمان 12 شهرًا، توصيل مجاني داخل نواكشوط، وإمكانية الإرجاع خلال {returnDays} أيام.",
+      "Chaque appareil est contrôlé, nettoyé et testé avant la vente.\nNous vérifions l’écran, la batterie, les caméras, le son, les ports et la connectivité, puis nous effaçons les données et installons le système.\nChaque appareil est livré avec 12 mois de garantie, la livraison gratuite à Nouakchott et un retour possible sous {returnDays} jours."
     ],
     [
       "shipping",
@@ -140,7 +140,7 @@ export function install(ctx) {
     slug,
     title: ctx.name(ar, fr),
     body: ctx.txt(bodyAr, bodyFr),
-    visible: true,
+    visible: slug !== "renewed",
     seoTitle: ctx.name(ar, fr)
   }));
 
@@ -149,8 +149,8 @@ export function install(ctx) {
       id: "p1",
       outlet: ctx.txt("تِك صحارى", "Tech Sahara"),
       quote: bt(
-        "{brand} يعيد تعريف سوق الإلكترونيات المجددة في موريتانيا بأسعار شفافة وضمان حقيقي.",
-        "{brand} redéfinit le marché du reconditionné en Mauritanie avec des prix transparents et une vraie garantie."
+        "{brand} يعيد تعريف سوق الإلكترونيات في موريتانيا بأسعار شفافة وضمان حقيقي.",
+        "{brand} redéfinit le marché de l’électronique en Mauritanie avec des prix transparents et une vraie garantie."
       )
     },
     {

@@ -113,12 +113,9 @@ svg { display: block; }
 .announcement span {
   display: inline-block;
   white-space: nowrap;
-  padding-left: 100%;
-  animation: ann-scroll 22s linear infinite;
-}
-@keyframes ann-scroll { to { transform: translateX(-100%); } }
-@media (prefers-reduced-motion: reduce) {
-  .announcement span { animation: none; padding-left: 0; }
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-top {

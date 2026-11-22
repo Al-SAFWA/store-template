@@ -14,32 +14,32 @@ export function createDefaultTexts(ctx) {
   function descriptions() {
     return {
       Smartphone: bt(
-        "هاتف مجدد بالكامل، تم فحصه وتنظيفه واختباره من طرف خبراء {brand}. يعمل بكفاءة عالية ويأتي بضمان 12 شهرًا.",
-        "Téléphone entièrement reconditionné, inspecté, nettoyé et testé par les experts {brand}. Il fonctionne parfaitement et bénéficie d’une garantie de 12 mois."
+        "هاتف أصلي تم فحصه وتنظيفه واختباره من طرف خبراء {brand}. يعمل بكفاءة عالية ويأتي بضمان 12 شهرًا.",
+        "Téléphone d’origine inspecté, nettoyé et testé par les experts {brand}. Il fonctionne parfaitement et bénéficie d’une garantie de 12 mois."
       ),
       Laptop: ctx.txt(
-        "حاسوب محمول مجدد تم اختباره مكونًا بمكون. يصلح للعمل والدراسة والاستخدام اليومي، مع ضمان 12 شهرًا.",
-        "Ordinateur portable reconditionné, testé composant par composant. Idéal pour le travail, les études et l’usage quotidien, avec 12 mois de garantie."
+        "حاسوب محمول تم اختباره مكونًا بمكون. يصلح للعمل والدراسة والاستخدام اليومي، مع ضمان 12 شهرًا.",
+        "Ordinateur portable testé composant par composant. Idéal pour le travail, les études et l’usage quotidien, avec 12 mois de garantie."
       ),
       Macbook: bt(
-        "MacBook مجدد مع macOS مثبت وجاهز للاستخدام. تم فحص البطارية ولوحة المفاتيح والمنافذ بواسطة خبراء {brand}.",
-        "MacBook reconditionné avec macOS installé et prêt à l’emploi. Batterie, clavier et ports vérifiés par les experts {brand}."
+        "MacBook مع macOS مثبت وجاهز للاستخدام. تم فحص البطارية ولوحة المفاتيح والمنافذ بواسطة خبراء {brand}.",
+        "MacBook avec macOS installé et prêt à l’emploi. Batterie, clavier et ports vérifiés par les experts {brand}."
       ),
       Tablets: ctx.txt(
-        "جهاز لوحي مجدد تم فحصه بالكامل، مناسب للقراءة والعمل والترفيه، ويأتي بضمان 12 شهرًا.",
-        "Tablette reconditionnée entièrement vérifiée, idéale pour lire, travailler et se divertir, avec 12 mois de garantie."
+        "جهاز لوحي تم فحصه بالكامل، مناسب للقراءة والعمل والترفيه، ويأتي بضمان 12 شهرًا.",
+        "Tablette entièrement vérifiée, idéale pour lire, travailler et se divertir, avec 12 mois de garantie."
       ),
       Playstation: ctx.txt(
-        "جهاز ألعاب مجدد تم اختباره وتنظيفه، ويأتي مع ملحقاته الأساسية وضمان 12 شهرًا.",
-        "Console de jeu reconditionnée, testée et nettoyée, livrée avec ses accessoires essentiels et 12 mois de garantie."
+        "جهاز ألعاب تم اختباره وتنظيفه، ويأتي مع ملحقاته الأساسية وضمان 12 شهرًا.",
+        "Console de jeu testée et nettoyée, livrée avec ses accessoires essentiels et 12 mois de garantie."
       ),
       "Apple Watch": ctx.txt(
-        "ساعة Apple مجددة تم فحص البطارية والشاشة والحساسات، وتأتي بضمان 12 شهرًا.",
-        "Apple Watch reconditionnée : batterie, écran et capteurs vérifiés, avec 12 mois de garantie."
+        "ساعة ذكية تم فحص البطارية والشاشة والحساسات، وتأتي بضمان 12 شهرًا.",
+        "Montre connectée : batterie, écran et capteurs vérifiés, avec 12 mois de garantie."
       ),
       Accessories: ctx.txt(
-        "ملحق أصلي مجدد أو جديد، تم فحصه لضمان التوافق والجودة.",
-        "Accessoire d’origine reconditionné ou neuf, contrôlé pour garantir compatibilité et qualité."
+        "ملحق أصلي تم فحصه لضمان التوافق والجودة.",
+        "Accessoire d’origine contrôlé pour garantir compatibilité et qualité."
       )
     };
   }
@@ -48,10 +48,10 @@ export function createDefaultTexts(ctx) {
     return [
       {
         id: "faq-1",
-        q: ctx.txt("هل الأجهزة جديدة أم مستعملة؟", "Les appareils sont-ils neufs ou d’occasion ?"),
+        q: ctx.txt("هل الأجهزة مفحوصة؟", "Les appareils sont-ils contrôlés ?"),
         a: ctx.txt(
-          "الأجهزة مجددة: مستعملة، لكنها مفحوصة ومصلحة ومعاد تأهيلها لتكون جاهزة للاستخدام.",
-          "Les appareils sont reconditionnés : d’occasion, mais contrôlés, réparés et remis en état pour être prêts à l’emploi."
+          "نعم. كل جهاز يُفحص ويُختبر قبل البيع، ويأتي بضمان 12 شهرًا.",
+          "Oui. Chaque appareil est contrôlé et testé avant la vente, avec 12 mois de garantie."
         )
       },
       {
@@ -184,8 +184,8 @@ export function createDefaultTexts(ctx) {
         rating: 5,
         title: ctx.txt("جهاز موثوق", "Appareil fiable"),
         body: ctx.txt(
-          "حاسوب Dell مجدد يعمل بسرعة، والضمان أعطاني راحة البال.",
-          "Le Dell reconditionné est rapide, et la garantie me rassure."
+          "الحاسوب المحمول يعمل بسرعة، والضمان أعطاني راحة البال.",
+          "L’ordinateur portable est rapide, et la garantie me rassure."
         ),
         color: "#00b894"
       },
@@ -308,15 +308,15 @@ export function createDefaultTexts(ctx) {
       "special-offers": ctx.txt("عروض", "Offres"),
       "restore-anniversary": ctx.txt("عروض", "Offres"),
       phones: ctx.txt("هواتف ذكية", "Smartphones"),
-      "refurbished-iphones": ctx.txt("آيفون مجدد معتمد", "iPhone reconditionnés certifiés"),
+      "refurbished-iphones": ctx.txt("هواتف آيفون", "iPhones"),
       android: ctx.txt("أندرويد", "Android"),
-      "used-samsung": ctx.txt("سامسونج مجدد معتمد", "Samsung reconditionnés certifiés"),
+      "used-samsung": ctx.txt("هواتف أندرويد", "Android"),
       laptops: ctx.txt("حواسيب محمولة", "Laptops"),
-      "laptops-used-refurbished": ctx.txt("حواسيب محمولة مجددة", "Ordinateurs portables reconditionnés"),
+      "laptops-used-refurbished": ctx.txt("حواسيب محمولة", "Ordinateurs portables"),
       macbooks: ctx.txt("حواسيب للمبدعين", "Creator Laptops"),
-      "refurbished-macbooks": ctx.txt("ماك بوك مجدد", "MacBook reconditionnés"),
+      "refurbished-macbooks": ctx.txt("حواسيب للمبدعين", "Creator Laptops"),
       tablets: ctx.txt("أجهزة لوحية", "Tablets"),
-      ipads: ctx.txt("آيباد مجدد", "iPad reconditionnés"),
+      ipads: ctx.txt("أجهزة لوحية", "Tablettes"),
       watches: ctx.txt("ساعات ذكية", "Smartwatches"),
       "apple-watches": ctx.txt("ساعات آبل", "Montres Apple"),
       audio: ctx.txt("صوتيات", "Audio"),

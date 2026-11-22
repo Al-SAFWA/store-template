@@ -5,7 +5,8 @@ import {
   collectionHandleFromHref,
   isCollectionVisible,
   productInCollection,
-  resolveCollectionHandle
+  resolveCollectionHandle,
+  visibleBarEntries
 } from "../assets/js/domain/collection-aliases.js";
 
 test("resolveCollectionHandle: maps legacy Restore slugs onto the demo catalog", () => {
@@ -49,4 +50,41 @@ test("collectionHandleFromHref and isCollectionVisible", () => {
   assert.equal(isCollectionVisible(collections, "refurbished-iphones"), true);
   assert.equal(isCollectionVisible(collections, "used-samsung"), false);
   assert.equal(isCollectionVisible(collections, "all"), true);
+});
+
+test("visibleBarEntries: hidden or missing collections stay off the bar", () => {
+  const theme = [
+    { handle: "special-offers", label: "عروض", image: "a.svg" },
+    { handle: "phones", label: "هواتف", image: "b.svg" },
+    { handle: "android", label: "أندرويد", image: "c.svg" }
+  ];
+  const collections = [
+    { handle: "special-offers", title: { ar: "عروض" }, visible: true },
+    { handle: "phones", title: { ar: "هواتف" }, visible: false }
+  ];
+  const cards = visibleBarEntries(theme, collections);
+  assert.deepEqual(
+    cards.map((c) => c.handle),
+    ["special-offers"]
+  );
+  assert.equal(
+    visibleBarEntries([{ handle: "restore-anniversary" }], [{ handle: "special-offers", visible: true }])[0].handle,
+    "special-offers"
+  );
+});
+
+test("visibleBarEntries: empty theme falls back to live collections", () => {
+  const collections = [
+    { handle: "phones", title: { ar: "هواتف" }, visible: true },
+    { handle: "android", title: { ar: "أندرويد" }, visible: true },
+    { handle: "laptops", title: { ar: "حواسيب" }, visible: false }
+  ];
+  assert.deepEqual(
+    visibleBarEntries([], collections).map((c) => c.handle),
+    ["phones", "android"]
+  );
+  assert.deepEqual(
+    visibleBarEntries(null, collections).map((c) => c.handle),
+    ["phones", "android"]
+  );
 });

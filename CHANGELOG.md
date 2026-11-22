@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.18.2 — 2026-11-21
+
+- Dashboard categories: labeled Edit and Delete.
+- Home category strip animates when it enters view.
+- Anniversary nav reads Offres / عروض.
+- Return days, demo socials, single checkout form.
+
+
 ## 1.17.9 — 2026-10-29
 
 - **Critical:** new visitors never received the published settings. The storefront compared the published `updated_at` with the local `updatedAt`, which the built-in demo state (and a stock decrement, and the catalog overlay) stamps with "now" — so the publish always looked older and was skipped; the visitor stayed on the demo WhatsApp/phone/e-mail forever. The comparison now uses `publishedAt`, the stamp of the publish last applied, which local activity never touches. Existing visitors pick up the published state on their next visit automatically.

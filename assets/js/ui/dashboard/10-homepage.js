@@ -8,7 +8,7 @@ export function install(ctx) {
   const PAGE_SECTION_LABELS = {
     hero: { ar: "السلايدر الرئيسي", fr: "Hero / Slider" },
     trust: { ar: "شريط الثقة", fr: "Barre de confiance" },
-    renewed: { ar: "ما معنى مجدد", fr: "Reconditionné" },
+    renewed: { ar: "شريط الجودة", fr: "Bandeau qualité" },
     categories: { ar: "الفئات", fr: "Catégories" },
     offer: { ar: "عرض بنكيلي", fr: "Offre Bankily" },
     products: { ar: "أقسام المنتجات", fr: "Sections produits" },

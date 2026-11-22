@@ -69,11 +69,38 @@ export function install(ctx) {
 
   function setupCategoryScroller() {
     const track = document.getElementById("cat-track");
+    const section = document.querySelector(".categories");
     document
       .querySelector(".cat-arrow")
       ?.addEventListener("click", () =>
         track?.scrollBy({ left: (ctx.R.lang === "ar" ? -1 : 1) * 380, behavior: "smooth" })
       );
+    if (!section) return;
+    const play = () => {
+      if (section.classList.contains("is-in")) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        section.classList.add("is-in");
+        return;
+      }
+      requestAnimationFrame(() => requestAnimationFrame(() => section.classList.add("is-in")));
+    };
+    if (!("IntersectionObserver" in window)) {
+      play();
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        play();
+        io.disconnect();
+      },
+      { threshold: 0.25, rootMargin: "0px" }
+    );
+    io.observe(section);
+    requestAnimationFrame(() => {
+      const rect = section.getBoundingClientRect();
+      if (rect.bottom > 60 && rect.top < (window.innerHeight || 800) - 40) window.setTimeout(play, 80);
+    });
   }
 
   function setupCountdowns() {
@@ -128,8 +155,15 @@ export function install(ctx) {
             }
           });
         },
-        { threshold: 0.08, rootMargin: "0px 0px -30px" }
+        { threshold: 0.01, rootMargin: "40px 0px 40px" }
       );
-    nodes.forEach((node) => ctx.revealObserver.observe(node));
+    nodes.forEach((node) => {
+      const rect = node.getBoundingClientRect();
+      if (rect.bottom > 0 && rect.top < (window.innerHeight || 800) + 40) {
+        requestAnimationFrame(() => requestAnimationFrame(() => node.classList.add("in")));
+        return;
+      }
+      ctx.revealObserver.observe(node);
+    });
   }
 }

@@ -8,7 +8,7 @@ window.RESTORE_CONFIG = {
   supabaseUrl: "",
   supabaseAnonKey: "",
   mode: "auto", // "auto" | "local" | "supabase"
-  demoEnabled: false, // local/dev demo accounts only; keep false in production
+  demoEnabled: true, // DEMO_ALLOWED still requires localhost; production hostnames stay locked
   requireServerOrders: true, // when true + remote: reject orders unless the Edge Function validates them
   createOrderFunction: "create-order",
   createStaffFunction: "admin-create-staff",

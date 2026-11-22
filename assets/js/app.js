@@ -23,6 +23,7 @@ import { install as s15a } from "./ui/storefront/15a-click-handlers.js";
 import { install as s15b } from "./ui/storefront/15b-seo.js";
 import { install as s15 } from "./ui/storefront/15-global-events.js";
 import { install as s16 } from "./ui/storefront/16-boot.js";
+import { install as s17 } from "./ui/storefront/17-store-probe.js";
 
 const _initStorefront = () => {
   /** @type {StorefrontCtx} */
@@ -52,6 +53,7 @@ const _initStorefront = () => {
   s15b(ctx); // SEO helpers (meta, canonical, JSON-LD)
   s15(ctx); // Global events
   s16(ctx); // Boot
+  s17(ctx); // Ctrl+Shift+T probe
 };
 
 _initStorefront();

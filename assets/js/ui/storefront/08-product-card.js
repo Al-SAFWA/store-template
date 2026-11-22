@@ -28,15 +28,16 @@ export function install(ctx) {
       .join("");
     const more = (p.colors || []).length > 4 ? `<span class="swatch-more">+${p.colors.length - 4}</span>` : "";
     const wished = ctx.readWish().has(p.handle) ? " active" : "";
+    const title = ctx.L(p.title);
     return `
       <article class="product-card" data-handle="${ctx.esc(p.handle)}">
-        <a class="card-media" href="product.html?handle=${encodeURIComponent(p.handle)}" aria-label="${ctx.esc(p.title)}">
-          ${badge}<img src="${initialImage}" alt="${ctx.esc(p.title)}" width="300" height="300" loading="lazy" decoding="async" data-card-main>
+        <a class="card-media" href="product.html?handle=${encodeURIComponent(p.handle)}" aria-label="${ctx.esc(title)}">
+          ${badge}<img src="${initialImage}" alt="${ctx.esc(title)}" width="300" height="300" loading="lazy" decoding="async" data-card-main>
           <span class="card-tint" data-card-tint aria-hidden="true"></span>
           ${Number(p.stock) <= 0 ? `<span class="sold-out-badge">${ctx.esc(ctx.t("soldOut"))}</span>` : ""}
         </a>
         <button class="wish${wished}" type="button" data-wish="${ctx.esc(p.handle)}" aria-label="${ctx.esc(ctx.t("addToWishlist"))}">${ctx.ICON.heart}</button>
-        <a class="card-title" href="product.html?handle=${encodeURIComponent(p.handle)}">${ctx.esc(p.title)}</a>
+        <a class="card-title" href="product.html?handle=${encodeURIComponent(p.handle)}">${ctx.esc(title)}</a>
         <div class="card-meta">
           ${p.battery ? `<span class="card-battery">${ctx.ICON.bolt}${p.battery}%</span>` : ""}
           <span class="card-condition">${ctx.esc(conditionLabel(p.condition))}</span>

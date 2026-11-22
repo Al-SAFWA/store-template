@@ -130,8 +130,8 @@ export function createDefaultState(ctx) {
         "توصيل مجاني داخل نواكشوط • الدفع عند الاستلام أو عبر بنكيلي",
         "Livraison gratuite à Nouakchott • Paiement à la livraison ou Bankily"
       ),
-      renewalText: bt("ما معنى مجدد من {brand}؟", "Que signifie reconditionné chez {brand} ?"),
-      categoriesTitle: ctx.txt("تسوق الإلكترونيات المجددة", "Électronique reconditionnée"),
+      renewalText: bt("جودة مفحوصة من {brand}", "Qualité contrôlée chez {brand}"),
+      categoriesTitle: ctx.txt("تسوق الإلكترونيات", "Électronique"),
       serviceTitle: ctx.txt(
         "كل أجهزتنا أصلية ومفحوصة من طرف خبراء",
         "Tous nos appareils sont originaux et vérifiés par des experts"
@@ -233,10 +233,10 @@ export function createDefaultState(ctx) {
         }
       ],
       social: [
-        { id: "facebook", href: "https://www.facebook.com/", icon: "facebook" },
-        { id: "instagram", href: "https://www.instagram.com/", icon: "instagram" },
-        { id: "tiktok", href: "https://www.tiktok.com/", icon: "tiktok" }
-      ],
+        { id: "facebook", href: B.social?.facebook || "", icon: "facebook" },
+        { id: "instagram", href: B.social?.instagram || "", icon: "instagram" },
+        { id: "tiktok", href: B.social?.tiktok || "", icon: "tiktok" }
+      ].filter((row) => row.href),
       channels: defaultChannels(
         {
           whatsapp: B.whatsapp || "",
@@ -244,10 +244,10 @@ export function createDefaultState(ctx) {
           email: B.email || "",
           address: B.address || { ar: "", fr: "" },
           social: [
-            { id: "facebook", href: "https://www.facebook.com/" },
-            { id: "instagram", href: "https://www.instagram.com/" },
-            { id: "tiktok", href: "https://www.tiktok.com/" }
-          ]
+            { id: "facebook", href: B.social?.facebook || "" },
+            { id: "instagram", href: B.social?.instagram || "" },
+            { id: "tiktok", href: B.social?.tiktok || "" }
+          ].filter((row) => row.href)
         },
         B
       )
@@ -272,7 +272,7 @@ export function createDefaultState(ctx) {
           id: "iphones",
           visible: true,
           order: 2,
-          title: ctx.txt("آيفون مجدد معتمد", "iPhones reconditionnés certifiés"),
+          title: ctx.txt("هواتف آيفون", "iPhones"),
           collection: "phones",
           handles: ctx.RAW.home.iphones,
           layout: "left",
@@ -283,7 +283,7 @@ export function createDefaultState(ctx) {
           id: "samsung",
           visible: true,
           order: 3,
-          title: ctx.txt("سامسونج مجدد معتمد", "Samsung reconditionné certifié"),
+          title: ctx.txt("هواتف أندرويد", "Android"),
           collection: "android",
           handles: ctx.RAW.home.samsung,
           layout: "right",
@@ -294,7 +294,7 @@ export function createDefaultState(ctx) {
           id: "laptops",
           visible: true,
           order: 4,
-          title: ctx.txt("حواسيب محمولة مجددة", "Ordinateurs portables reconditionnés"),
+          title: ctx.txt("حواسيب محمولة", "Ordinateurs portables"),
           collection: "laptops",
           handles: ctx.RAW.home.laptops,
           layout: "left",
@@ -305,7 +305,7 @@ export function createDefaultState(ctx) {
       pageSections: [
         { id: "hero", visible: true, order: 1 },
         { id: "trust", visible: true, order: 2 },
-        { id: "renewed", visible: true, order: 3 },
+        { id: "renewed", visible: false, order: 3 },
         { id: "categories", visible: true, order: 4 },
         { id: "offer", visible: true, order: 5 },
         { id: "products", visible: true, order: 6 },
@@ -323,7 +323,7 @@ export function createDefaultState(ctx) {
         {
           id: "hero-1",
           visible: true,
-          title: ctx.txt("تقنية مجددة، ثقة جديدة", "La tech reconditionnée, en toute confiance"),
+          title: ctx.txt("إلكترونيات بثقة، توصيل سريع", "Électronique de confiance, livraison rapide"),
           subtitle: ctx.txt(
             "هواتف وحواسيب مفحوصة بضمان 12 شهرًا، وتوصيل لكل موريتانيا.",
             "Téléphones et ordinateurs contrôlés, garantis 12 mois et livrés partout en Mauritanie."
@@ -331,7 +331,7 @@ export function createDefaultState(ctx) {
           cta: ctx.txt("تسوق الآن", "Découvrir"),
           href: "collection.html?handle=all",
           image: "assets/img/hero-1.webp",
-          bg: "linear-gradient(135deg,#1f1f2e 0%,#39255b 55%,#ff6400 130%)"
+          bg: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 55%,#60a5fa 130%)"
         },
         {
           id: "hero-2",
@@ -381,13 +381,10 @@ export function createDefaultState(ctx) {
   function miscSettings() {
     return {
       seo: {
-        title: bt(
-          "{brand} | إلكترونيات مجددة موثوقة في موريتانيا",
-          "{brand} | Électronique reconditionnée en Mauritanie"
-        ),
+        title: bt("{brand} | إلكترونيات موثوقة في موريتانيا", "{brand} | Électronique de confiance en Mauritanie"),
         description: ctx.txt(
-          "اشترِ هواتف وحواسيب مجددة مفحوصة في موريتانيا مع ضمان 12 شهرًا، توصيل سريع ودفع عبر بنكيلي ومصرفي وسداد.",
-          "Achetez téléphones et ordinateurs reconditionnés en Mauritanie avec 12 mois de garantie, livraison rapide et paiement Bankily, Masrvi ou Sedad."
+          "اشترِ هواتف وحواسيب مفحوصة في موريتانيا مع ضمان 12 شهرًا، توصيل سريع ودفع عبر بنكيلي ومصرفي وسداد.",
+          "Achetez téléphones et ordinateurs contrôlés en Mauritanie avec 12 mois de garantie, livraison rapide et paiement Bankily, Masrvi ou Sedad."
         )
       },
       pixels: { meta: "", tiktok: "", ga: "" },

@@ -39,9 +39,7 @@ function firstText(...values) {
 }
 
 function urlChannel(social, brandSocial, id) {
-  const value = Object.prototype.hasOwnProperty.call(brandSocial, id)
-    ? firstText(brandSocial[id])
-    : firstText(social[id], brandSocial[id]);
+  const value = firstText(social[id], brandSocial[id]);
   return { value, visible: Boolean(value) };
 }
 
@@ -77,7 +75,7 @@ export function mergeChannels(settings, brand) {
     const row = saved[def.id];
     if (!row || typeof row !== "object") continue;
     base[def.id] = {
-      value: row.value != null ? row.value : base[def.id].value,
+      value: isFilled(def, row.value) ? row.value : base[def.id].value,
       visible: row.visible !== false
     };
   }

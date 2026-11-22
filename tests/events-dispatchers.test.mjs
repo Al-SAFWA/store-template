@@ -101,7 +101,7 @@ test("install() exposes the table and the dispatcher on ctx", () => {
   const ctx = fakeCtx();
   installClicks(ctx);
   assert.equal(typeof ctx.dispatchClick, "function");
-  assert.equal(ctx.clickHandlers.length, 25);
+  assert.equal(ctx.clickHandlers.length, 26);
 });
 
 test("click table: theme toggle flips the theme and rewrites the button label", () => {

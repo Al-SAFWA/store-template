@@ -7,7 +7,7 @@ export const ar = {
   wishlist: "المفضلة",
   cart: "السلة",
   checkout: "إتمام الطلب",
-  searchPlaceholder: "ابحث عن iPhone، Galaxy، MacBook...",
+  searchPlaceholder: "ابحث عن هاتف، حاسوب، سماعات...",
   close: "إغلاق",
   menu: "القائمة",
   language: "اللغة",

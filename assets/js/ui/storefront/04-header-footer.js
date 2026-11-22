@@ -5,6 +5,7 @@
 import { collectionHandleFromHref, isCollectionVisible } from "../../domain/collection-aliases.js";
 import { visibleChannel, whatsappDigits } from "../../domain/channels.js";
 import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
+import { applyReturnDays, isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
 
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
@@ -46,6 +47,14 @@ export function install(ctx) {
     return ctx.R.theme === "dark" ? ctx.ICON.sun : ctx.ICON.moon;
   }
 
+  function navLabel(item) {
+    const handle = collectionHandleFromHref(item.href);
+    if (handle === "special-offers" || item.id === "anniversary") {
+      return siteText(ctx.SET, "offers_label", ctx.R.lang) || ctx.L(item.label);
+    }
+    return ctx.L(item.label);
+  }
+
   function navItemHTML(n) {
     const flame = n.flame ? '<span class="flame" data-icon="flame" aria-hidden="true"></span>' : "";
     const sub = n.sub?.length
@@ -53,7 +62,7 @@ export function install(ctx) {
       : "";
     return `
             <div class="nav-item">
-              <a href="${ctx.esc(ctx.R.safeHref(n.href))}">${ctx.esc(ctx.L(n.label))}${flame}</a>
+              <a href="${ctx.esc(ctx.R.safeHref(n.href))}">${ctx.esc(navLabel(n))}${flame}</a>
               ${sub}
             </div>`;
   }
@@ -65,15 +74,15 @@ export function install(ctx) {
     const otherLabel = otherLangLabel(lang);
     const currentFlag = flagFor(lang);
     const closed = !ctx.R.isStoreOpen();
+    const announceText = siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement);
     el.className = "site-header";
     el.innerHTML = `
       ${
         closed
           ? `<div class="announcement is-closed"><span>${ctx.esc(ctx.t("storeClosed"))}</span></div>`
-          : siteSettingVisible(ctx.SET, "announcement")
-            ? `<div class="announcement" aria-label="${ctx.esc(siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement))}"><div class="announce-track"><span>${ctx.esc(siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement))}</span><span aria-hidden="true">${ctx.esc(siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement))}</span></div></div>`
+          : siteSettingVisible(ctx.SET, "announcement") && announceText
+            ? `<div class="announcement" aria-label="${ctx.esc(announceText)}"><span>${ctx.esc(announceText)}</span></div>`
             : ""
-      }
       }
       <div class="container header-top">
         <button class="menu-btn" type="button" data-open-menu aria-label="${ctx.esc(ctx.t("menu"))}">${ctx.ICON.menu}</button>
@@ -207,7 +216,18 @@ export function install(ctx) {
       <div class="trust-bar">
         <div class="container trust-inner">
           <ul class="trust-list">
-            ${(ctx.SET.trustBar || []).map((item) => `<li><span class="trust-ico" data-icon="${ctx.esc(item.icon)}"></span>${ctx.esc(ctx.L(item.label))}</li>`).join("")}
+            ${(ctx.SET.trustBar || [])
+              .map((item) => {
+                let label = ctx.L(item.label);
+                if (item.icon === "return") {
+                  if (!isReturnEnabled(ctx.SET)) return "";
+                  label = returnLabel(ctx.SET, ctx.R.lang) || applyReturnDays(label, ctx.SET.returnDays);
+                } else {
+                  label = applyReturnDays(label, ctx.SET.returnDays);
+                }
+                return `<li><span class="trust-ico" data-icon="${ctx.esc(item.icon)}"></span>${ctx.esc(label)}</li>`;
+              })
+              .join("")}
           </ul>
           ${ctx.hasPaymentOffer() ? `<div class="footer-promo">${ctx.ICON.bolt}<span>${ctx.esc(ctx.L(ctx.SET.paymentOffer))}</span></div>` : ""}
         </div>
@@ -275,7 +295,13 @@ export function install(ctx) {
           <div class="footer-bottom-links">
             <a href="dashboard.html">${ctx.R.lang === "ar" ? "لوحة التحكم" : "Tableau de bord"}</a>
             <div class="socials">
-              ${(ctx.SET.social || []).map((s) => `<a href="${ctx.esc(ctx.R.safeHref(s.href, ""))}" target="_blank" rel="noopener" aria-label="${ctx.esc(s.id)}">${ctx.ICON[s.icon] || ctx.ICON.instagram}</a>`).join("")}
+              ${(ctx.SET.social || [])
+                .filter((s) => s.href)
+                .map(
+                  (s) =>
+                    `<a href="${ctx.esc(ctx.R.safeHref(s.href, ""))}" target="_blank" rel="noopener noreferrer" aria-label="${ctx.esc(s.id)}">${ctx.ICON[s.icon] || ctx.ICON.instagram}</a>`
+                )
+                .join("")}
             </div>
           </div>
         </div>
