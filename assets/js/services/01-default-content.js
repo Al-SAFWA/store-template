@@ -18,7 +18,8 @@ export function install(ctx) {
   });
   // Default state builders live in 01a-default-state.js; hydrate merges saved data over them.
   const defaultState = createDefaultState(ctx);
-  const STALE_NAME = /^(متجر التجربة|متجر تجريبي|المرابطون|Demo Store|Demo One)$/i;
+  const STALE_NAME = /تجربة|تجريبي|المرابطون|Demo Store|Demo One/i;
+  const FRESH_NAME = { ar: "المتجر", fr: "Boutique" };
 
   function withoutTwelveMonthClaim(text) {
     return String(text ?? "")
@@ -37,12 +38,12 @@ export function install(ctx) {
       .trim();
   }
 
-  function scrubI18nName(value, fallback) {
+  function scrubI18nName(value) {
     const ar = String(value?.ar || "").trim();
     const fr = String(value?.fr || "").trim();
     return {
-      ar: !ar || STALE_NAME.test(ar) ? fallback.ar : value.ar,
-      fr: !fr || STALE_NAME.test(fr) ? fallback.fr : value.fr
+      ar: !ar || STALE_NAME.test(ar) ? FRESH_NAME.ar : value.ar,
+      fr: !fr || STALE_NAME.test(fr) ? FRESH_NAME.fr : value.fr
     };
   }
 
@@ -78,11 +79,34 @@ export function install(ctx) {
     }
   }
 
+  const EXTRA_NAV = new Set(["samsung", "macbooks", "ipads", "watches", "business", "seller"]);
+
+  function compactNavigation(settings) {
+    const nav = settings.navigation;
+    if (!Array.isArray(nav)) return;
+    settings.navigation = nav
+      .filter((item) => !EXTRA_NAV.has(item.id))
+      .map((item) => {
+        const copy = { ...item };
+        delete copy.sub;
+        return copy;
+      });
+  }
+
+  function scrubLogo(settings) {
+    const logo = String(settings.logo || "");
+    if (/\.(png|jpe?g|webp)$/i.test(logo) || /hero|phones|cats\//i.test(logo)) {
+      settings.logo = "assets/img/brand-logo.svg";
+      settings.logoWhite = "assets/img/brand-logo-white.svg";
+    }
+  }
+
   function scrubStorefrontCopy(state) {
-    const brand = window.BRAND?.name || { ar: "المتجر", fr: "Boutique" };
     const settings = state.settings || {};
-    settings.storeName = scrubI18nName(settings.storeName, brand);
-    settings.legalName = scrubI18nName(settings.legalName, { ar: brand.ar, fr: brand.fr });
+    settings.storeName = scrubI18nName(settings.storeName);
+    settings.legalName = scrubI18nName(settings.legalName);
+    compactNavigation(settings);
+    scrubLogo(settings);
     scrubProductVendors(state);
     scrubMarketingCopy(settings);
   }

@@ -802,6 +802,17 @@ svg { display: block; }
   font-size: 15px; font-weight: 500;
 }
 .menu-links a:hover { color: var(--purple); }
+.menu-cats {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 16px 22px 8px;
+}
+.menu-chip {
+  display: inline-flex; align-items: center;
+  padding: 8px 14px;
+  border: 1px solid #e5e7eb; border-radius: 999px;
+  font-size: 13px; font-weight: 600;
+  background: #f8fafc;
+}
 .menu-extra {
   display: flex; flex-direction: column; gap: 12px;
   padding: 22px; font-size: 13px; color: #555;

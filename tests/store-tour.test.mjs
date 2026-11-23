@@ -101,6 +101,19 @@ test("account track is collapsed, newsletter is gone, orders tabs are two column
   assert.equal(styles.includes("min-height: 242px"), false);
 });
 
+test("mobile menu is a chip strip and category toggles persist on change", () => {
+  const menu = readFileSync(new URL("../assets/js/ui/storefront/07-mobile-menu.js", import.meta.url), "utf8");
+  assert.match(menu, /class="menu-cats"/);
+  assert.match(menu, /menu-chip/);
+  const nav = readFileSync(new URL("../assets/js/services/01-default-texts.js", import.meta.url), "utf8");
+  assert.equal(nav.includes('id: "samsung"'), false);
+  assert.equal(nav.includes("كن بائعًا"), false);
+  const events = readFileSync(new URL("../assets/js/ui/dashboard/23-events-misc.js", import.meta.url), "utf8");
+  assert.match(events, /toggle-category-visible/);
+  const css = readFileSync(new URL("../assets/css/restore.css", import.meta.url), "utf8");
+  assert.equal(css.includes(".lang-current span { display: none; }"), false);
+});
+
 test("warranty badge is opt-in and Demo is stripped from vendor chips", () => {
   const settings = readFileSync(new URL("../assets/js/domain/site-settings.js", import.meta.url), "utf8");
   assert.match(settings, /key: "warranty_label"/);

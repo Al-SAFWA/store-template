@@ -87,7 +87,7 @@ export function install(ctx) {
       }
       <div class="container header-top">
         <button class="menu-btn" type="button" data-open-menu aria-label="${ctx.esc(ctx.t("menu"))}">${ctx.ICON.menu}</button>
-        <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.SET.logo}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="420" height="96" decoding="async"></a>
+        <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.esc(ctx.R.theme === "dark" ? ctx.SET.logoWhite || ctx.SET.logo : ctx.SET.logo)}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="420" height="96" decoding="async"></a>
         <form class="search" id="header-search" role="search" autocomplete="off">
           <input type="search" placeholder="${ctx.esc(ctx.t("searchPlaceholder"))}" aria-label="${ctx.esc(ctx.t("search"))}">
           <button class="search-btn" type="submit" aria-label="${ctx.esc(ctx.t("search"))}">${ctx.ICON.search}</button>
@@ -95,7 +95,7 @@ export function install(ctx) {
         <div class="header-actions">
           <div class="customer-account" id="customer-account"></div>
           <button class="lang-current" type="button" data-set-lang="${lang === "ar" ? "fr" : "ar"}" aria-label="${ctx.esc(ctx.t("language"))}" title="${lang === "ar" ? "Français" : "العربية"}">
-            <img src="${currentFlag}" alt="" width="20" height="14"><span>${lang.toUpperCase()}</span>
+            <img src="${currentFlag}" alt="" width="20" height="14"><span>${lang === "ar" ? "AR" : "FR"}</span>
           </button><button class="icon-btn theme-btn" type="button" data-theme-toggle aria-label="${ctx.esc(themeButtonLabel())}">${themeButtonIcon()}</button>
           <a class="icon-btn" href="account.html" aria-label="${ctx.esc(ctx.t("account"))}">${ctx.ICON.user}</a>
           <a class="icon-btn" href="wishlist.html" aria-label="${ctx.esc(ctx.t("wishlist"))}">${ctx.ICON.heart}<span class="cart-count wish-count" hidden>0</span></a>

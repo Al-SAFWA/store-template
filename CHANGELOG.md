@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.10 — 2026-11-23
+
+- Header: AR next to the flag, bag mark instead of phone collage, five-item chip menu, working category switches, store name المتجر.
+
 ## 1.18.9 — 2026-11-23
 
 - Storefront polish: collapsed order tracking, no newsletter, opt-in warranty, two-tab orders, no Demo chips, tighter collection toolbar.

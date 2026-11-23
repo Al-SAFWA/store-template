@@ -215,91 +215,23 @@ export function createDefaultTexts(ctx) {
       },
       {
         id: "iphones",
-        label: ctx.txt("آيفون", "iPhones"),
+        label: ctx.txt("هواتف", "Téléphones"),
         href: "collection.html?handle=phones",
-        visible: true,
-        sub: [
-          { label: ctx.txt("سلسلة iPhone 16", "iPhone 16"), href: "collection.html?q=iPhone%2016" },
-          { label: ctx.txt("سلسلة iPhone 15", "iPhone 15"), href: "collection.html?q=iPhone%2015" },
-          { label: ctx.txt("سلسلة iPhone 14", "iPhone 14"), href: "collection.html?q=iPhone%2014" },
-          { label: ctx.txt("سلسلة iPhone 13", "iPhone 13"), href: "collection.html?q=iPhone%2013" },
-          { label: ctx.txt("سلسلة iPhone 12", "iPhone 12"), href: "collection.html?q=iPhone%2012" },
-          { label: ctx.txt("سلسلة iPhone 11", "iPhone 11"), href: "collection.html?q=iPhone%2011" }
-        ]
-      },
-      {
-        id: "samsung",
-        label: ctx.txt("سامسونج", "Samsung"),
-        href: "collection.html?handle=android",
-        visible: true,
-        sub: [
-          { label: ctx.txt("سلسلة Galaxy S24", "Galaxy S24"), href: "collection.html?q=S24" },
-          { label: ctx.txt("سلسلة Galaxy S23", "Galaxy S23"), href: "collection.html?q=S23" },
-          { label: ctx.txt("سلسلة Galaxy S22", "Galaxy S22"), href: "collection.html?q=S22" },
-          { label: ctx.txt("سلسلة Galaxy S21", "Galaxy S21"), href: "collection.html?q=S21" },
-          { label: ctx.txt("سلسلة Galaxy S20", "Galaxy S20"), href: "collection.html?q=S20" },
-          { label: ctx.txt("سلسلة Galaxy Z", "Galaxy Z"), href: "collection.html?q=Z%20Fold" },
-          { label: ctx.txt("سلسلة Galaxy Note", "Galaxy Note"), href: "collection.html?q=Note" }
-        ]
-      },
-      {
-        id: "macbooks",
-        label: ctx.txt("ماك بوك", "MacBooks"),
-        href: "collection.html?handle=macbooks",
-        visible: true,
-        sub: [
-          { label: ctx.txt("MacBook Pro", "MacBook Pro"), href: "collection.html?q=MacBook%20Pro" },
-          { label: ctx.txt("MacBook Air", "MacBook Air"), href: "collection.html?q=MacBook%20Air" },
-          { label: ctx.txt("iMac", "iMac"), href: "collection.html?q=iMac" }
-        ]
+        visible: true
       },
       {
         id: "laptops",
-        label: ctx.txt("حواسيب محمولة", "Laptops"),
+        label: ctx.txt("حواسيب", "Ordinateurs"),
         href: "collection.html?handle=laptops",
-        visible: true,
-        sub: [
-          { label: "Lenovo", href: "collection.html?q=Lenovo" },
-          { label: "Dell", href: "collection.html?q=Dell" },
-          { label: "HP", href: "collection.html?q=HP" },
-          { label: "Acer", href: "collection.html?q=Acer" }
-        ]
+        visible: true
       },
-      { id: "ipads", label: ctx.txt("آيباد", "iPads"), href: "collection.html?handle=tablets", visible: true },
       {
         id: "accessories",
-        label: ctx.txt("ملحقات وصوتيات", "Accessoires et audio"),
-        href: "collection.html?handle=audio",
-        visible: true,
-        sub: [
-          { label: ctx.txt("صوتيات", "Audio"), href: "collection.html?handle=audio" },
-          {
-            label: ctx.txt("شواحن وكابلات", "Chargeurs et câbles"),
-            href: "collection.html?handle=chargers"
-          },
-          { label: ctx.txt("ألعاب", "Gaming"), href: "collection.html?handle=gaming" },
-          { label: ctx.txt("ملحقات", "Accessoires"), href: "collection.html?handle=accessories" }
-        ]
-      },
-      {
-        id: "watches",
-        label: ctx.txt("ساعة آبل", "Apple Watch"),
-        href: "collection.html?handle=watches",
+        label: ctx.txt("إكسسوارات", "Accessoires"),
+        href: "collection.html?handle=accessories",
         visible: true
       },
-      {
-        id: "business",
-        label: ctx.txt("للشركات", "Entreprises"),
-        href: "page.html?slug=for-businesses",
-        visible: true
-      },
-      { id: "help", label: ctx.txt("تحتاج مساعدة؟", "Besoin d’aide ?"), href: "page.html?slug=help", visible: true },
-      {
-        id: "seller",
-        label: ctx.txt("كن بائعًا", "Devenir vendeur"),
-        href: "page.html?slug=become-a-seller",
-        visible: true
-      }
+      { id: "help", label: ctx.txt("تواصل", "Contact"), href: "page.html?slug=contact", visible: true }
     ];
   }
 

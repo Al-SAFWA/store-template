@@ -17,12 +17,9 @@ export function install(ctx) {
           <h3>${ctx.esc(ctx.t("menu"))}</h3>
           <button class="drawer-close" type="button" data-close-menu aria-label="${ctx.esc(ctx.t("close"))}">${ctx.ICON.close}</button>
         </div>
-        <nav class="menu-links" aria-label="Mobile">
+        <nav class="menu-cats" aria-label="Mobile">
           ${(ctx.navItems ? ctx.navItems() : ctx.NAV || [])
-            .map(
-              (n) =>
-                `<a href="${ctx.esc(ctx.R.safeHref(n.href))}">${ctx.esc(ctx.L(n.label))}${n.flame ? '<span class="flame" data-icon="flame" aria-hidden="true"></span>' : ""}</a>`
-            )
+            .map((n) => `<a class="menu-chip" href="${ctx.esc(ctx.R.safeHref(n.href))}">${ctx.esc(ctx.L(n.label))}</a>`)
             .join("")}
         </nav>
         <div class="menu-extra">

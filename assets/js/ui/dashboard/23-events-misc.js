@@ -159,6 +159,10 @@ export function install(ctx) {
     { match: (node) => node.matches(TOGGLE_SELECTOR), run: (node) => ctx.handleDirectToggle(node) },
     { match: (node) => node.matches("[data-order-status]"), run: (node) => ctx.handleDirectToggle(node) },
     {
+      match: (node) => node.matches("[data-action='toggle-category-visible']"),
+      run: (node) => ctx.toggleCategoryVisible(Number(node.dataset.index), node.checked)
+    },
+    {
       match: (node) => node.matches("[data-product-filter]"),
       run: (node) => {
         if (node.dataset.productFilter === "category") ctx.productCategory = node.value;

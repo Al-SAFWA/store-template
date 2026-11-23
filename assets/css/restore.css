@@ -106,7 +106,8 @@ html[data-theme="dark"] .cat-arrow { background: var(--surface); border-color: v
 }
 
 .header-top { grid-template-columns: 190px minmax(0, 1fr) auto; gap: 22px; }
-.logo img { width: auto; max-width: 150px; height: auto; max-height: 44px; object-fit: contain; }
+.logo { background: transparent; }
+.logo img { width: auto; max-width: 150px; height: auto; max-height: 44px; object-fit: contain; background: transparent; }
 .search { background: var(--surface-2); border: 1px solid transparent; transition: border-color .2s, background .2s; }
 .search:focus-within { border-color: var(--orange); background: var(--surface); }
 .search input { color: var(--text); }
@@ -615,6 +616,11 @@ html[data-theme="dark"] .card-battery { color: #4ade80; }
 .drawer-head,
 .cart-item,
 .menu-links a { border-color: var(--border); }
+.menu-chip {
+  background: var(--surface-2);
+  border-color: var(--border);
+  color: var(--text);
+}
 .drawer-close:hover,
 .search-close:hover { background: var(--surface-2); }
 .cart-item-img { background: var(--surface-2); }
@@ -946,8 +952,8 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 }
 
 @media (max-width: 900px) {
-  .lang-current span { display: none; } /* flag only on phones — keeps the centre free for the logo */
-  .lang-current { padding: 0 6px; min-width: 36px; }
+  .lang-current { padding: 0 8px; min-width: 52px; gap: 5px; }
+  .lang-current span { display: inline; font-size: 11px; font-weight: 800; letter-spacing: .04em; }
   .header-top { grid-template-columns: auto 1fr auto; }
   /* 1.13.6 — phones keep a "my account" icon in the header (merchant request); the wide login button and the
      wishlist icon stay hidden. Once the customer is signed in the avatar dropdown replaces the icon. */

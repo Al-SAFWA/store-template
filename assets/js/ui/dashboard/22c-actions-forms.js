@@ -164,8 +164,6 @@ function catalogActions(ctx) {
       if (ctx.categoryDraft?.index != null) ctx.deleteCategory(ctx.categoryDraft.index);
     },
     "move-category": ({ index, node }) => ctx.moveCategory(index, Number(node.dataset.dir)),
-    "toggle-category-visible": ({ index, node }) =>
-      ctx.toggleCategoryVisible(index, /** @type {HTMLInputElement} */ (node).checked),
     "import-catalog": () => {
       if (!ctx.CAT?.enabled) return;
       const go = ask(
