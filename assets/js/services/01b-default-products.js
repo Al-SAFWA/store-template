@@ -14,10 +14,7 @@ export function createProductBuilders(ctx) {
   function productDescriptions(type) {
     return (
       TYPE_DESCRIPTIONS[type] ||
-      bt(
-        "جهاز تم فحصه واختباره من طرف خبراء {brand}، ويأتي بضمان 12 شهرًا.",
-        "Appareil inspecté et testé par les experts {brand}, avec 12 mois de garantie."
-      )
+      bt("جهاز تم فحصه واختباره من طرف خبراء {brand}.", "Appareil inspecté et testé par les experts {brand}.")
     );
   }
 

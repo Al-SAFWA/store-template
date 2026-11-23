@@ -17,7 +17,7 @@ export const ar = {
   light: "الوضع النهاري",
   freeDelivery: "توصيل مجاني",
   returns: "إرجاع سهل",
-  warranty: "ضمان 12 شهرًا",
+  warranty: "ضمان المتجر",
   macos: "macOS مثبت",
   checked: "مفحوص بواسطة خبراء",
   seeAll: "عرض الكل",

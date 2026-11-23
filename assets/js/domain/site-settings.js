@@ -100,10 +100,12 @@ export const SITE_SETTING_DEFS = [
   {
     key: "warranty_label",
     kind: "i18n",
-    defaultValue: { ar: "ضمان 12 شهرًا", fr: "Garantie 12 mois" },
-    defaultVisible: true,
+    defaultValue: { ar: "ضمان المتجر", fr: "Garantie boutique" },
+    defaultVisible: false,
     ar: "شارة الضمان",
-    fr: "Badge garantie"
+    fr: "Badge garantie",
+    hintAr: "مخفية افتراضياً. اكتب المدة التي تضمنها فعلاً ثم أظهر الشارة.",
+    hintFr: "Masqué par défaut. Saisissez la durée réelle, puis affichez le badge."
   },
   {
     key: "free_delivery",
@@ -222,6 +224,17 @@ function copyOffersTitle(settings, ss) {
   if (anniversary) anniversary.title = offers;
 }
 
+/** Old demos claimed “12 months” in the badge. Hide that claim until the merchant writes a real policy. */
+function scrubLegacyWarranty(ss) {
+  const row = ss?.warranty_label;
+  if (!row?.value) return;
+  const ar = String(row.value.ar || "");
+  const fr = String(row.value.fr || "");
+  if (ar !== "ضمان 12 شهرًا" && fr !== "Garantie 12 mois") return;
+  row.is_visible = false;
+  row.value = { ar: "ضمان المتجر", fr: "Garantie boutique" };
+}
+
 /** Copy siteSettings onto the legacy fields the rest of the app already reads. */
 export function applySiteSettingsToState(settings, _lang) {
   if (!settings) return settings;
@@ -241,6 +254,7 @@ export function applySiteSettingsToState(settings, _lang) {
   if (ss.trusted_by?.value) settings.trustTitle = ss.trusted_by.value;
   copyRenewal(settings);
   copyOffersTitle(settings, ss);
+  scrubLegacyWarranty(ss);
   return settings;
 }
 

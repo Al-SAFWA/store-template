@@ -5,6 +5,7 @@ import { createProductsRepo } from "../../data/repositories/products.repo.js";
 import { displayImage, isBrokenProductImage } from "../../domain/category-images.js";
 import { whatsappDigits } from "../../domain/channels.js";
 import { isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
+import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
 import { mapRepoProduct } from "./11a-product-mappers.js";
 import { galleryHTML, productExtraHTML, productNotFoundHTML, relatedHTML } from "./11b-product-blocks.js";
 
@@ -263,9 +264,14 @@ export function install(ctx) {
     const returnsBit = returnsOn
       ? `<div>${ctx.ICON.return}<span>${ctx.esc(returnLabel(ctx.SET, ctx.R.lang) || ctx.t("returns"))}<small>${ctx.esc(ctx.t("returnsSub"))}</small></span></div>`
       : "";
+    const warrantyOn = siteSettingVisible(ctx.SET, "warranty_label");
+    const warrantyLabel = siteText(ctx.SET, "warranty_label", ctx.R.lang) || ctx.t("warranty");
+    const warrantyBit = warrantyOn
+      ? `<div>${ctx.ICON.shield}<span>${ctx.esc(warrantyLabel)}<small>${ctx.esc(ctx.t("warrantySub"))}</small></span></div>`
+      : "";
     return `<div class="trust-mini">
           <div>${ctx.ICON.truck}<span>${ctx.esc(ctx.t("freeDelivery"))}<small>${ctx.esc(ctx.t("freeDeliverySub"))}</small></span></div>
-          <div>${ctx.ICON.shield}<span>${ctx.esc(ctx.t("warranty"))}<small>${ctx.esc(ctx.t("warrantySub"))}</small></span></div>
+          ${warrantyBit}
           ${returnsBit}
           ${last}
         </div>`;
@@ -281,6 +287,21 @@ export function install(ctx) {
         </div>`;
   }
 
+  function pdpWarrantyCopy() {
+    const returnsOn = isReturnEnabled(ctx.SET);
+    const returnsBit = returnsOn ? returnLabel(ctx.SET, ctx.R.lang) : "";
+    if (!siteSettingVisible(ctx.SET, "warranty_label")) return returnsBit;
+    const label = siteText(ctx.SET, "warranty_label", ctx.R.lang) || ctx.t("warranty");
+    if (ctx.R.lang === "ar") {
+      return returnsBit
+        ? `${label} يغطي الأعطال التقنية، و${returnsBit} في حال وجود مشكلة.`
+        : `${label} يغطي الأعطال التقنية.`;
+    }
+    return returnsBit
+      ? `${label} couvrant les pannes techniques et ${returnsBit.toLowerCase()} en cas de problème.`
+      : `${label} couvrant les pannes techniques.`;
+  }
+
   function pdpAccordionHTML(p) {
     const shipping = ctx.esc(ctx.L(ctx.SET.shippingNote));
     const cities = ctx.esc(
@@ -288,21 +309,14 @@ export function install(ctx) {
         ? "نواكشوط: توصيل مجاني · باقي المدن: رسوم حسب الولاية."
         : "Nouakchott : livraison offerte · Autres villes : frais selon la wilaya."
     );
-    const returnsOn = isReturnEnabled(ctx.SET);
-    const returnsBit = returnsOn ? returnLabel(ctx.SET, ctx.R.lang) : "";
-    const warranty = ctx.esc(
-      ctx.R.lang === "ar"
-        ? returnsOn
-          ? `ضمان 12 شهرًا يغطي الأعطال التقنية، و${returnsBit} في حال وجود مشكلة.`
-          : "ضمان 12 شهرًا يغطي الأعطال التقنية."
-        : returnsOn
-          ? `Garantie 12 mois couvrant les pannes techniques et ${returnsBit.toLowerCase()} en cas de problème.`
-          : "Garantie 12 mois couvrant les pannes techniques."
-    );
+    const warranty = ctx.esc(pdpWarrantyCopy());
+    const extra = siteSettingVisible(ctx.SET, "warranty_label")
+      ? ` · ${ctx.esc(siteText(ctx.SET, "warranty_label", ctx.R.lang) || ctx.t("warranty"))}`
+      : "";
     return `<div class="accordion">
-          <details open><summary>${ctx.esc(ctx.t("description"))}</summary><div class="acc-body"><p>${ctx.esc(ctx.L(p.description))}</p><p class="muted">${ctx.esc(ctx.L(ctx.SET.originalDevice))} · ${ctx.esc(ctx.t("warrantyMonths", { months: p.warrantyMonths || 12 }))}</p></div></details>
+          <details open><summary>${ctx.esc(ctx.t("description"))}</summary><div class="acc-body"><p>${ctx.esc(ctx.L(p.description))}</p><p class="muted">${ctx.esc(ctx.L(ctx.SET.originalDevice))}${extra}</p></div></details>
           <details><summary>${ctx.esc(ctx.t("shippingDelivery"))}</summary><div class="acc-body"><p>${shipping}</p><p>${cities}</p></div></details>
-          <details><summary>${ctx.esc(ctx.t("warrantyReturns"))}</summary><div class="acc-body"><p>${warranty}</p></div></details>
+          ${warranty ? `<details><summary>${ctx.esc(ctx.t("warrantyReturns"))}</summary><div class="acc-body"><p>${warranty}</p></div></details>` : ""}
         </div>`;
   }
 

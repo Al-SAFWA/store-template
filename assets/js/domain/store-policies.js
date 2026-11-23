@@ -1,6 +1,8 @@
 // @ts-check
 /* Return window + “no-risk” badge — pure helpers over settings. */
 
+import { siteSettingVisible, siteText } from "./site-settings.js";
+
 const DEFAULT_DAYS = 10;
 const MIN_DAYS = 1;
 const MAX_DAYS = 90;
@@ -33,4 +35,23 @@ export function returnLabel(settings, lang) {
   if (!isReturnEnabled(settings)) return "";
   const n = clampReturnDays(settings?.returnDays);
   return lang === "fr" ? `Retour sous ${n} jours` : `إرجاع خلال ${n} أيام`;
+}
+
+const TRUST_ICON_SETTING = {
+  truck: "free_delivery",
+  shield: "warranty_label",
+  badgeCheck: "checked_experts"
+};
+
+/** Trust-bar / footer line for one item, honouring dashboard show/hide. Empty = skip. */
+export function trustItemText(settings, item, lang, fallback) {
+  if (!item) return "";
+  if (item.icon === "return") {
+    if (!isReturnEnabled(settings)) return "";
+    return returnLabel(settings, lang) || applyReturnDays(fallback, settings?.returnDays);
+  }
+  const key = TRUST_ICON_SETTING[item.icon];
+  if (!key) return applyReturnDays(fallback, settings?.returnDays);
+  if (!siteSettingVisible(settings, key)) return "";
+  return siteText(settings, key, lang) || applyReturnDays(fallback, settings?.returnDays);
 }

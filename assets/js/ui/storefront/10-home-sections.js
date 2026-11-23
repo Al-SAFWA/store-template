@@ -5,7 +5,7 @@
 import { productInCollection, resolveCollectionHandle, visibleBarEntries } from "../../domain/collection-aliases.js";
 import { categoryPhoto, FALLBACK_PHOTO, pickCategoryImage } from "../../domain/category-images.js";
 import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
-import { applyReturnDays, isNoRiskVisible, isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
+import { applyReturnDays, isNoRiskVisible, trustItemText } from "../../domain/store-policies.js";
 
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
@@ -71,8 +71,6 @@ export function install(ctx) {
     return applyReturnDays(text, ctx.SET.returnDays);
   }
 
-  const TRUST_SETTING = { truck: "free_delivery", shield: "warranty_label", badgeCheck: "checked_experts" };
-
   function heroPillsHTML() {
     const pills = [];
     const add = (key, icon, fallback) => {
@@ -87,16 +85,7 @@ export function install(ctx) {
   }
 
   function trustItemLabel(item) {
-    if (item.icon === "return") {
-      if (!isReturnEnabled(ctx.SET)) return "";
-      return returnLabel(ctx.SET, ctx.R.lang) || policy(ctx.L(item.label));
-    }
-    const key = TRUST_SETTING[item.icon];
-    if (key) {
-      if (!siteSettingVisible(ctx.SET, key)) return "";
-      return siteText(ctx.SET, key, ctx.R.lang) || policy(ctx.L(item.label));
-    }
-    return policy(ctx.L(item.label));
+    return trustItemText(ctx.SET, item, ctx.R.lang, ctx.L(item.label));
   }
 
   function trustBarHTML() {
@@ -459,11 +448,15 @@ export function install(ctx) {
     if (crumb)
       crumb.innerHTML = `<a href="index.html">${ctx.esc(ctx.t("homeCrumb"))}</a><span>/</span><span>${ctx.esc(title)}</span>`;
 
+    const vendorLabel = (vendor) =>
+      String(vendor || "")
+        .replace(/^Demo\s+/i, "")
+        .trim() || vendor;
     const vendors = [...new Set(COL.items.map((p) => p.vendor).filter(Boolean))].sort();
     const filters = document.getElementById("col-filters");
     filters.innerHTML = `
       <button class="chip ${COL.brand === "all" && !COL.sale ? "active" : ""}" type="button" data-brand="all">${ctx.esc(ctx.t("all"))}</button>
-      ${vendors.map((v) => `<button class="chip ${COL.brand === v ? "active" : ""}" type="button" data-brand="${ctx.esc(v)}">${ctx.esc(v)}</button>`).join("")}
+      ${vendors.map((v) => `<button class="chip ${COL.brand === v ? "active" : ""}" type="button" data-brand="${ctx.esc(v)}">${ctx.esc(vendorLabel(v))}</button>`).join("")}
       <button class="chip ${COL.sale ? "active" : ""}" type="button" data-sale="1">${ctx.esc(ctx.t("onSale"))}</button>`;
 
     const sort = document.getElementById("col-sort");

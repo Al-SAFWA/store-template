@@ -600,12 +600,6 @@ html[data-theme="dark"] .card-battery { color: #4ade80; }
 }
 .pay-badge.pay-image img { height: 34px; width: auto; max-width: 92px; object-fit: contain; display: block; }
 .pay-badge.pay-text { background: #fff; color: #111; font-size: 9px; letter-spacing: 0; padding: 0 8px; font-weight: 700; border-inline-start: 3px solid var(--pay, #ff6400); }
-.newsletter { margin-top: 18px; }
-.newsletter label { display: block; font-size: 11px; color: #b9b9b9; margin-bottom: 7px; }
-.newsletter div { display: flex; gap: 6px; }
-.newsletter input { flex: 1; min-width: 0; height: 38px; border: 1px solid #353535; background: #1b1b1b; color: #fff; border-radius: 7px; padding: 0 10px; font-size: 11px; outline: 0; }
-.newsletter input:focus { border-color: var(--orange); }
-.newsletter button { height: 38px; padding: 0 12px; border-radius: 7px; background: var(--orange); color: #fff; font-size: 11px; font-weight: 700; }
 .footer-bottom-links { display: flex; align-items: center; gap: 20px; }
 .footer-bottom-links > a { font-size: 11px; color: #8a8a8a; }
 .footer-bottom-links > a:hover { color: #fff; }
@@ -856,6 +850,32 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 .blog-post .btn { margin-top: 16px; }
 .account-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; padding-bottom: 60px; }
 .account-card { border: 1px solid var(--border); border-radius: 15px; padding: 24px; background: var(--surface); }
+.account-track details { margin: 0; }
+.account-track summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  position: relative;
+  padding-inline-end: 28px;
+}
+.account-track summary::-webkit-details-marker { display: none; }
+.account-track-title { font-size: 17px; font-weight: 700; }
+.account-track-hint { font-size: 12px; color: var(--muted); line-height: 1.55; }
+.account-track summary::after {
+  content: "";
+  position: absolute;
+  inset-inline-end: 2px;
+  top: 10px;
+  width: 8px;
+  height: 8px;
+  border-inline-end: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg);
+  transition: transform .25s ease;
+}
+.account-track[open] summary::after { transform: rotate(225deg); }
+.account-track-body { padding-top: 14px; }
 .account-card h1 { font-size: 28px; margin: 5px 0 8px; }
 .account-card h2 { font-size: 17px; margin-bottom: 13px; }
 .account-card > p { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
@@ -885,11 +905,22 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
   opacity: 1;
   transform: none;
 }
+@media (prefers-reduced-motion: no-preference) {
+  .product-card { animation: riseIn .45s cubic-bezier(.22, 1, .36, 1) both; }
+  .chip { transition: transform .18s ease, background .18s ease, border-color .18s ease, color .18s ease; }
+  .chip:active { transform: scale(.96); }
+  .btn { transition: transform .15s ease, background .2s ease, box-shadow .2s ease; }
+  .btn:active { transform: scale(.98); }
+  .order-card { transition: transform .2s ease, box-shadow .2s ease; }
+  .account-track[open] .account-track-body { animation: riseIn .35s ease; }
+  .segmented button { transition: background .2s ease, color .2s ease, box-shadow .2s ease; }
+}
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
   .hero-visual img { animation: none; }
   .hero-slide.active .hero-copy > *,
   .hero-slide.active .hero-visual { animation: none; }
+  .product-card, .account-track[open] .account-track-body { animation: none; }
 }
 
 /* --------------------------------------------------------------------------
@@ -1017,7 +1048,6 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
   .press-grid { gap: 12px; }
   .press-grid > div { padding: 17px; }
   .footer-main { gap: 26px; }
-  .newsletter div { flex-direction: column; }
   .footer-bottom-links { flex-wrap: wrap; gap: 12px; }
   .review-grid { grid-template-columns: 1fr; }
   .product-reviews, .product-faq { padding-bottom: 32px; }

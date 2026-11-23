@@ -184,7 +184,7 @@ export function createDefaultState(ctx) {
       pressTitle: bt("{brand} في الأخبار", "{brand} dans la presse"),
       trustBar: [
         { icon: "truck", label: ctx.txt("توصيل مجاني داخل نواكشوط", "Livraison gratuite à Nouakchott") },
-        { icon: "shield", label: ctx.txt("ضمان 12 شهرًا", "Garantie 12 mois") },
+        { icon: "shield", label: ctx.txt("ضمان المتجر", "Garantie boutique") },
         { icon: "return", label: ctx.txt("إرجاع خلال {returnDays} أيام", "Retour sous {returnDays} jours") },
         { icon: "badgeCheck", label: ctx.txt("فحص بواسطة خبراء", "Vérifié par des experts") }
       ],
@@ -326,8 +326,8 @@ export function createDefaultState(ctx) {
           visible: true,
           title: ctx.txt("إلكترونيات بثقة، توصيل سريع", "Électronique de confiance, livraison rapide"),
           subtitle: ctx.txt(
-            "هواتف وحواسيب مفحوصة بضمان 12 شهرًا، وتوصيل لكل موريتانيا.",
-            "Téléphones et ordinateurs contrôlés, garantis 12 mois et livrés partout en Mauritanie."
+            "هواتف وحواسيب مفحوصة، وتوصيل لكل موريتانيا.",
+            "Téléphones et ordinateurs contrôlés, livrés partout en Mauritanie."
           ),
           cta: ctx.txt("تسوق الآن", "Découvrir"),
           href: "collection.html?handle=all",
@@ -384,8 +384,8 @@ export function createDefaultState(ctx) {
       seo: {
         title: bt("{brand} | إلكترونيات موثوقة في موريتانيا", "{brand} | Électronique de confiance en Mauritanie"),
         description: ctx.txt(
-          "اشترِ هواتف وحواسيب مفحوصة في موريتانيا مع ضمان 12 شهرًا، توصيل سريع ودفع عبر بنكيلي ومصرفي وسداد.",
-          "Achetez téléphones et ordinateurs contrôlés en Mauritanie avec 12 mois de garantie, livraison rapide et paiement Bankily, Masrvi ou Sedad."
+          "اشترِ هواتف وحواسيب مفحوصة في موريتانيا، توصيل سريع ودفع عبر بنكيلي ومصرفي وسداد.",
+          "Achetez téléphones et ordinateurs contrôlés en Mauritanie, livraison rapide et paiement Bankily, Masrvi ou Sedad."
         )
       },
       pixels: { meta: "", tiktok: "", ga: "" },

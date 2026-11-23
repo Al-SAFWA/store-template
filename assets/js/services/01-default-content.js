@@ -18,10 +18,81 @@ export function install(ctx) {
   });
   // Default state builders live in 01a-default-state.js; hydrate merges saved data over them.
   const defaultState = createDefaultState(ctx);
+  const STALE_NAME = /^(متجر التجربة|متجر تجريبي|المرابطون|Demo Store|Demo One)$/i;
+
+  function withoutTwelveMonthClaim(text) {
+    return String(text ?? "")
+      .replace(/\s*بضمان 12 شهرًا،?/g, "")
+      .replace(/\s*مع ضمان 12 شهرًا،?/g, "،")
+      .replace(/ضمان 12 شهرًا،?\s*/g, "")
+      .replace(/الضمان 12 شهرًا/g, "الضمان")
+      .replace(/,\s*garantis 12 mois\s*/gi, " ")
+      .replace(/\s*avec 12 mois de garantie,?\s*/gi, " ")
+      .replace(/\s*avec une garantie de 12 mois,?\s*/gi, " ")
+      .replace(/\s*12 mois de garantie,?\s*/gi, " ")
+      .replace(/garantie de 12 mois/gi, "garantie")
+      .replace(/\s{2,}/g, " ")
+      .replace(/\s+,/g, ",")
+      .replace(/،{2,}/g, "،")
+      .trim();
+  }
+
+  function scrubI18nName(value, fallback) {
+    const ar = String(value?.ar || "").trim();
+    const fr = String(value?.fr || "").trim();
+    return {
+      ar: !ar || STALE_NAME.test(ar) ? fallback.ar : value.ar,
+      fr: !fr || STALE_NAME.test(fr) ? fallback.fr : value.fr
+    };
+  }
+
+  function scrubLocaleField(value) {
+    if (!value) return value;
+    if (typeof value === "string") return withoutTwelveMonthClaim(value);
+    return {
+      ar: withoutTwelveMonthClaim(value.ar),
+      fr: withoutTwelveMonthClaim(value.fr)
+    };
+  }
+
+  function stripDemoPrefix(value) {
+    return String(value || "")
+      .replace(/^Demo\s+/i, "")
+      .trim();
+  }
+
+  function scrubProductVendors(state) {
+    for (const product of state.products || []) {
+      if (product.vendor) product.vendor = stripDemoPrefix(product.vendor);
+      if (product.brand) product.brand = stripDemoPrefix(product.brand);
+    }
+  }
+
+  function scrubMarketingCopy(settings) {
+    for (const slide of settings.heroSlides || []) {
+      if (slide.subtitle) slide.subtitle = scrubLocaleField(slide.subtitle);
+    }
+    if (settings.seo?.description) settings.seo.description = scrubLocaleField(settings.seo.description);
+    for (const item of settings.trustBar || []) {
+      if (item.icon === "shield" && item.label) item.label = scrubLocaleField(item.label);
+    }
+  }
+
+  function scrubStorefrontCopy(state) {
+    const brand = window.BRAND?.name || { ar: "المتجر", fr: "Boutique" };
+    const settings = state.settings || {};
+    settings.storeName = scrubI18nName(settings.storeName, brand);
+    settings.legalName = scrubI18nName(settings.legalName, { ar: brand.ar, fr: brand.fr });
+    scrubProductVendors(state);
+    scrubMarketingCopy(settings);
+  }
 
   function hydrate(saved) {
     const base = defaultState.buildState();
-    if (!saved) return base;
+    if (!saved) {
+      scrubStorefrontCopy(base);
+      return base;
+    }
     const out = ctx.merge(base, saved);
     const baseProducts = new Map(base.products.map((p) => [p.handle, p]));
     out.products = (saved.products || base.products).map((p) => ctx.merge(baseProducts.get(p.handle) || {}, p));
@@ -57,6 +128,7 @@ export function install(ctx) {
     out.settings.siteSettings = mergeSiteSettings(out.settings.siteSettings, out.settings);
     applySiteSettingsToState(out.settings, ctx.lang);
     applyChannelsToSettings(out.settings, window.BRAND || {});
+    scrubStorefrontCopy(out);
     stampCatalogImages(out);
     return out;
   }

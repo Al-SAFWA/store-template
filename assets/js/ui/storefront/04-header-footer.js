@@ -6,7 +6,7 @@ import { collectionHandleFromHref, isCollectionVisible } from "../../domain/coll
 import { visibleChannel, whatsappDigits } from "../../domain/channels.js";
 import { paymentIcon } from "../../domain/payments.js";
 import { siteSettingVisible, siteText } from "../../domain/site-settings.js";
-import { applyReturnDays, isReturnEnabled, returnLabel } from "../../domain/store-policies.js";
+import { trustItemText } from "../../domain/store-policies.js";
 
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
@@ -219,13 +219,8 @@ export function install(ctx) {
           <ul class="trust-list">
             ${(ctx.SET.trustBar || [])
               .map((item) => {
-                let label = ctx.L(item.label);
-                if (item.icon === "return") {
-                  if (!isReturnEnabled(ctx.SET)) return "";
-                  label = returnLabel(ctx.SET, ctx.R.lang) || applyReturnDays(label, ctx.SET.returnDays);
-                } else {
-                  label = applyReturnDays(label, ctx.SET.returnDays);
-                }
+                const label = trustItemText(ctx.SET, item, ctx.R.lang, ctx.L(item.label));
+                if (!label) return "";
                 return `<li><span class="trust-ico" data-icon="${ctx.esc(item.icon)}"></span>${ctx.esc(label)}</li>`;
               })
               .join("")}
@@ -276,10 +271,6 @@ export function install(ctx) {
                 })
                 .join("")}
             </div>
-            <form class="newsletter" id="newsletter-form">
-              <label for="newsletter-email">${ctx.esc(ctx.t("newsletter"))}</label>
-              <div><input id="newsletter-email" type="email" placeholder="${ctx.esc(ctx.t("newsletterPlaceholder"))}" required><button type="submit">${ctx.esc(ctx.t("subscribe"))}</button></div>
-            </form>
           </div>
           ${(ctx.SET.footerColumns || [])
             .map(
@@ -309,12 +300,6 @@ export function install(ctx) {
           </div>
         </div>
       </footer>`;
-    const form = /** @type {HTMLFormElement | null} */ (el.querySelector("#newsletter-form"));
-    form?.addEventListener("submit", (event) => {
-      event.preventDefault();
-      ctx.toast(ctx.t("subscribed"));
-      form.reset();
-    });
     ctx.hydrateIcons(el);
   }
 }

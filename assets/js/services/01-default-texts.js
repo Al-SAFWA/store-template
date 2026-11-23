@@ -14,28 +14,28 @@ export function createDefaultTexts(ctx) {
   function descriptions() {
     return {
       Smartphone: bt(
-        "هاتف أصلي تم فحصه وتنظيفه واختباره من طرف خبراء {brand}. يعمل بكفاءة عالية ويأتي بضمان 12 شهرًا.",
-        "Téléphone d’origine inspecté, nettoyé et testé par les experts {brand}. Il fonctionne parfaitement et bénéficie d’une garantie de 12 mois."
+        "هاتف أصلي تم فحصه وتنظيفه واختباره من طرف خبراء {brand}. يعمل بكفاءة عالية.",
+        "Téléphone d’origine inspecté, nettoyé et testé par les experts {brand}. Il fonctionne parfaitement."
       ),
       Laptop: ctx.txt(
-        "حاسوب محمول تم اختباره مكونًا بمكون. يصلح للعمل والدراسة والاستخدام اليومي، مع ضمان 12 شهرًا.",
-        "Ordinateur portable testé composant par composant. Idéal pour le travail, les études et l’usage quotidien, avec 12 mois de garantie."
+        "حاسوب محمول تم اختباره مكونًا بمكون. يصلح للعمل والدراسة والاستخدام اليومي.",
+        "Ordinateur portable testé composant par composant. Idéal pour le travail, les études et l’usage quotidien."
       ),
       Macbook: bt(
         "MacBook مع macOS مثبت وجاهز للاستخدام. تم فحص البطارية ولوحة المفاتيح والمنافذ بواسطة خبراء {brand}.",
         "MacBook avec macOS installé et prêt à l’emploi. Batterie, clavier et ports vérifiés par les experts {brand}."
       ),
       Tablets: ctx.txt(
-        "جهاز لوحي تم فحصه بالكامل، مناسب للقراءة والعمل والترفيه، ويأتي بضمان 12 شهرًا.",
-        "Tablette entièrement vérifiée, idéale pour lire, travailler et se divertir, avec 12 mois de garantie."
+        "جهاز لوحي تم فحصه بالكامل، مناسب للقراءة والعمل والترفيه.",
+        "Tablette entièrement vérifiée, idéale pour lire, travailler et se divertir."
       ),
       Playstation: ctx.txt(
-        "جهاز ألعاب تم اختباره وتنظيفه، ويأتي مع ملحقاته الأساسية وضمان 12 شهرًا.",
-        "Console de jeu testée et nettoyée, livrée avec ses accessoires essentiels et 12 mois de garantie."
+        "جهاز ألعاب تم اختباره وتنظيفه، ويأتي مع ملحقاته الأساسية.",
+        "Console de jeu testée et nettoyée, livrée avec ses accessoires essentiels."
       ),
       "Apple Watch": ctx.txt(
-        "ساعة ذكية تم فحص البطارية والشاشة والحساسات، وتأتي بضمان 12 شهرًا.",
-        "Montre connectée : batterie, écran et capteurs vérifiés, avec 12 mois de garantie."
+        "ساعة ذكية تم فحص البطارية والشاشة والحساسات.",
+        "Montre connectée : batterie, écran et capteurs vérifiés."
       ),
       Accessories: ctx.txt(
         "ملحق أصلي تم فحصه لضمان التوافق والجودة.",
@@ -50,16 +50,16 @@ export function createDefaultTexts(ctx) {
         id: "faq-1",
         q: ctx.txt("هل الأجهزة مفحوصة؟", "Les appareils sont-ils contrôlés ?"),
         a: ctx.txt(
-          "نعم. كل جهاز يُفحص ويُختبر قبل البيع، ويأتي بضمان 12 شهرًا.",
-          "Oui. Chaque appareil est contrôlé et testé avant la vente, avec 12 mois de garantie."
+          "نعم. كل جهاز يُفحص ويُختبر قبل البيع.",
+          "Oui. Chaque appareil est contrôlé et testé avant la vente."
         )
       },
       {
         id: "faq-2",
         q: ctx.txt("ما مدة الضمان؟", "Quelle est la durée de la garantie ?"),
         a: ctx.txt(
-          "كل جهاز يأتي بضمان 12 شهرًا يغطي الأعطال التقنية غير الناتجة عن سوء الاستخدام.",
-          "Chaque appareil bénéficie de 12 mois de garantie couvrant les pannes techniques hors mauvais usage."
+          "مدة الضمان يحددها المتجر. إن ظهرت شارة ضمان على الموقع فهي المرجع.",
+          "La durée de garantie est fixée par la boutique. Le badge affiché sur le site fait foi."
         )
       },
       {

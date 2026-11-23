@@ -448,7 +448,7 @@ body[data-page="dashboard"] {
   .orders-desk { display: none; }
   .orders-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
   .orders-toolbar .spacer { display: none; }
-  .orders-tabs { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .orders-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
   .orders-tabs button { justify-content: center; }
   .orders-toolbar .field { min-width: 0; }
   .order-detail { grid-template-columns: 1fr; }

@@ -89,3 +89,24 @@ test("Ctrl+Alt+Y probe is wired", () => {
   assert.match(probe, /STORE PROBE/);
   assert.match(app, /17-store-probe\.js/);
 });
+
+test("account track is collapsed, newsletter is gone, orders tabs are two columns", () => {
+  const account = readFileSync(new URL("../assets/js/ui/storefront/14-static-pages.js", import.meta.url), "utf8");
+  assert.match(account, /class="account-card account-track"/);
+  assert.match(account, /<details>/);
+  assert.equal(header.includes("newsletter-form"), false);
+  const dashCss = readFileSync(new URL("../assets/css/dashboard.css", import.meta.url), "utf8");
+  assert.match(dashCss, /\.orders-tabs \{ display: grid; grid-template-columns: repeat\(2,/);
+  const styles = readFileSync(new URL("../assets/css/styles.css", import.meta.url), "utf8");
+  assert.equal(styles.includes("min-height: 242px"), false);
+});
+
+test("warranty badge is opt-in and Demo is stripped from vendor chips", () => {
+  const settings = readFileSync(new URL("../assets/js/domain/site-settings.js", import.meta.url), "utf8");
+  assert.match(settings, /key: "warranty_label"/);
+  assert.match(settings, /defaultValue: \{ ar: "ضمان المتجر"/);
+  assert.match(settings, /defaultVisible: false/);
+  assert.match(sections, /replace\(\/\^Demo\\s\+\/i/);
+  const productPage = readFileSync(new URL("../assets/js/ui/storefront/11-product-page.js", import.meta.url), "utf8");
+  assert.equal(productPage.includes("ضمان 12 شهرًا يغطي"), false);
+});

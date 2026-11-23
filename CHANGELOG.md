@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.9 — 2026-11-23
+
+- Storefront polish: collapsed order tracking, no newsletter, opt-in warranty, two-tab orders, no Demo chips, tighter collection toolbar.
+
 ## 1.18.8 — 2026-11-22
 
 - Client update gate: store-tour tests no longer require the template demo brand name (so store-demo1 can receive the release).

@@ -17,7 +17,7 @@ export const fr = {
   light: "Mode clair",
   freeDelivery: "Livraison gratuite",
   returns: "Retour facile",
-  warranty: "Garantie 12 mois",
+  warranty: "Garantie boutique",
   macos: "macOS installé",
   checked: "Vérifié par des experts",
   seeAll: "Voir tout",

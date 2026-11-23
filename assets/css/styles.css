@@ -898,24 +898,22 @@ svg { display: block; }
 /* --------------------------------------------------------------------------
    Collection page
    -------------------------------------------------------------------------- */
-.collection-head { padding: 26px 0 14px; min-height: 102px; }
+.collection-head { padding: 16px 0 8px; }
 .breadcrumb { font-size: 12px; color: #8a8a8a; padding: 16px 0 4px; display: flex; gap: 6px; flex-wrap: wrap; }
 .breadcrumb a:hover { color: var(--purple); }
 .collection-head h1 { font-size: 26px; font-weight: 700; line-height: 1.25; margin-top: 6px; }
 .collection-head .count { font-size: 12px; color: var(--muted); margin-top: 6px; }
 .collection-toolbar {
   display: flex; align-items: center; justify-content: space-between;
-  /* chips + sort are injected after boot; the reserved height stops them pushing the grid down */
-  min-height: 110px;
-  gap: 14px; padding: 16px 0;
+  gap: 10px; padding: 10px 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 .chip {
   border: 1px solid #cfcfcf; border-radius: 999px;
-  padding: 7px 14px; font-size: 12px; background: #fff;
+  padding: 6px 12px; font-size: 12px; background: #fff;
   transition: .15s;
 }
 .chip:hover { border-color: #888; }
@@ -1284,15 +1282,9 @@ main > .container > .breadcrumb:empty { min-height: 38px; }
   #site-footer { min-height: 754px; }
 }
 
-@media (max-width: 1023px) {
-  .collection-toolbar { min-height: 152px; }
-}
-
 @media (max-width: 767px) {
   #site-header { min-height: 135px; }
-  .collection-head { min-height: 96px; }
-  .collection-toolbar { min-height: 242px; }
-  #site-footer { min-height: 1199px; }
+  #site-footer { min-height: 1100px; }
   .grid { min-height: 344px; }
 }
 

@@ -91,8 +91,8 @@ export function install(ctx) {
       "raise-claim",
       "تقديم طلب ضمان",
       "Ouvrir une demande de garantie",
-      "كل جهاز مشمول بضمان 12 شهرًا يغطي عيوب التصنيع أو الأعطال غير الناتجة عن سوء الاستخدام.\nأرسل رقم الطلب، وصف العطل، وصورة أو فيديو قصير عبر واتساب.",
-      "Chaque appareil bénéficie d’une garantie de 12 mois couvrant les défauts de fabrication ou les pannes non liées à un mauvais usage.\nEnvoyez le numéro de commande, une description du problème et une courte photo ou vidéo via WhatsApp."
+      "إن فعّل المتجر شارة الضمان فهي تغطي عيوب التصنيع أو الأعطال غير الناتجة عن سوء الاستخدام.\nأرسل رقم الطلب، وصف العطل، وصورة أو فيديو قصير عبر واتساب.",
+      "Si la boutique affiche un badge de garantie, il couvre les défauts de fabrication ou les pannes non liées à un mauvais usage.\nEnvoyez le numéro de commande, une description du problème et une courte photo ou vidéo via WhatsApp."
     ],
     [
       "track-claim",
@@ -119,8 +119,8 @@ export function install(ctx) {
       "renewed",
       "الجودة والفحص في " + BN.ar,
       "Qualité et contrôle chez " + BN.fr,
-      "كل جهاز يُفحص ويُنظف ويُختبر قبل البيع.\nنفحص الشاشة، البطارية، الكاميرا، الصوت، المنافذ والاتصال، ثم نمسح البيانات ونثبت النظام.\nكل جهاز يأتي بضمان 12 شهرًا، توصيل مجاني داخل نواكشوط، وإمكانية الإرجاع خلال {returnDays} أيام.",
-      "Chaque appareil est contrôlé, nettoyé et testé avant la vente.\nNous vérifions l’écran, la batterie, les caméras, le son, les ports et la connectivité, puis nous effaçons les données et installons le système.\nChaque appareil est livré avec 12 mois de garantie, la livraison gratuite à Nouakchott et un retour possible sous {returnDays} jours."
+      "كل جهاز يُفحص ويُنظف ويُختبر قبل البيع.\nنفحص الشاشة، البطارية، الكاميرا، الصوت، المنافذ والاتصال، ثم نمسح البيانات ونثبت النظام.\nالتوصيل مجاني داخل نواكشوط، مع إمكانية الإرجاع خلال {returnDays} أيام.",
+      "Chaque appareil est contrôlé, nettoyé et testé avant la vente.\nNous vérifions l’écran, la batterie, les caméras, le son, les ports et la connectivité, puis nous effaçons les données et installons le système.\nLivraison gratuite à Nouakchott et retour possible sous {returnDays} jours."
     ],
     [
       "shipping",
@@ -133,8 +133,8 @@ export function install(ctx) {
       "returns",
       "الإرجاع والضمان",
       "Retours et garantie",
-      "لديك {returnDays} أيام لاختبار الجهاز وإرجاعه إذا لم يعجبك، بشرط أن يكون في حالته الأصلية.\nالضمان 12 شهرًا يغطي الأعطال التقنية، ولا يغطي الكسر أو دخول الماء أو سوء الاستخدام.\nلبدء الإرجاع راسلنا على واتساب مع رقم الطلب.",
-      "Vous disposez de {returnDays} jours pour tester l’appareil et le retourner s’il ne vous convient pas, à condition qu’il soit dans son état d’origine.\nLa garantie de 12 mois couvre les pannes techniques, hors casse, dégâts d’eau ou mauvais usage.\nPour un retour, contactez-nous sur WhatsApp avec votre numéro de commande."
+      "لديك {returnDays} أيام لاختبار الجهاز وإرجاعه إذا لم يعجبك، بشرط أن يكون في حالته الأصلية.\nإن وُجد ضمان فهو يغطي الأعطال التقنية، ولا يغطي الكسر أو دخول الماء أو سوء الاستخدام.\nلبدء الإرجاع راسلنا على واتساب مع رقم الطلب.",
+      "Vous disposez de {returnDays} jours pour tester l’appareil et le retourner s’il ne vous convient pas, à condition qu’il soit dans son état d’origine.\nUne garantie éventuelle couvre les pannes techniques, hors casse, dégâts d’eau ou mauvais usage.\nPour un retour, contactez-nous sur WhatsApp avec votre numéro de commande."
     ]
   ].map(([slug, ar, fr, bodyAr, bodyFr]) => ({
     slug,

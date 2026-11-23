@@ -64,14 +64,19 @@ export function install(ctx) {
     const myOrders = cust ? ctx.R.getCustomerOrders() : [];
 
     const trackCard = `
-      <section class="account-card">
-        <span class="eyebrow">${ctx.esc(ctx.L(ctx.SET.storeName))}</span>
-        <h2>${ctx.esc(ctx.t("trackOrder"))}</h2>
-        <p>${ctx.esc(ctx.t("trackOrderText"))}</p>
-        <div class="field"><label for="acc-order">${ctx.esc(ctx.t("orderId"))}</label><input id="acc-order" placeholder="RS-261022-A1B2" dir="ltr"></div>
-        <div class="field"><label for="acc-phone">${ctx.esc(ctx.t("phone"))}</label><input id="acc-phone" inputmode="tel" placeholder="46 00 00 00" dir="ltr"></div>
-        <button class="btn btn-primary btn-block" type="button" id="acc-track">${ctx.esc(ctx.t("trackOrder"))}</button>
-        <div id="acc-result"></div>
+      <section class="account-card account-track">
+        <details>
+          <summary>
+            <span class="account-track-title">${ctx.esc(ctx.t("trackOrder"))}</span>
+            <span class="account-track-hint">${ctx.esc(ctx.t("trackOrderText"))}</span>
+          </summary>
+          <div class="account-track-body">
+            <div class="field"><label for="acc-order">${ctx.esc(ctx.t("orderId"))}</label><input id="acc-order" placeholder="RS-261022-A1B2" dir="ltr"></div>
+            <div class="field"><label for="acc-phone">${ctx.esc(ctx.t("phone"))}</label><input id="acc-phone" inputmode="tel" placeholder="46 00 00 00" dir="ltr"></div>
+            <button class="btn btn-primary btn-block" type="button" id="acc-track">${ctx.esc(ctx.t("trackOrder"))}</button>
+            <div id="acc-result"></div>
+          </div>
+        </details>
         ${
           myOrders.length
             ? `<h3 class="account-subtitle">${ctx.esc(ctx.t("recentOrders"))}</h3>
