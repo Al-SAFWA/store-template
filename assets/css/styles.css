@@ -1147,20 +1147,19 @@ svg { display: block; }
 @media (max-width: 900px) {
   :root { --pad: 20px; }
   .announcement { display: block; }
-  .header-top { grid-template-columns: auto 1fr auto; height: auto; padding-top: 12px; padding-bottom: 10px; gap: 10px; position: relative; }
-  .menu-btn { display: grid; }
-  /* 1.17.5 — logo lives in the grid (column 2) instead of being absolutely centred, so it can never overlap the
-     action buttons when they grow (theme + language on phones). */
+  .header-top { grid-template-columns: 1fr auto; height: auto; padding-top: 12px; padding-bottom: 10px; gap: 10px; position: relative; }
+  .menu-btn { display: none; }
   .logo {
-    position: static; transform: none; grid-column: 2; grid-row: 1; justify-self: center; align-self: center;
+    position: static; transform: none; grid-column: 1; grid-row: 1; justify-self: center; align-self: center;
     height: 34px; max-width: 100%; overflow: hidden;
   }
   .logo img { max-width: min(120px, 100%); max-height: 34px; }
-  .header-actions { grid-column: 3; }
+  .header-actions { grid-column: 2; }
   .nav-scroll { display: none; }
   .search { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; margin-left: 0; margin-top: 4px; height: 44px; }
   .header-actions .icon-btn { width: 30px; height: 30px; }
-  .main-nav { display: none; }
+  .main-nav { display: block; }
+  .main-nav .nav-inner { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-inline: 8px; }
   .hero-slide img { max-height: 520px; }
   .trust-inner { flex-direction: column; align-items: flex-start; padding: 12px 0; gap: 10px; }
   .trust-list { gap: 22px; flex-wrap: wrap; }

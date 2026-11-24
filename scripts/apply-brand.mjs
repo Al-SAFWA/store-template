@@ -66,16 +66,8 @@ const sm = site
     ].join("\n") + "\n"
   : `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Set BRAND.domain in assets/js/brand.config.js and run: npm run brand -->\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>\n`;
 fs.writeFileSync(P("sitemap.xml"), sm);
-// text logos + favicon (merchant can replace the files with real artwork; keep the same file names)
-const primary = B.colors?.primary || "#2563eb";
-const logo = (color) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="96" viewBox="0 0 420 96"><rect x="8" y="16" width="64" height="64" rx="16" fill="${primary}"/><text x="40" y="60" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#fff">${esc(fr.trim()[0] || "S")}</text><text x="88" y="46" font-family="Tahoma,Arial,sans-serif" font-size="30" font-weight="700" fill="${color}">${esc(ar)}</text><text x="88" y="76" font-family="Arial,Helvetica,sans-serif" font-size="18" fill="${color}" opacity=".7">${esc(fr)}</text></svg>\n`;
-fs.writeFileSync(P("assets/img/brand-logo.svg"), logo(B.colors?.ink || "#0f172a"));
-fs.writeFileSync(P("assets/img/brand-logo-white.svg"), logo("#ffffff"));
-fs.writeFileSync(
-  P("assets/img/favicon.svg"),
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="${primary}"/><text x="32" y="44" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#fff">${esc(fr.trim()[0] || "S")}</text></svg>\n`
-);
+// Keep bag-mark artwork in assets/img/brand-logo*.svg — never rewrite those files here
+// (client updates used to stamp a letter + the merchant name over the mark).
 // _headers (Cloudflare Pages / Netlify) — always regenerated from vercel.json so both hosts share one policy
 const vercel = JSON.parse(fs.readFileSync(P("vercel.json"), "utf8"));
 fs.writeFileSync(

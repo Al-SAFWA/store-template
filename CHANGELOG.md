@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.11 — 2026-11-24
+
+- Checkout 2×2 payment tiles, drop demo name and مجددة copy, phone-first order track, no hamburger drawer, category switches as buttons.
+
 ## 1.18.10 — 2026-11-23
 
 - Header: AR next to the flag, bag mark instead of phone collage, five-item chip menu, working category switches, store name المتجر.

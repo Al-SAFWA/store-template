@@ -51,7 +51,7 @@ export function checkoutPageHTML(ctx, data) {
                     (
                       payment,
                       i
-                    ) => `<label class="payment-card ${i === 0 ? "active" : ""} u-pay-rail" data-sv="pay:${ctx.esc(payment.color)}">
+                    ) => `<label class="payment-card ${payment.id === "cod" ? "is-wide" : "is-tile"} ${i === 0 ? "active" : ""} u-pay-rail" data-sv="pay:${ctx.esc(payment.color)}">
                   <input type="radio" name="co-payment" value="${ctx.esc(payment.id)}" ${i === 0 ? "checked" : ""}>
                   <span class="payment-mark">${paymentIcon(payment) ? `<img src="${ctx.esc(paymentIcon(payment))}" alt="${ctx.esc(ctx.L(payment.name))}" width="40" height="40" decoding="async">` : ctx.esc(ctx.L(payment.name).slice(0, 2))}</span>
                   <span class="payment-copy"><strong>${ctx.esc(ctx.L(payment.name))}</strong><small>${ctx.esc(ctx.paymentNote(payment))}</small></span>

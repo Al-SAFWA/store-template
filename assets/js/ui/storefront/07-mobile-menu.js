@@ -8,54 +8,12 @@ import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
 export function install(ctx) {
   Object.assign(ctx, { mountMenu, openMenu, closeMenu, runSearch });
   function mountMenu() {
-    if (document.getElementById("menu-drawer")) return;
-    const el = document.createElement("div");
-    el.innerHTML = `
-      <div class="menu-overlay" id="menu-overlay"></div>
-      <aside class="menu-drawer" id="menu-drawer" aria-label="${ctx.esc(ctx.t("menu"))}" aria-hidden="true">
-        <div class="drawer-head">
-          <h3>${ctx.esc(ctx.t("menu"))}</h3>
-          <button class="drawer-close" type="button" data-close-menu aria-label="${ctx.esc(ctx.t("close"))}">${ctx.ICON.close}</button>
-        </div>
-        <nav class="menu-cats" aria-label="Mobile">
-          ${(ctx.navItems ? ctx.navItems() : ctx.NAV || [])
-            .map((n) => `<a class="menu-chip" href="${ctx.esc(ctx.R.safeHref(n.href))}">${ctx.esc(ctx.L(n.label))}</a>`)
-            .join("")}
-        </nav>
-        <div class="menu-extra">
-          <a href="account.html">${ctx.ICON.user} ${ctx.esc(ctx.t("myAccount"))}</a>
-          <a href="wishlist.html">${ctx.ICON.heart} ${ctx.esc(ctx.t("wishlist"))}</a>
-          <a href="page.html?slug=help">${ctx.ICON.info} ${ctx.esc(ctx.t("contactUs"))}</a>
-          <a href="dashboard.html">${ctx.ICON.badgeCheck} ${ctx.R.lang === "ar" ? "لوحة التحكم" : "Tableau de bord"}</a>
-        </div>
-        <div class="menu-preferences">
-          <button type="button" data-set-lang="ar" class="${ctx.R.lang === "ar" ? "active" : ""}"><img src="assets/img/flag-mr.svg" alt="" width="22"> العربية</button>
-          <button type="button" data-set-lang="fr" class="${ctx.R.lang === "fr" ? "active" : ""}"><img src="assets/img/flag-fr.svg" alt="" width="22"> Français</button>
-          <button type="button" data-theme-toggle>${ctx.R.theme === "dark" ? ctx.ICON.sun : ctx.ICON.moon} ${ctx.esc(ctx.R.theme === "dark" ? ctx.t("light") : ctx.t("dark"))}</button>
-        </div>
-      </aside>`;
-    document.body.appendChild(el);
-    document.getElementById("menu-overlay").addEventListener("click", closeMenu);
-    el.querySelector("[data-close-menu]").addEventListener("click", closeMenu);
-    ctx.hydrateIcons(el);
+    /* Drawer removed: header nav + icons already cover the same links. */
   }
-
   function openMenu() {
-    mountMenu();
-    document.getElementById("menu-overlay").classList.add("open");
-    const d = document.getElementById("menu-drawer");
-    d.classList.add("open");
-    d.setAttribute("aria-hidden", "false");
-    document.body.classList.add("no-scroll");
+    /* no hamburger */
   }
-
   function closeMenu() {
-    document.getElementById("menu-overlay")?.classList.remove("open");
-    const d = document.getElementById("menu-drawer");
-    if (d) {
-      d.classList.remove("open");
-      d.setAttribute("aria-hidden", "true");
-    }
     document.body.classList.remove("no-scroll");
   }
 

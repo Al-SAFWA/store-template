@@ -67,7 +67,7 @@ export function install(ctx) {
         <span class="ct-thumb"><img src="${ctx.esc(categoryImage(collection))}" alt="" data-fb="${ctx.esc(categoryPhoto(collection.handle) || PLACEHOLDER)}"></span>
         <span class="ct-text"><strong>${ctx.esc(ctx.lng(collection.title))}</strong><small>${ctx.esc(cardMeta(collection))}</small></span>
       </button>
-      <label class="toggle"><input type="checkbox" data-action="toggle-category-visible" data-index="${index}" ${collection.visible !== false ? "checked" : ""}><span></span></label>
+      <button type="button" class="toggle${collection.visible !== false ? " is-on" : ""}" data-action="toggle-category-visible" data-index="${index}" aria-pressed="${collection.visible !== false}" aria-label="${ctx.dt("إظهار الفئة", "Afficher la catégorie")}"><span></span></button>
       <div class="ct-actions">
         <button type="button" class="ct-edit" data-action="edit-category" data-index="${index}">${ctx.icon("edit")} ${ctx.dt("تعديل", "Modifier")}</button>
         <button type="button" class="ct-del" data-action="delete-category" data-index="${index}">${ctx.icon("trash")} ${ctx.dt("حذف", "Supprimer")}</button>

@@ -17,9 +17,15 @@ export function install(ctx) {
     setTheme
   });
   // Default state builders live in 01a-default-state.js; hydrate merges saved data over them.
-  const defaultState = createDefaultState(ctx);
   const STALE_NAME = /تجربة|تجريبي|المرابطون|Demo Store|Demo One/i;
   const FRESH_NAME = { ar: "المتجر", fr: "Boutique" };
+  if (typeof window !== "undefined" && window.BRAND?.name) {
+    const ar = String(window.BRAND.name.ar || "");
+    const fr = String(window.BRAND.name.fr || "");
+    if (!ar || STALE_NAME.test(ar)) window.BRAND.name.ar = FRESH_NAME.ar;
+    if (!fr || STALE_NAME.test(fr)) window.BRAND.name.fr = FRESH_NAME.fr;
+  }
+  const defaultState = createDefaultState(ctx);
 
   function withoutTwelveMonthClaim(text) {
     return String(text ?? "")
@@ -47,13 +53,38 @@ export function install(ctx) {
     };
   }
 
+  function withoutRenewedWord(text) {
+    return String(text ?? "")
+      .replace(/الإلكترونيات المجددة/g, "الإلكترونيات")
+      .replace(/تقنية مجددة/g, "تقنية موثوقة")
+      .replace(/المجددة/g, "")
+      .replace(/مجددة/g, "")
+      .replace(/\s+،/g, "،")
+      .replace(/،{2,}/g, "،")
+      .replace(/\s{2,}/g, " ")
+      .trim()
+      .replace(/^،|،$/g, "");
+  }
+
   function scrubLocaleField(value) {
     if (!value) return value;
-    if (typeof value === "string") return withoutTwelveMonthClaim(value);
+    if (typeof value === "string") return withoutRenewedWord(withoutTwelveMonthClaim(value));
     return {
-      ar: withoutTwelveMonthClaim(value.ar),
+      ar: withoutRenewedWord(withoutTwelveMonthClaim(value.ar)),
       fr: withoutTwelveMonthClaim(value.fr)
     };
+  }
+
+  function scrubRenewedTree(value) {
+    if (typeof value === "string") return withoutRenewedWord(value);
+    if (Array.isArray(value)) {
+      for (let i = 0; i < value.length; i++) value[i] = scrubRenewedTree(value[i]);
+      return value;
+    }
+    if (value && typeof value === "object") {
+      for (const key of Object.keys(value)) value[key] = scrubRenewedTree(value[key]);
+    }
+    return value;
   }
 
   function stripDemoPrefix(value) {
@@ -79,7 +110,20 @@ export function install(ctx) {
     }
   }
 
-  const EXTRA_NAV = new Set(["samsung", "macbooks", "ipads", "watches", "business", "seller"]);
+  const EXTRA_NAV = new Set([
+    "samsung",
+    "macbooks",
+    "ipads",
+    "watches",
+    "business",
+    "seller",
+    "android",
+    "cases",
+    "gaming",
+    "audio",
+    "chargers",
+    "tablets"
+  ]);
 
   function compactNavigation(settings) {
     const nav = settings.navigation;
@@ -95,7 +139,15 @@ export function install(ctx) {
 
   function scrubLogo(settings) {
     const logo = String(settings.logo || "");
-    if (/\.(png|jpe?g|webp)$/i.test(logo) || /hero|phones|cats\//i.test(logo)) {
+    const staleBrand =
+      STALE_NAME.test(String(settings.storeName?.ar || "")) || STALE_NAME.test(String(settings.storeName?.fr || ""));
+    if (
+      staleBrand ||
+      !logo ||
+      /\.(png|jpe?g|webp)$/i.test(logo) ||
+      /hero|phones|cats\//i.test(logo) ||
+      /brand-logo/i.test(logo)
+    ) {
       settings.logo = "assets/img/brand-logo.svg";
       settings.logoWhite = "assets/img/brand-logo-white.svg";
     }
@@ -109,6 +161,8 @@ export function install(ctx) {
     scrubLogo(settings);
     scrubProductVendors(state);
     scrubMarketingCopy(settings);
+    scrubRenewedTree(settings);
+    if (state.pages) scrubRenewedTree(state.pages);
   }
 
   function hydrate(saved) {

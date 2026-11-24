@@ -86,7 +86,6 @@ export function install(ctx) {
             : ""
       }
       <div class="container header-top">
-        <button class="menu-btn" type="button" data-open-menu aria-label="${ctx.esc(ctx.t("menu"))}">${ctx.ICON.menu}</button>
         <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.esc(ctx.R.theme === "dark" ? ctx.SET.logoWhite || ctx.SET.logo : ctx.SET.logo)}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="420" height="96" decoding="async"></a>
         <form class="search" id="header-search" role="search" autocomplete="off">
           <input type="search" placeholder="${ctx.esc(ctx.t("searchPlaceholder"))}" aria-label="${ctx.esc(ctx.t("search"))}">
@@ -124,7 +123,6 @@ export function install(ctx) {
       ctx.openSearch(input.value);
     });
     el.querySelectorAll("[data-open-cart]").forEach((b) => b.addEventListener("click", ctx.openCart));
-    el.querySelector("[data-open-menu]")?.addEventListener("click", ctx.openMenu);
     el.querySelector(".nav-scroll")?.addEventListener("click", () => {
       el.querySelector(".nav-inner")?.scrollBy({ left: (ctx.R.lang === "ar" ? -1 : 1) * 260, behavior: "smooth" });
     });

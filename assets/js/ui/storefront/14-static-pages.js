@@ -9,6 +9,43 @@ import { applyReturnDays } from "../../domain/store-policies.js";
 export function install(ctx) {
   Object.assign(ctx, { renderPage, renderAccount });
 
+  function readInput(id) {
+    return /** @type {HTMLInputElement | null} */ (document.getElementById(id))?.value || "";
+  }
+
+  function bindAccountTrack(orders) {
+    const findOrder = () => {
+      const code = readInput("acc-order").trim().toUpperCase();
+      const phone = readInput("acc-phone").replace(/\D/g, "").slice(-8);
+      const box = document.getElementById("acc-result");
+      if (!box) return;
+      if (!phone && !code) {
+        box.innerHTML = `<div class="account-result error">${ctx.esc(ctx.t("needPhoneOrOrder"))}</div>`;
+        return;
+      }
+      const found =
+        (phone &&
+          orders.find((order) =>
+            String(order.customer?.phone || "")
+              .replace(/\D/g, "")
+              .endsWith(phone)
+          )) ||
+        (code && orders.find((order) => order.id.toUpperCase() === code));
+      if (!found) {
+        box.innerHTML = `<div class="account-result error">${ctx.esc(ctx.t("orderNotFound"))}</div>`;
+        return;
+      }
+      const status = ctx.R.statusMeta(found.status);
+      box.innerHTML = `<div class="account-result"><div class="result-head"><strong>${ctx.esc(found.id)}</strong><span class="status-pill u-status-text" data-sv="status:${ctx.esc(status.color)}">${ctx.esc(ctx.L(status.label))}</span></div><p>${ctx.esc(found.customer?.name || "")} · ${ctx.money(found.total)}</p><ul>${(found.items || []).map((item) => `<li>${ctx.esc(item.title)} × ${item.qty}</li>`).join("")}</ul></div>`;
+    };
+    document.getElementById("acc-track")?.addEventListener("click", findOrder);
+    const onEnter = (event) => {
+      if (event.key === "Enter") findOrder();
+    };
+    document.getElementById("acc-phone")?.addEventListener("keydown", onEnter);
+    document.getElementById("acc-order")?.addEventListener("keydown", onEnter);
+  }
+
   function contactActionsHTML() {
     const wa = whatsappDigits(ctx.SET);
     const email = visibleChannel(ctx.SET, "email");
@@ -65,18 +102,15 @@ export function install(ctx) {
 
     const trackCard = `
       <section class="account-card account-track">
-        <details>
-          <summary>
-            <span class="account-track-title">${ctx.esc(ctx.t("trackOrder"))}</span>
-            <span class="account-track-hint">${ctx.esc(ctx.t("trackOrderText"))}</span>
-          </summary>
-          <div class="account-track-body">
-            <div class="field"><label for="acc-order">${ctx.esc(ctx.t("orderId"))}</label><input id="acc-order" placeholder="RS-261022-A1B2" dir="ltr"></div>
-            <div class="field"><label for="acc-phone">${ctx.esc(ctx.t("phone"))}</label><input id="acc-phone" inputmode="tel" placeholder="46 00 00 00" dir="ltr"></div>
-            <button class="btn btn-primary btn-block" type="button" id="acc-track">${ctx.esc(ctx.t("trackOrder"))}</button>
-            <div id="acc-result"></div>
-          </div>
-        </details>
+        <h2 class="account-track-title">${ctx.esc(ctx.t("trackOrder"))}</h2>
+        <p class="account-track-hint">${ctx.esc(ctx.t("trackOrderText"))}</p>
+        <div class="account-track-body">
+          <div class="field"><label for="acc-phone">${ctx.esc(ctx.t("phone"))}</label><input id="acc-phone" inputmode="tel" placeholder="46 00 00 00" dir="ltr" autocomplete="tel"></div>
+          <p class="track-or" aria-hidden="true">${ctx.esc(ctx.t("trackOr"))}</p>
+          <div class="field"><label for="acc-order">${ctx.esc(ctx.t("orderId"))}</label><input id="acc-order" placeholder="RS-261022-A1B2" dir="ltr"></div>
+          <button class="btn btn-primary btn-block" type="button" id="acc-track">${ctx.esc(ctx.t("trackOrder"))}</button>
+          <div id="acc-result"></div>
+        </div>
         ${
           myOrders.length
             ? `<h3 class="account-subtitle">${ctx.esc(ctx.t("recentOrders"))}</h3>
@@ -144,8 +178,8 @@ export function install(ctx) {
         event.preventDefault();
         const button = /** @type {HTMLButtonElement | undefined} */ (/** @type {SubmitEvent} */ (event).submitter);
         if (button) button.disabled = true;
-        const email = readValue("#login-email");
-        const password = readValue("#login-password");
+        const email = readInput("login-email");
+        const password = readInput("login-password");
         try {
           // Try admin login first (works with username or email)
           try {
@@ -180,8 +214,8 @@ export function install(ctx) {
         button.disabled = true;
         try {
           // Accept a username or a full e-mail address.
-          const identifier = readValue("#dash-email").trim();
-          const password = readValue("#dash-password");
+          const identifier = readInput("dash-email").trim();
+          const password = readInput("dash-password");
           await ctx.R.login(identifier, password);
           ctx.toast(ctx.t("signedIn") + " (" + ctx.t("dashboardLogin") + ")", "good");
           setTimeout(() => {
@@ -203,10 +237,10 @@ export function install(ctx) {
           try {
             const wishlist = [...ctx.readWish()];
             await ctx.R.customerRegister({
-              name: readValue("#reg-name"),
-              email: readValue("#reg-email"),
-              phone: readValue("#reg-phone"),
-              password: readValue("#reg-password"),
+              name: readInput("reg-name"),
+              email: readInput("reg-email"),
+              phone: readInput("reg-phone"),
+              password: readInput("reg-password"),
               wishlist
             });
             ctx.toast(ctx.t("accountCreated"), "good");
@@ -257,32 +291,6 @@ export function install(ctx) {
       });
     }
 
-    /**
-     * Value of an input of this panel.
-     * @param {string} selector
-     * @param {ParentNode} [scope]
-     */
-    const readValue = (selector, scope = root) => /** @type {HTMLInputElement} */ (scope.querySelector(selector)).value;
-
-    const findOrder = () => {
-      const code = readValue("#acc-order", document).trim().toUpperCase();
-      const phone = readValue("#acc-phone", document).replace(/\D/g, "").slice(-8);
-      const found = orders.find(
-        (order) =>
-          (!code || order.id.toUpperCase() === code) &&
-          (!phone || String(order.customer?.phone).replace(/\D/g, "").endsWith(phone))
-      );
-      const box = document.getElementById("acc-result");
-      if (!found) {
-        box.innerHTML = `<div class="account-result error">${ctx.esc(ctx.t("orderNotFound"))}</div>`;
-        return;
-      }
-      const status = ctx.R.statusMeta(found.status);
-      box.innerHTML = `<div class="account-result"><div class="result-head"><strong>${ctx.esc(found.id)}</strong><span class="status-pill u-status-text" data-sv="status:${ctx.esc(status.color)}">${ctx.esc(ctx.L(status.label))}</span></div><p>${ctx.esc(found.customer?.name || "")} · ${ctx.money(found.total)}</p><ul>${(found.items || []).map((item) => `<li>${ctx.esc(item.title)} × ${item.qty}</li>`).join("")}</ul></div>`;
-    };
-    document.getElementById("acc-track")?.addEventListener("click", findOrder);
-    document.getElementById("acc-order")?.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") findOrder();
-    });
+    bindAccountTrack(orders);
   }
 }

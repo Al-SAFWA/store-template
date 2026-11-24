@@ -90,10 +90,14 @@ test("Ctrl+Alt+Y probe is wired", () => {
   assert.match(app, /17-store-probe\.js/);
 });
 
-test("account track is collapsed, newsletter is gone, orders tabs are two columns", () => {
+test("account track is phone first with أو, newsletter is gone, orders tabs are two columns", () => {
   const account = readFileSync(new URL("../assets/js/ui/storefront/14-static-pages.js", import.meta.url), "utf8");
   assert.match(account, /class="account-card account-track"/);
-  assert.match(account, /<details>/);
+  assert.equal(account.includes("<details>"), false);
+  const phoneAt = account.indexOf('id="acc-phone"');
+  const orderAt = account.indexOf('id="acc-order"');
+  assert.ok(phoneAt > 0 && orderAt > phoneAt);
+  assert.match(account, /track-or/);
   assert.equal(header.includes("newsletter-form"), false);
   const dashCss = readFileSync(new URL("../assets/css/dashboard.css", import.meta.url), "utf8");
   assert.match(dashCss, /\.orders-tabs \{ display: grid; grid-template-columns: repeat\(2,/);
@@ -101,17 +105,34 @@ test("account track is collapsed, newsletter is gone, orders tabs are two column
   assert.equal(styles.includes("min-height: 242px"), false);
 });
 
-test("mobile menu is a chip strip and category toggles persist on change", () => {
+test("no hamburger drawer; category toggles are tappable buttons; payments are four tiles", () => {
+  assert.equal(header.includes("data-open-menu"), false);
   const menu = readFileSync(new URL("../assets/js/ui/storefront/07-mobile-menu.js", import.meta.url), "utf8");
-  assert.match(menu, /class="menu-cats"/);
-  assert.match(menu, /menu-chip/);
+  assert.equal(menu.includes("menu-chip"), false);
+  assert.equal(menu.includes("menu-drawer"), false);
   const nav = readFileSync(new URL("../assets/js/services/01-default-texts.js", import.meta.url), "utf8");
   assert.equal(nav.includes('id: "samsung"'), false);
   assert.equal(nav.includes("كن بائعًا"), false);
-  const events = readFileSync(new URL("../assets/js/ui/dashboard/23-events-misc.js", import.meta.url), "utf8");
-  assert.match(events, /toggle-category-visible/);
+  const actions = readFileSync(new URL("../assets/js/ui/dashboard/22c-actions-forms.js", import.meta.url), "utf8");
+  assert.match(actions, /"toggle-category-visible"/);
+  assert.match(cats, /<button type="button" class="toggle/);
+  assert.match(checkout, /is-tile/);
+  assert.match(checkout, /is-wide/);
   const css = readFileSync(new URL("../assets/css/restore.css", import.meta.url), "utf8");
   assert.equal(css.includes(".lang-current span { display: none; }"), false);
+  assert.match(css, /\.payment-card\.is-tile/);
+  const styles = readFileSync(new URL("../assets/css/styles.css", import.meta.url), "utf8");
+  assert.match(styles, /\.main-nav \{ display: block; \}/);
+});
+
+test("stale demo name and مجددة copy are scrubbed; apply-brand keeps the bag mark", () => {
+  const hydrate = readFileSync(new URL("../assets/js/services/01-default-content.js", import.meta.url), "utf8");
+  assert.match(hydrate, /withoutRenewedWord/);
+  assert.match(hydrate, /المتجر/);
+  assert.match(hydrate, /STALE_NAME/);
+  const brand = readFileSync(new URL("../scripts/apply-brand.mjs", import.meta.url), "utf8");
+  assert.match(brand, /never rewrite those files/);
+  assert.equal(brand.includes('writeFileSync(P("assets/img/brand-logo'), false);
 });
 
 test("warranty badge is opt-in and Demo is stripped from vendor chips", () => {
