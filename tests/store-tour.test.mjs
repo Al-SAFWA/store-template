@@ -118,6 +118,8 @@ test("no hamburger drawer; category toggles are tappable buttons; payments are f
   assert.match(cats, /<button type="button" class="toggle/);
   assert.match(checkout, /is-tile/);
   assert.match(checkout, /is-wide/);
+  assert.equal(checkout.includes("co-email"), false);
+  assert.equal(checkout.includes("country-readonly"), false);
   const css = readFileSync(new URL("../assets/css/restore.css", import.meta.url), "utf8");
   assert.equal(css.includes(".lang-current span { display: none; }"), false);
   assert.match(css, /\.payment-card\.is-tile/);

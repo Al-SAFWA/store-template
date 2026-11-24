@@ -31,14 +31,10 @@ export function checkoutPageHTML(ctx, data) {
                 <div class="field"><label for="co-name">${ctx.esc(ctx.t("fullName"))} *</label><input id="co-name" autocomplete="name" required><p class="field-error" id="err-co-name"></p></div>
                 <div class="field"><label for="co-phone">${ctx.esc(ctx.t("phone"))} *</label><div class="phone-input"><span>+222</span><input id="co-phone" inputmode="tel" autocomplete="tel" placeholder="46 00 00 00" maxlength="14" required></div><p class="field-error" id="err-co-phone"></p></div>
               </div>
-              <div class="field"><label for="co-email">${ctx.esc(ctx.t("email"))}</label><input id="co-email" type="email" autocomplete="email" placeholder="you@example.com"></div>
             </section>
             <section class="checkout-block">
               <div class="checkout-block-head"><span>2</span><h2>${ctx.esc(ctx.t("shippingDelivery"))}</h2></div>
-              <div class="field-row">
-                <div class="field"><label for="co-city">${ctx.esc(ctx.t("city"))} *</label><select id="co-city">${cities.map((city) => `<option value="${ctx.esc(city.id)}" ${city.id === defaultCity?.id ? "selected" : ""}>${ctx.esc(ctx.L(city.name))} — ${Number(city.fee) ? ctx.money(city.fee) : ctx.t("free")}</option>`).join("")}</select></div>
-                <div class="field"><label>${ctx.esc(ctx.t("country"))}</label><div class="country-readonly"><img src="${ctx.SET.country.flag}" alt="" width="22" height="15">${ctx.esc(ctx.L(ctx.SET.country.name))}</div></div>
-              </div>
+              <div class="field"><label for="co-city">${ctx.esc(ctx.t("city"))} *</label><select id="co-city">${cities.map((city) => `<option value="${ctx.esc(city.id)}" ${city.id === defaultCity?.id ? "selected" : ""}>${ctx.esc(ctx.L(city.name))} — ${Number(city.fee) ? ctx.money(city.fee) : ctx.t("free")}</option>`).join("")}</select></div>
               <div class="field"><label for="co-address">${ctx.esc(ctx.t("address"))} *</label><input id="co-address" autocomplete="street-address" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "الحي، الشارع، رقم المنزل" : "Quartier, rue, numéro")}" required><p class="field-error" id="err-co-address"></p></div>
               <div class="field"><label for="co-notes">${ctx.esc(ctx.t("notes"))}</label><textarea id="co-notes" rows="3" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "أي تفاصيل إضافية عن الطلب" : "Toute précision utile")}"></textarea></div>
               <p class="field-note">${ctx.ICON.truck} ${ctx.esc(ctx.L(ctx.SET.shippingNote))}</p>
@@ -53,7 +49,7 @@ export function checkoutPageHTML(ctx, data) {
                       i
                     ) => `<label class="payment-card ${payment.id === "cod" ? "is-wide" : "is-tile"} ${i === 0 ? "active" : ""} u-pay-rail" data-sv="pay:${ctx.esc(payment.color)}">
                   <input type="radio" name="co-payment" value="${ctx.esc(payment.id)}" ${i === 0 ? "checked" : ""}>
-                  <span class="payment-mark">${paymentIcon(payment) ? `<img src="${ctx.esc(paymentIcon(payment))}" alt="${ctx.esc(ctx.L(payment.name))}" width="40" height="40" decoding="async">` : ctx.esc(ctx.L(payment.name).slice(0, 2))}</span>
+                  <span class="payment-mark">${paymentIcon(payment) ? `<img src="${ctx.esc(paymentIcon(payment))}" alt="${ctx.esc(ctx.L(payment.name))}" width="56" height="56" decoding="async">` : ctx.esc(ctx.L(payment.name).slice(0, 2))}</span>
                   <span class="payment-copy"><strong>${ctx.esc(ctx.L(payment.name))}</strong><small>${ctx.esc(ctx.paymentNote(payment))}</small></span>
                   ${payment.discount ? `<span class="payment-discount">-${payment.discount}%</span>` : ""}
                 </label>`

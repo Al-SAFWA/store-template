@@ -78,7 +78,7 @@ export function install(ctx) {
   function viewCategories() {
     const list = collections();
     return `
-      <div class="dash-view-head"><div><h2>${ctx.dt("الفئات", "Catégories")}</h2><p>${ctx.dt("قائمة واحدة: ما تفعّله هنا يظهر في الصفحة الرئيسية وقائمة المتجر. اضغط الفئة لتعديلها.", "Une seule liste : ce que vous activez ici apparaît sur l’accueil et dans le menu. Touchez une catégorie pour la modifier.")}</p></div></div>
+      <div class="dash-view-head"><div><h2>${ctx.dt("الفئات", "Catégories")}</h2><p>${ctx.dt("المفتاح يخفي الفئة من المتجر فقط. تبقى هنا، واضغط مرة ثانية لإظهارها.", "Le bouton masque la catégorie de la boutique. Elle reste ici ; un second appui la réaffiche.")}</p></div></div>
       <div class="ct">
         ${list.map((collection, index) => categoryCard(collection, index, list.length)).join("")}
         ${list.length ? "" : `<p class="form-note">${ctx.dt("لا توجد فئات بعد.", "Aucune catégorie.")}</p>`}

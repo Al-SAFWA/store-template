@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.12 — 2026-11-24
+
+- Hide category stays in the dashboard, tighter bag logo, checkout drops email/country, larger payment app icons in smaller tiles.
+
 ## 1.18.11 — 2026-11-24
 
 - Checkout 2×2 payment tiles, drop demo name and مجددة copy, phone-first order track, no hamburger drawer, category switches as buttons.

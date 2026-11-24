@@ -102,7 +102,8 @@ test("collection mapping keeps visible ↔ active", () => {
     visible: false,
     image: "c.png"
   });
-  assert.equal(row.active, false);
+  assert.equal(row.active, true);
+  assert.equal(row.extra.visible, false);
   assert.equal(row.extra.image, "c.png");
   assert.equal(row.id, "iphone");
   const back = rowToCollection(row);

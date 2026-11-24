@@ -227,25 +227,29 @@ export function rowToProduct(row, variants = [], collectionHandles = null) {
 }
 
 export function collectionToRow(c) {
-  const { id, handle, title, description, active, visible, sortOrder, ...rest } = c || {};
+  const { id, handle, title, description, visible, sortOrder, ...rest } = c || {};
+  delete rest.active;
   return {
     id: String(id || handle),
     handle: String(handle),
     title: txt(title),
     description: txt(description || ""),
-    active: visible !== false && active !== false,
+    // Keep the row in the dashboard list; storefront hide lives on extra.visible.
+    active: true,
     sort_order: int(sortOrder, 0),
-    extra: rest
+    extra: { ...rest, visible: visible !== false }
   };
 }
 export function rowToCollection(row) {
+  const extra = obj(row.extra);
+  const hidden = extra.visible === false || row.active === false;
   return {
-    ...obj(row.extra),
+    ...extra,
     id: row.id,
     handle: row.handle,
     title: txt(row.title),
     description: txt(row.description),
-    visible: row.active !== false,
+    visible: !hidden,
     active: row.active !== false,
     sortOrder: int(row.sort_order, 0),
     _source: "restore_collections"

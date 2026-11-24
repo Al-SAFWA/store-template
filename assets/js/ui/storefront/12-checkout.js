@@ -64,7 +64,7 @@ export function install(ctx) {
       if (!signedCustomer) return;
       fillIfEmpty("co-name", signedCustomer.name);
       fillIfEmpty("co-phone", digits(signedCustomer.phone).slice(-8));
-      fillIfEmpty("co-email", signedCustomer.email);
+      fillIfEmpty("co-email", signedCustomer.email); // field is optional / may be absent
       const savedAddress = (signedCustomer.addresses || [])[0];
       if (!savedAddress) return;
       fillIfEmpty("co-address", savedAddress.address || savedAddress.line1);
@@ -110,7 +110,7 @@ export function install(ctx) {
       return {
         name: $("co-name").value,
         phone: $("co-phone").value,
-        email: $("co-email").value,
+        email: $("co-email")?.value || "",
         address: $("co-address").value,
         notes: $("co-notes").value
       };

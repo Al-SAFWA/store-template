@@ -126,7 +126,7 @@ svg { display: block; }
   height: 78px;
 }
 .logo { display: inline-flex; align-items: center; }
-.logo img { width: auto; max-width: 150px; height: auto; max-height: 44px; object-fit: contain; }
+.logo img { width: auto; max-width: 190px; height: auto; max-height: 48px; object-fit: contain; object-position: center; }
 
 .menu-btn {
   display: none;
@@ -693,7 +693,7 @@ svg { display: block; }
   gap: 40px;
   padding: 40px var(--pad) 34px;
 }
-.footer .logo img { width: 130px; }
+.footer .logo img { width: 168px; max-width: 168px; height: auto; }
 .footer h4 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #fff; }
 .footer-contact h4 { margin-top: 30px; }
 .footer p, .footer a { font-size: 12px; color: #b9b9b9; }
@@ -1130,7 +1130,7 @@ svg { display: block; }
 @media (max-width: 1100px) {
   :root { --pad: 28px; }
   .header-top { grid-template-columns: 140px minmax(0, 1fr) auto; gap: 16px; }
-  .logo img { max-width: 124px; max-height: 40px; }
+  .logo img { max-width: 168px; max-height: 44px; }
   .search { height: 46px; }
   .header-actions { gap: 6px; }
   .lang { display: none; }
@@ -1153,7 +1153,7 @@ svg { display: block; }
     position: static; transform: none; grid-column: 1; grid-row: 1; justify-self: center; align-self: center;
     height: 34px; max-width: 100%; overflow: hidden;
   }
-  .logo img { max-width: min(120px, 100%); max-height: 34px; }
+  .logo img { max-width: min(168px, 100%); max-height: 44px; }
   .header-actions { grid-column: 2; }
   .nav-scroll { display: none; }
   .search { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; margin-left: 0; margin-top: 4px; height: 44px; }

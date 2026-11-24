@@ -75,7 +75,8 @@ test("rowToProduct tolerates null jsonb columns from the database", () => {
 });
 test("collection round trip preserves handle, title and visibility", () => {
   const row = collectionToRow({ handle: "deals", title: { ar: "عروض", fr: "Promos" }, visible: false });
-  assert.equal(row.active, false);
+  assert.equal(row.active, true);
+  assert.equal(row.extra.visible, false);
   const back = rowToCollection(row);
   assert.equal(back.handle, "deals");
   assert.equal(back.visible, false);

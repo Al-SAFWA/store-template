@@ -107,7 +107,7 @@ html[data-theme="dark"] .cat-arrow { background: var(--surface); border-color: v
 
 .header-top { grid-template-columns: 190px minmax(0, 1fr) auto; gap: 22px; }
 .logo { background: transparent; }
-.logo img { width: auto; max-width: 150px; height: auto; max-height: 44px; object-fit: contain; background: transparent; }
+.logo img { width: auto; max-width: 190px; height: auto; max-height: 48px; object-fit: contain; object-position: center; background: transparent; }
 .search { background: var(--surface-2); border: 1px solid transparent; transition: border-color .2s, background .2s; }
 .search:focus-within { border-color: var(--orange); background: var(--surface); }
 .search input { color: var(--text); }
@@ -785,12 +785,20 @@ html[data-theme="dark"] .payment-offer-line { background: #352516; color: #ffc89
   align-items: center;
   justify-content: center;
   text-align: center;
-  aspect-ratio: 1;
+  aspect-ratio: auto;
   min-height: 0;
-  padding: 12px 8px;
-  gap: 8px;
+  padding: 8px 6px 10px;
+  gap: 4px;
+}
+.payment-card.is-tile .payment-mark {
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border-radius: 16px;
+  background: #fff;
 }
 .payment-card.is-tile .payment-copy small { display: none; }
+.payment-card.is-tile .payment-copy strong { font-size: 11px; }
 .payment-card.is-tile .payment-discount { margin-inline-start: 0; }
 .payment-card.is-wide { grid-column: 1 / -1; aspect-ratio: auto; }
 .payment-card input { position: absolute; opacity: 0; pointer-events: none; }
@@ -1007,7 +1015,7 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 @media (max-width: 640px) {
   .announcement { display: block; font-size: 9px; padding: 0; }
   .header-top { gap: 8px; }
-  .logo img { max-width: 120px; max-height: 34px; }
+  .logo img { max-width: 168px; max-height: 44px; }
   /* keep the language code visible on phones: a lone 19px flag was not recognised as a switch (demo1 feedback) */
   .lang-current > svg:last-child { display: none; }
   .lang-current { padding: 0 8px; min-height: 30px; gap: 5px; border: 1px solid var(--line, #e5e7eb); border-radius: 999px; font-weight: 700; font-size: 11px; }
