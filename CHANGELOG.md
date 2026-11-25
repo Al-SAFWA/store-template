@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.14 — 2026-11-25
+
+- Account login hides search/nav, four payment squares in one row, drop the payment heading.
+
 ## 1.18.13 — 2026-11-24
 
 - Logo flush right, five-item nav bar, compact checkout title, tighter product editor on phones.

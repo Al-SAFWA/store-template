@@ -34,11 +34,10 @@ export function checkoutPageHTML(ctx, data) {
               <div class="checkout-block-head"><span>2</span><h2>${ctx.esc(ctx.t("shippingDelivery"))}</h2></div>
               <div class="field"><label for="co-city">${ctx.esc(ctx.t("city"))} *</label><select id="co-city">${cities.map((city) => `<option value="${ctx.esc(city.id)}" ${city.id === defaultCity?.id ? "selected" : ""}>${ctx.esc(ctx.L(city.name))} — ${Number(city.fee) ? ctx.money(city.fee) : ctx.t("free")}</option>`).join("")}</select></div>
               <div class="field"><label for="co-address">${ctx.esc(ctx.t("address"))} *</label><input id="co-address" autocomplete="street-address" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "الحي، الشارع، رقم المنزل" : "Quartier, rue, numéro")}" required><p class="field-error" id="err-co-address"></p></div>
-              <div class="field"><label for="co-notes">${ctx.esc(ctx.t("notes"))}</label><textarea id="co-notes" rows="3" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "أي تفاصيل إضافية عن الطلب" : "Toute précision utile")}"></textarea></div>
+              <div class="field"><label for="co-notes">${ctx.esc(ctx.t("notes"))}</label><textarea id="co-notes" rows="2" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "تفاصيل إضافية" : "Précision utile")}"></textarea></div>
               <p class="field-note">${ctx.ICON.truck} ${ctx.esc(ctx.L(ctx.SET.shippingNote))}</p>
             </section>
             <section class="checkout-block">
-              <div class="checkout-block-head"><span>3</span><h2>${ctx.esc(ctx.t("payment"))}</h2></div>
               <div class="payment-grid">
                 ${payments
                   .map(

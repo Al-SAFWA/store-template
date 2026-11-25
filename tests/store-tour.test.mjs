@@ -118,6 +118,7 @@ test("no hamburger drawer; category toggles are tappable buttons; payments are f
   assert.match(cats, /<button type="button" class="toggle/);
   assert.match(checkout, /is-tile/);
   assert.match(checkout, /is-wide/);
+  assert.equal(checkout.includes("<span>3</span>"), false);
   assert.equal(checkout.includes("co-email"), false);
   assert.equal(checkout.includes("country-readonly"), false);
   assert.equal(checkout.includes("breadcrumb"), false);
@@ -125,6 +126,8 @@ test("no hamburger drawer; category toggles are tappable buttons; payments are f
   const css = readFileSync(new URL("../assets/css/restore.css", import.meta.url), "utf8");
   assert.equal(css.includes(".lang-current span { display: none; }"), false);
   assert.match(css, /\.payment-card\.is-tile/);
+  assert.match(css, /repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(css, /data-page="account"] \.search/);
   const styles = readFileSync(new URL("../assets/css/styles.css", import.meta.url), "utf8");
   assert.match(styles, /\.main-nav \{ display: block; \}/);
   assert.match(styles, /repeat\(5, minmax\(0, 1fr\)\)/);
