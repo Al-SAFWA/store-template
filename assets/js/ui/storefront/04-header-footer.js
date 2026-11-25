@@ -13,12 +13,14 @@ export function install(ctx) {
   Object.assign(ctx, { renderHeader, renderCustomerAccount, renderFooter, navItems });
 
   function navItems() {
-    return (ctx.SET.navigation || []).filter((item) => {
-      if (item.visible === false) return false;
-      const handle = collectionHandleFromHref(item.href);
-      if (!handle || handle === "all") return true;
-      return isCollectionVisible(ctx.S.collections, handle);
-    });
+    return (ctx.SET.navigation || [])
+      .filter((item) => {
+        if (item.visible === false) return false;
+        const handle = collectionHandleFromHref(item.href);
+        if (!handle || handle === "all") return true;
+        return isCollectionVisible(ctx.S.collections, handle);
+      })
+      .slice(0, 5);
   }
 
   const currencyLabel = () => {

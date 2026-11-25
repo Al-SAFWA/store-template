@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.13 — 2026-11-24
+
+- Logo flush right, five-item nav bar, compact checkout title, tighter product editor on phones.
+
 ## 1.18.12 — 2026-11-24
 
 - Hide category stays in the dashboard, tighter bag logo, checkout drops email/country, larger payment app icons in smaller tiles.

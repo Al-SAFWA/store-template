@@ -17,10 +17,8 @@ export function checkoutPageHTML(ctx, data) {
   const { items, subtotal, cities, payments, open, defaultCity, selectedPayment } = data;
   return `
       <div class="container">
-        <div class="breadcrumb"><a href="index.html">${ctx.esc(ctx.t("homeCrumb"))}</a><span>/</span><span>${ctx.esc(ctx.t("checkout"))}</span></div>
         <div class="checkout-head">
-          <div><span class="eyebrow">${ctx.esc(ctx.L(ctx.SET.storeName))} · ${ctx.esc(ctx.L(ctx.SET.city))}</span><h1>${ctx.esc(ctx.t("checkout"))}</h1></div>
-          <div class="checkout-secure">${ctx.ICON.shield} ${ctx.R.lang === "ar" ? "طلب آمن ومؤكد عبر واتساب" : "Commande sécurisée et confirmée sur WhatsApp"}</div>
+          <h1>${ctx.esc(ctx.t("checkout"))}</h1>
         </div>
         ${!open ? `<div class="store-closed-banner">${ctx.ICON.clock}<div><strong>${ctx.esc(ctx.t("closedTitle"))}</strong><span>${ctx.esc(ctx.t("storeClosed"))}</span></div></div>` : ""}
         <div class="checkout-layout">

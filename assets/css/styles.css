@@ -1147,11 +1147,11 @@ svg { display: block; }
 @media (max-width: 900px) {
   :root { --pad: 20px; }
   .announcement { display: block; }
-  .header-top { grid-template-columns: 1fr auto; height: auto; padding-top: 12px; padding-bottom: 10px; gap: 10px; position: relative; }
+  .header-top { grid-template-columns: 1fr auto; height: auto; padding-top: 10px; padding-bottom: 8px; padding-inline-start: 8px; gap: 8px; position: relative; }
   .menu-btn { display: none; }
   .logo {
-    position: static; transform: none; grid-column: 1; grid-row: 1; justify-self: center; align-self: center;
-    height: 34px; max-width: 100%; overflow: hidden;
+    position: static; transform: none; grid-column: 1; grid-row: 1; justify-self: start; align-self: center;
+    height: auto; max-width: 100%; overflow: visible;
   }
   .logo img { max-width: min(168px, 100%); max-height: 44px; }
   .header-actions { grid-column: 2; }
@@ -1159,7 +1159,17 @@ svg { display: block; }
   .search { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; margin-left: 0; margin-top: 4px; height: 44px; }
   .header-actions .icon-btn { width: 30px; height: 30px; }
   .main-nav { display: block; }
-  .main-nav .nav-inner { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-inline: 8px; }
+  .main-nav .nav-inner {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    height: 44px;
+    padding: 0 4px;
+    overflow: hidden;
+  }
+  .main-nav .nav-item { justify-content: center; min-width: 0; font-size: 12px; font-weight: 700; }
+  .main-nav .nav-item > a { display: flex; justify-content: center; width: 100%; padding: 8px 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .main-nav .nav-item .flame { display: none; }
   .hero-slide img { max-height: 520px; }
   .trust-inner { flex-direction: column; align-items: flex-start; padding: 12px 0; gap: 10px; }
   .trust-list { gap: 22px; flex-wrap: wrap; }
@@ -1197,18 +1207,16 @@ svg { display: block; }
 @media (max-width: 640px) {
   :root { --pad: 16px; }
   .announcement { font-size: 10px; padding: 0; white-space: nowrap; overflow: hidden; }
-  .header-top { grid-template-columns: auto 1fr auto; position: relative; }
-  /* 1.17.5 — logo lives in the grid (column 2) instead of being absolutely centred, so it can never overlap the
-     action buttons when they grow (theme + language on phones). */
+  .header-top { grid-template-columns: 1fr auto; position: relative; padding-inline-start: 6px; }
   .logo {
-    position: static; transform: none; grid-column: 2; grid-row: 1; justify-self: center; align-self: center;
-    height: 34px; max-width: 100%; overflow: hidden;
+    position: static; transform: none; grid-column: 1; grid-row: 1; justify-self: start; align-self: center;
+    height: auto; max-width: 100%; overflow: visible;
   }
   .country {
     position: absolute; left: 56px; top: 19px;
     z-index: 2;
   }
-  .header-actions { grid-column: 3; }
+  .header-actions { grid-column: 2; }
   .search { height: 42px; }
   .country .country-name { display: inline; }
   .country > svg { display: none; }

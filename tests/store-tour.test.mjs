@@ -120,11 +120,21 @@ test("no hamburger drawer; category toggles are tappable buttons; payments are f
   assert.match(checkout, /is-wide/);
   assert.equal(checkout.includes("co-email"), false);
   assert.equal(checkout.includes("country-readonly"), false);
+  assert.equal(checkout.includes("breadcrumb"), false);
+  assert.equal(checkout.includes("checkout-secure"), false);
   const css = readFileSync(new URL("../assets/css/restore.css", import.meta.url), "utf8");
   assert.equal(css.includes(".lang-current span { display: none; }"), false);
   assert.match(css, /\.payment-card\.is-tile/);
   const styles = readFileSync(new URL("../assets/css/styles.css", import.meta.url), "utf8");
   assert.match(styles, /\.main-nav \{ display: block; \}/);
+  assert.match(styles, /repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /justify-self: start/);
+  const hydrate = readFileSync(new URL("../assets/js/services/01-default-content.js", import.meta.url), "utf8");
+  assert.match(hydrate, /SHORT_NAV/);
+  assert.match(hydrate, /عروض/);
+  assert.match(hydrate, /ملحقات/);
+  const headerJs = readFileSync(new URL("../assets/js/ui/storefront/04-header-footer.js", import.meta.url), "utf8");
+  assert.match(headerJs, /\.slice\(0, 5\)/);
 });
 
 test("stale demo name and مجددة copy are scrubbed; apply-brand keeps the bag mark", () => {

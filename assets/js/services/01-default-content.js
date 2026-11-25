@@ -110,31 +110,37 @@ export function install(ctx) {
     }
   }
 
-  const EXTRA_NAV = new Set([
-    "samsung",
-    "macbooks",
-    "ipads",
-    "watches",
-    "business",
-    "seller",
-    "android",
-    "cases",
-    "gaming",
-    "audio",
-    "chargers",
-    "tablets"
-  ]);
+  const SHORT_NAV = [
+    {
+      id: "anniversary",
+      label: { ar: "عروض", fr: "Offres" },
+      href: "collection.html?handle=special-offers",
+      flame: true,
+      visible: true
+    },
+    {
+      id: "iphones",
+      label: { ar: "هواتف", fr: "Téléphones" },
+      href: "collection.html?handle=phones",
+      visible: true
+    },
+    {
+      id: "laptops",
+      label: { ar: "حواسيب", fr: "Ordinateurs" },
+      href: "collection.html?handle=laptops",
+      visible: true
+    },
+    {
+      id: "accessories",
+      label: { ar: "ملحقات", fr: "Accessoires" },
+      href: "collection.html?handle=accessories",
+      visible: true
+    },
+    { id: "help", label: { ar: "تواصل", fr: "Contact" }, href: "page.html?slug=contact", visible: true }
+  ];
 
   function compactNavigation(settings) {
-    const nav = settings.navigation;
-    if (!Array.isArray(nav)) return;
-    settings.navigation = nav
-      .filter((item) => !EXTRA_NAV.has(item.id))
-      .map((item) => {
-        const copy = { ...item };
-        delete copy.sub;
-        return copy;
-      });
+    settings.navigation = SHORT_NAV.map((item) => ({ ...item }));
   }
 
   function scrubLogo(settings) {

@@ -227,7 +227,7 @@ export function createDefaultTexts(ctx) {
       },
       {
         id: "accessories",
-        label: ctx.txt("إكسسوارات", "Accessoires"),
+        label: ctx.txt("ملحقات", "Accessoires"),
         href: "collection.html?handle=accessories",
         visible: true
       },

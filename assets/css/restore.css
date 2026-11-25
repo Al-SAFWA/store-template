@@ -755,8 +755,8 @@ html[data-theme="dark"] .payment-offer-line { background: #352516; color: #ffc89
 /* --------------------------------------------------------------------------
    Checkout
    -------------------------------------------------------------------------- */
-.checkout-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; padding: 8px 0 20px; }
-.checkout-head h1 { font-size: clamp(26px, 3vw, 36px); letter-spacing: -.02em; margin-top: 4px; }
+.checkout-head { padding: 10px 0 12px; }
+.checkout-head h1 { font-size: 22px; letter-spacing: -.02em; margin: 0; font-weight: 800; }
 .eyebrow { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; color: var(--orange); }
 .checkout-secure { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 999px; padding: 6px 12px; }
 .checkout-secure svg { width: 15px; height: 15px; color: var(--success); }
@@ -959,7 +959,24 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 @media (max-width: 900px) {
   .lang-current { padding: 0 8px; min-width: 52px; gap: 5px; }
   .lang-current span { display: inline; font-size: 11px; font-weight: 800; letter-spacing: .04em; }
-  .header-top { grid-template-columns: auto 1fr auto; }
+  .header-top { grid-template-columns: 1fr auto; padding-inline-start: 8px; }
+  .logo { justify-self: start; grid-column: 1; }
+  .main-nav .nav-inner {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    height: 44px;
+    padding-inline: 4px;
+    overflow: hidden;
+  }
+  .main-nav .nav-item { justify-content: center; min-width: 0; font-size: 12px; font-weight: 700; }
+  .main-nav .nav-item:nth-child(n + 6) { display: none; }
+  .main-nav .nav-item > a {
+    display: flex; justify-content: center; width: 100%;
+    padding: 8px 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .main-nav .nav-item .flame { display: none; }
+  .nav-scroll { display: none; }
   /* 1.13.6 — phones keep a "my account" icon in the header (merchant request); the wide login button and the
      wishlist icon stay hidden. Once the customer is signed in the avatar dropdown replaces the icon. */
   .header-actions [href="wishlist.html"],
@@ -988,7 +1005,8 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
   .account-layout { grid-template-columns: 1fr; }
   .order-summary { position: static; }
   .checkout-layout { grid-template-columns: 1fr; gap: 18px; }
-  .checkout-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+  .checkout-head { padding: 6px 0 10px; }
+  .checkout-head h1 { font-size: 20px; }
   .categories .cat-track {
     display: flex;
     flex-wrap: nowrap;

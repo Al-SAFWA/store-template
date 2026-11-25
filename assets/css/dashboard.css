@@ -359,14 +359,14 @@ body[data-page="dashboard"] {
 
 /* 1.11 — merchant product editor (phone first): numbered white cards, colour circles */
 .dash-modal-body:has(.pe) { background: var(--surface-2); }
-.pe { display: grid; gap: 16px; counter-reset: step; }
+.pe { display: grid; gap: 10px; counter-reset: step; padding-bottom: 8px; }
 .pe-field { display: grid; gap: 5px; }
 .pe-field > label { font-size: 12px; font-weight: 700; color: var(--muted); }
 .pe-field input, .pe-field select, .pe-field textarea { font-size: 16px; min-height: 44px; padding: 8px 12px; border-radius: 12px; background: var(--surface); color: var(--text); }
 .pe-title input { font-size: 18px; font-weight: 700; min-height: 50px; }
 .pe-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.pe-step { position: relative; display: grid; gap: 10px; padding: 14px; padding-inline-start: 46px; border: 0; border-radius: 16px; background: var(--surface); box-shadow: 0 2px 10px rgba(0, 0, 0, .06); }
-.pe-step::before { counter-increment: step; content: counter(step); position: absolute; inset-inline-start: 10px; top: 12px; width: 26px; height: 26px; border-radius: 50%; background: var(--orange); color: #fff; font-weight: 800; font-size: 13px; display: grid; place-items: center; }
+.pe-step { position: relative; display: grid; gap: 6px; padding: 10px; padding-inline-start: 40px; border: 0; border-radius: 14px; background: var(--surface); box-shadow: 0 2px 10px rgba(0, 0, 0, .06); }
+.pe-step::before { counter-increment: step; content: counter(step); position: absolute; inset-inline-start: 8px; top: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--orange); color: #fff; font-weight: 800; font-size: 12px; display: grid; place-items: center; }
 .pe-step h4 { font-size: 15px; margin: 0; }
 .pe-section-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .pe-section-head h4 { flex: 1 1 100%; }
@@ -403,13 +403,27 @@ body[data-page="dashboard"] {
 .pe-more-body { display: grid; gap: 12px; padding-top: 8px; }
 .pe-advanced { opacity: .85; }
 .pe-advanced textarea { font-family: ui-monospace, monospace; font-size: 12px; }
-.dash-modal-foot.pe-foot { position: sticky; bottom: 0; background: var(--surface); gap: 8px; }
+.dash-modal-body:has(.pe) { padding-bottom: 72px; }
+.dash-modal-foot.pe-foot { position: sticky; bottom: 0; z-index: 3; background: var(--surface); gap: 8px; }
 .pe-foot .u-grow { display: none; }
 .pe-foot .btn-primary { flex: 1; height: 48px; font-size: 16px; border-radius: 12px; justify-content: center; }
 .pe-foot .btn-soft, .pe-foot .btn-danger { height: 48px; border-radius: 12px; font-size: 13px; }
 .pe input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 .pe input[type="number"]::-webkit-inner-spin-button, .pe input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-@media (max-width: 480px) { .pe-two { grid-template-columns: 1fr; } }
+@media (max-width: 760px) {
+  .dash-modal-backdrop:has(.pe) { padding: 0; align-items: stretch; }
+  .dash-modal:has(.pe) { width: 100%; min-height: 100%; border-radius: 0; }
+  .dash-modal-body:has(.pe) { padding: 8px 8px 80px; }
+  .pe { gap: 8px; }
+  .pe-step { padding: 8px; padding-inline-start: 36px; gap: 6px; }
+  .pe-title input { min-height: 42px; font-size: 16px; }
+  .pe-field { gap: 4px; }
+  .pe-field input, .pe-field select, .pe-field textarea { min-height: 40px; padding: 6px 10px; }
+  .pe-images { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .pe-chips { gap: 8px; }
+  .form-note { font-size: 11px; margin: 0; }
+}
+@media (max-width: 480px) { .pe-two { grid-template-columns: 1fr 1fr; gap: 8px; } }
 /* 1.12 — orders: three groups, phone cards with one next-step button */
 .orders-tabs button { font-size: 13px; padding: 8px 14px; }
 .oc-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 99px; background: var(--surface-3); font-size: 11px; font-weight: 800; margin-inline-start: 4px; }
