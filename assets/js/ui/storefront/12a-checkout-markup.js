@@ -24,14 +24,11 @@ export function checkoutPageHTML(ctx, data) {
         <div class="checkout-layout">
           <form id="checkout-form" class="checkout-form" novalidate>
             <section class="checkout-block">
-              <div class="field-row">
-                <div class="field"><label for="co-name">${ctx.esc(ctx.t("fullName"))} *</label><input id="co-name" autocomplete="name" required><p class="field-error" id="err-co-name"></p></div>
-                <div class="field"><label for="co-phone">${ctx.esc(ctx.t("phone"))} *</label><div class="phone-input"><span>+222</span><input id="co-phone" inputmode="tel" autocomplete="tel" placeholder="46 00 00 00" maxlength="14" required></div><p class="field-error" id="err-co-phone"></p></div>
-              </div>
-            </section>
-            <section class="checkout-block">
+              <div class="field"><label for="co-name">${ctx.esc(ctx.t("fullName"))} *</label><input id="co-name" autocomplete="name" required><p class="field-error" id="err-co-name"></p></div>
+              <div class="field"><label for="co-phone">${ctx.esc(ctx.t("phone"))} *</label><div class="phone-input"><span>+222</span><input id="co-phone" inputmode="tel" autocomplete="tel" placeholder="46 00 00 00" maxlength="14" required></div><p class="field-error" id="err-co-phone"></p></div>
               <div class="field"><label for="co-city">${ctx.esc(ctx.t("city"))} *</label><select id="co-city">${cities.map((city) => `<option value="${ctx.esc(city.id)}" ${city.id === defaultCity?.id ? "selected" : ""}>${ctx.esc(ctx.L(city.name))} — ${Number(city.fee) ? ctx.money(city.fee) : ctx.t("free")}</option>`).join("")}</select></div>
               <div class="field"><label for="co-address">${ctx.esc(ctx.t("address"))} *</label><input id="co-address" autocomplete="street-address" placeholder="${ctx.esc(ctx.R.lang === "ar" ? "الحي، الشارع، رقم المنزل" : "Quartier, rue, numéro")}" required><p class="field-error" id="err-co-address"></p></div>
+              <div class="field"><label for="co-notes">${ctx.esc(ctx.t("notes"))}</label><textarea id="co-notes" rows="2"></textarea></div>
               <p class="field-note">${ctx.ICON.truck} ${ctx.esc(ctx.L(ctx.SET.shippingNote))}</p>
             </section>
             <section class="checkout-block">

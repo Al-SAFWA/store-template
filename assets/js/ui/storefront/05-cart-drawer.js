@@ -7,8 +7,28 @@ import { displayImage, FALLBACK_PHOTO } from "../../domain/category-images.js";
 /** @param {StorefrontCtx} ctx */
 export function install(ctx) {
   Object.assign(ctx, { mountCart, openCart, closeCart, renderCart });
+  const HAS_ORDER_KEY = "restore_has_order_v1";
+
+  function customerHasOrdered() {
+    try {
+      if (localStorage.getItem(HAS_ORDER_KEY) === "1") return true;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i) || "";
+        if (key.startsWith("restore_last_order_")) return true;
+      }
+    } catch {
+      /* private mode */
+    }
+    return false;
+  }
+
+  function syncCartTrack() {
+    const el = document.getElementById("cart-track");
+    if (el) el.hidden = !customerHasOrdered();
+  }
+
   function trackHTML() {
-    return `<div class="cart-track" id="cart-track">
+    return `<div class="cart-track" id="cart-track" hidden>
         <h4>${ctx.esc(ctx.t("trackOrder"))}</h4>
         <div class="field"><label for="acc-phone">${ctx.esc(ctx.t("phone"))}</label><input id="acc-phone" inputmode="tel" placeholder="46 00 00 00" dir="ltr" autocomplete="tel"></div>
         <p class="track-or" aria-hidden="true">${ctx.esc(ctx.t("trackOr"))}</p>
@@ -71,6 +91,7 @@ export function install(ctx) {
     document.getElementById("cart-overlay").addEventListener("click", closeCart);
     wrap.querySelector("[data-close-cart]").addEventListener("click", closeCart);
     bindCartTrack();
+    syncCartTrack();
   }
 
   function openCart() {
@@ -101,6 +122,7 @@ export function install(ctx) {
     const count = items.reduce((n, it) => n + it.qty, 0);
     const titleCount = document.getElementById("cart-title-count");
     if (titleCount) titleCount.textContent = count ? `(${count})` : "";
+    syncCartTrack();
     if (!items.length) {
       body.innerHTML = `<div class="cart-empty">${ctx.ICON.bag}<p>${ctx.esc(ctx.t("emptyCart"))}</p><a class="btn btn-primary u-mt-16" href="collection.html?handle=all">${ctx.esc(ctx.t("shopNow"))}</a></div>`;
       foot.innerHTML = "";

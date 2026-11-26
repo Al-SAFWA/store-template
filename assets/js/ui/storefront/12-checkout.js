@@ -176,6 +176,7 @@ export function install(ctx) {
         ctx.R.updateOrder(order.id, { whatsappUrl: link, message: built.message });
 
       ctx.R.decrementStock(order.items || draft.items);
+      localStorage.setItem("restore_has_order_v1", "1");
       localStorage.setItem(`restore_last_order_${phone}`, String(Date.now()));
       localStorage.removeItem(ctx.CART_KEY);
       ctx.syncBadges();

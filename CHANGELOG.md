@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.17 — 2026-11-26
+
+- Track in cart only after first order; checkout fields in one card with notes; editor fills empty photo space.
+
 ## 1.18.16 — 2026-11-26
 
 - Same phone layout on laptop: 5-col nav, square pay tiles, editor two-up, account without search/nav, track in cart.

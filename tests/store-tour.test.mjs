@@ -80,6 +80,11 @@ test("checkout has one form and no Restore coupon", () => {
   assert.equal((checkout.match(/id="checkout-form"/g) || []).length, 1);
   assert.equal(checkout.includes("RESTORE10"), false);
   assert.equal(checkout.includes("checkout-redirect-note"), false);
+  assert.match(checkout, /id="co-notes"/);
+  const nameAt = checkout.indexOf('id="co-name"');
+  const cityAt = checkout.indexOf('id="co-city"');
+  assert.ok(nameAt > 0 && cityAt > nameAt);
+  assert.equal(checkout.slice(nameAt, cityAt).includes("<section"), false);
 });
 
 test("Ctrl+Alt+Y probe is wired", () => {
@@ -95,6 +100,8 @@ test("account track is phone first with أو, newsletter is gone, orders tabs ar
   const cart = readFileSync(new URL("../assets/js/ui/storefront/05-cart-drawer.js", import.meta.url), "utf8");
   assert.equal(account.includes("account-track"), false);
   assert.match(cart, /class="cart-track"/);
+  assert.match(cart, /restore_has_order_v1/);
+  assert.match(cart, /hidden = !customerHasOrdered/);
   assert.equal(account.includes("<details>"), false);
   const phoneAt = cart.indexOf('id="acc-phone"');
   const orderAt = cart.indexOf('id="acc-order"');
