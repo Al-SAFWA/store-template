@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.16 — 2026-11-26
+
+- Same phone layout on laptop: 5-col nav, square pay tiles, editor two-up, account without search/nav, track in cart.
+
 ## 1.18.15 — 2026-11-25
 
 - Product editor: category beside title, colors beside photos; order tracking lives in the cart.

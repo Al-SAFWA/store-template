@@ -63,8 +63,8 @@ export function install(ctx) {
           <h3>${ctx.esc(ctx.t("cart"))} <span id="cart-title-count"></span></h3>
           <button class="drawer-close" type="button" data-close-cart aria-label="${ctx.esc(ctx.t("close"))}">${ctx.ICON.close}</button>
         </div>
-        <div class="drawer-body" id="cart-body"></div>
         ${trackHTML()}
+        <div class="drawer-body" id="cart-body"></div>
         <div class="drawer-foot" id="cart-foot"></div>
       </aside>`;
     document.body.appendChild(wrap);

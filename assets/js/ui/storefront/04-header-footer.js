@@ -79,6 +79,7 @@ export function install(ctx) {
     const closed = !ctx.R.isStoreOpen();
     const announceText = siteText(ctx.SET, "announcement", ctx.R.lang) || ctx.L(ctx.SET.announcement);
     el.className = "site-header";
+    const slimChrome = document.body?.dataset.page === "account";
     el.innerHTML = `
       ${
         closed
@@ -89,10 +90,14 @@ export function install(ctx) {
       }
       <div class="container header-top">
         <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.esc(ctx.R.theme === "dark" ? ctx.SET.logoWhite || ctx.SET.logo : ctx.SET.logo)}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="190" height="80" decoding="async"></a>
-        <form class="search" id="header-search" role="search" autocomplete="off">
+        ${
+          slimChrome
+            ? ""
+            : `<form class="search" id="header-search" role="search" autocomplete="off">
           <input type="search" placeholder="${ctx.esc(ctx.t("searchPlaceholder"))}" aria-label="${ctx.esc(ctx.t("search"))}">
           <button class="search-btn" type="submit" aria-label="${ctx.esc(ctx.t("search"))}">${ctx.ICON.search}</button>
-        </form>
+        </form>`
+        }
         <div class="header-actions">
           <div class="customer-account" id="customer-account"></div>
           <button class="lang-current" type="button" data-set-lang="${lang === "ar" ? "fr" : "ar"}" aria-label="${ctx.esc(ctx.t("language"))}" title="${lang === "ar" ? "Français" : "العربية"}">
@@ -103,27 +108,33 @@ export function install(ctx) {
           <button class="icon-btn" type="button" data-open-cart aria-label="${ctx.esc(ctx.t("cart"))}">${ctx.ICON.bag}<span class="cart-count cart-count-n" hidden>0</span></button>
         </div>
       </div>
-      <nav class="main-nav" aria-label="Main">
+      ${
+        slimChrome
+          ? ""
+          : `<nav class="main-nav" aria-label="Main">
         <div class="container nav-inner">
           ${navItems().map(navItemHTML).join("")}
         </div>
         <button class="nav-scroll" type="button" aria-label="${ctx.esc(ctx.t("seeAll"))}"><span data-icon="chevronRight" aria-hidden="true"></span></button>
-      </nav>`;
+      </nav>`
+      }`;
     wireHeader(el, otherLabel);
     ctx.hydrateIcons(el);
   }
 
   function wireHeader(el, otherLabel) {
     const form = el.querySelector("#header-search");
-    const input = form.querySelector("input");
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      ctx.openSearch(input.value);
-    });
-    input.addEventListener("focus", () => {
-      input.blur();
-      ctx.openSearch(input.value);
-    });
+    const input = form?.querySelector("input");
+    if (form && input) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        ctx.openSearch(input.value);
+      });
+      input.addEventListener("focus", () => {
+        input.blur();
+        ctx.openSearch(input.value);
+      });
+    }
     el.querySelectorAll("[data-open-cart]").forEach((b) => b.addEventListener("click", ctx.openCart));
     el.querySelector(".nav-scroll")?.addEventListener("click", () => {
       el.querySelector(".nav-inner")?.scrollBy({ left: (ctx.R.lang === "ar" ? -1 : 1) * 260, behavior: "smooth" });

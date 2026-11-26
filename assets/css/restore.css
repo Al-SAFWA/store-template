@@ -105,8 +105,8 @@ html[data-theme="dark"] .cat-arrow { background: var(--surface); border-color: v
   .nav-item .flame { animation: none; }
 }
 
-.header-top { grid-template-columns: 190px minmax(0, 1fr) auto; gap: 22px; }
-.logo { background: transparent; }
+.header-top { grid-template-columns: auto minmax(0, 1fr) auto; gap: 22px; }
+.logo { background: transparent; justify-self: start; }
 .logo img { width: auto; max-width: 190px; height: auto; max-height: 48px; object-fit: contain; object-position: center; background: transparent; }
 .search { background: var(--surface-2); border: 1px solid transparent; transition: border-color .2s, background .2s; }
 .search:focus-within { border-color: var(--orange); background: var(--surface); }
@@ -786,9 +786,10 @@ html[data-theme="dark"] .payment-offer-line { background: #352516; color: #ffc89
   align-items: center;
   justify-content: center;
   text-align: center;
-  aspect-ratio: auto;
+  aspect-ratio: 1;
+  width: 100%;
   min-height: 0;
-  padding: 8px 6px 10px;
+  padding: 8px 4px 8px;
   gap: 4px;
 }
 .payment-card.is-tile .payment-mark {

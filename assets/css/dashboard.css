@@ -364,8 +364,8 @@ body[data-page="dashboard"] {
 .pe-field > label { font-size: 12px; font-weight: 700; color: var(--muted); }
 .pe-field input, .pe-field select, .pe-field textarea { font-size: 16px; min-height: 44px; padding: 8px 12px; border-radius: 12px; background: var(--surface); color: var(--text); }
 .pe-title input { font-size: 18px; font-weight: 700; min-height: 50px; }
-.pe-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-.pe-media { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 10px; align-items: start; }
+.pe-two { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px; }
+.pe-media { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px; align-items: start; }
 .pe-media .pe-images { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .pe-media .form-note { display: none; }
 .pe-media .pe-chips { gap: 6px; }
@@ -425,7 +425,8 @@ body[data-page="dashboard"] {
   .pe-title input { min-height: 42px; font-size: 16px; }
   .pe-field { gap: 4px; }
   .pe-field input, .pe-field select, .pe-field textarea { min-height: 40px; padding: 6px 10px; }
-  .pe-images { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .pe-images { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .pe-two, .pe-media { grid-template-columns: 1fr 1fr !important; }
   .pe-chips { gap: 8px; }
   .form-note { font-size: 11px; margin: 0; }
 }

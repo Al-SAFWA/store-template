@@ -143,6 +143,7 @@ test("no hamburger drawer; category toggles are tappable buttons; payments are f
   assert.match(hydrate, /ملحقات/);
   const headerJs = readFileSync(new URL("../assets/js/ui/storefront/04-header-footer.js", import.meta.url), "utf8");
   assert.match(headerJs, /\.slice\(0, 5\)/);
+  assert.match(headerJs, /slimChrome/);
 });
 
 test("stale demo name and مجددة copy are scrubbed; apply-brand keeps the bag mark", () => {
