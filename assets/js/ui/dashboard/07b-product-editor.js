@@ -204,22 +204,23 @@ export function install(ctx) {
     ui = uiFrom(buffer);
     return `<div class="pe">
       ${step(
-        field(
+        `<div class="pe-two">${field(
           ctx.dt("اسم المنتج", "Nom du produit"),
           `<input data-edit-path="title.ar" value="${ctx.esc(buffer.title?.ar || "")}" placeholder="${ctx.dt("مثل: iPhone 13 128 GB", "ex. iPhone 13 128 Go")}" autofocus>`,
           "pe-title"
-        ) +
-          field(
-            ctx.dt("الفئة", "Catégorie"),
-            `<select data-edit-path="collections.0"><option value="">—</option>${categoryOptions}</select>`
-          )
+        )}${field(
+          ctx.dt("الفئة", "Catégorie"),
+          `<select data-edit-path="collections.0"><option value="">—</option>${categoryOptions}</select>`
+        )}</div>`
       )}
       ${step(`<div class="pe-two">
         ${field(ctx.dt("السعر (أوقية)", "Prix (MRU)"), `<input type="number" min="0" inputmode="numeric" data-edit-path="price" value="${ctx.esc(buffer.price || "")}">`)}
         ${field(ctx.dt("السعر قبل الخصم", "Prix barré"), `<input type="number" min="0" inputmode="numeric" data-edit-path="compare" value="${ctx.esc(buffer.compare || "")}" placeholder="${ctx.dt("اختياري", "facultatif")}">`)}
       </div>`)}
-      ${step(`<h4>${ctx.dt("الصور", "Photos")}</h4><div data-pe-images>${imagesHTML()}</div>`)}
-      ${step(`<h4>${ctx.dt("الألوان المتوفرة", "Couleurs disponibles")}</h4><div data-pe-colors>${colorsHTML()}</div>`)}
+      ${step(`<div class="pe-media">
+        <div><h4>${ctx.dt("الصور", "Photos")}</h4><div data-pe-images>${imagesHTML()}</div></div>
+        <div><h4>${ctx.dt("الألوان", "Couleurs")}</h4><div data-pe-colors>${colorsHTML()}</div></div>
+      </div>`)}
       ${choicesHTML(buffer)}
       ${step(ctx.editToggle(ctx.dt("ظاهر للزبائن في المتجر", "Visible dans la boutique"), "active", buffer.active !== false))}
       ${moreHTML(buffer)}

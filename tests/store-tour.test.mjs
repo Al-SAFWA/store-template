@@ -92,12 +92,14 @@ test("Ctrl+Alt+Y probe is wired", () => {
 
 test("account track is phone first with أو, newsletter is gone, orders tabs are two columns", () => {
   const account = readFileSync(new URL("../assets/js/ui/storefront/14-static-pages.js", import.meta.url), "utf8");
-  assert.match(account, /class="account-card account-track"/);
+  const cart = readFileSync(new URL("../assets/js/ui/storefront/05-cart-drawer.js", import.meta.url), "utf8");
+  assert.equal(account.includes("account-track"), false);
+  assert.match(cart, /class="cart-track"/);
   assert.equal(account.includes("<details>"), false);
-  const phoneAt = account.indexOf('id="acc-phone"');
-  const orderAt = account.indexOf('id="acc-order"');
+  const phoneAt = cart.indexOf('id="acc-phone"');
+  const orderAt = cart.indexOf('id="acc-order"');
   assert.ok(phoneAt > 0 && orderAt > phoneAt);
-  assert.match(account, /track-or/);
+  assert.match(cart, /track-or/);
   assert.equal(header.includes("newsletter-form"), false);
   const dashCss = readFileSync(new URL("../assets/css/dashboard.css", import.meta.url), "utf8");
   assert.match(dashCss, /\.orders-tabs \{ display: grid; grid-template-columns: repeat\(2,/);
@@ -128,6 +130,9 @@ test("no hamburger drawer; category toggles are tappable buttons; payments are f
   assert.match(css, /\.payment-card\.is-tile/);
   assert.match(css, /repeat\(4, minmax\(0, 1fr\)\)/);
   assert.match(css, /data-page="account"] \.search/);
+  const editor = readFileSync(new URL("../assets/js/ui/dashboard/07b-product-editor.js", import.meta.url), "utf8");
+  assert.match(editor, /pe-media/);
+  assert.match(editor, /pe-two/);
   const styles = readFileSync(new URL("../assets/css/styles.css", import.meta.url), "utf8");
   assert.match(styles, /\.main-nav \{ display: block; \}/);
   assert.match(styles, /repeat\(5, minmax\(0, 1fr\)\)/);

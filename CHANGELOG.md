@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.15 — 2026-11-25
+
+- Product editor: category beside title, colors beside photos; order tracking lives in the cart.
+
 ## 1.18.14 — 2026-11-25
 
 - Account login hides search/nav, four payment squares in one row, drop the payment heading.

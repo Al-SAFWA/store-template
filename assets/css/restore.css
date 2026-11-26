@@ -628,7 +628,8 @@ html[data-theme="dark"] .card-battery { color: #4ade80; }
 .cart-item-specs { font-size: 10px; color: var(--muted); margin-bottom: 8px; line-height: 1.45; }
 .qty { border-color: var(--border); }
 .qty button:hover { background: var(--surface-2); }
-.drawer-foot { border-color: var(--border); }
+.drawer-foot,
+.cart-track { border-color: var(--border); }
 .menu-extra { color: var(--muted); }
 .menu-preferences { display: flex; flex-wrap: wrap; gap: 7px; padding: 4px 22px 24px; }
 .menu-preferences button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border); border-radius: 999px; padding: 7px 10px; font-size: 11px; font-weight: 600; }
@@ -878,7 +879,7 @@ html[data-theme="dark"] .store-closed-banner { background: #352516; border-color
 .blog-post .btn { margin-top: 16px; }
 body[data-page="account"] .search,
 body[data-page="account"] .main-nav { display: none !important; }
-.account-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; padding-bottom: 60px; }
+.account-layout { display: grid; grid-template-columns: minmax(0, 420px); justify-content: center; gap: 22px; padding-bottom: 60px; }
 .account-card { border: 1px solid var(--border); border-radius: 15px; padding: 24px; background: var(--surface); }
 .account-track-title { font-size: 17px; font-weight: 700; margin: 0 0 4px; }
 .account-track-hint { font-size: 12px; color: var(--muted); line-height: 1.55; margin: 0 0 12px; }

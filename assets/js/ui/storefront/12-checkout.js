@@ -112,7 +112,7 @@ export function install(ctx) {
         phone: $("co-phone").value,
         email: $("co-email")?.value || "",
         address: $("co-address").value,
-        notes: $("co-notes").value
+        notes: $("co-notes")?.value || ""
       };
     }
 

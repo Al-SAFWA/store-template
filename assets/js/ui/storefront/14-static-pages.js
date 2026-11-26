@@ -13,39 +13,6 @@ export function install(ctx) {
     return /** @type {HTMLInputElement | null} */ (document.getElementById(id))?.value || "";
   }
 
-  function bindAccountTrack(orders) {
-    const findOrder = () => {
-      const code = readInput("acc-order").trim().toUpperCase();
-      const phone = readInput("acc-phone").replace(/\D/g, "").slice(-8);
-      const box = document.getElementById("acc-result");
-      if (!box) return;
-      if (!phone && !code) {
-        box.innerHTML = `<div class="account-result error">${ctx.esc(ctx.t("needPhoneOrOrder"))}</div>`;
-        return;
-      }
-      const found =
-        (phone &&
-          orders.find((order) =>
-            String(order.customer?.phone || "")
-              .replace(/\D/g, "")
-              .endsWith(phone)
-          )) ||
-        (code && orders.find((order) => order.id.toUpperCase() === code));
-      if (!found) {
-        box.innerHTML = `<div class="account-result error">${ctx.esc(ctx.t("orderNotFound"))}</div>`;
-        return;
-      }
-      const status = ctx.R.statusMeta(found.status);
-      box.innerHTML = `<div class="account-result"><div class="result-head"><strong>${ctx.esc(found.id)}</strong><span class="status-pill u-status-text" data-sv="status:${ctx.esc(status.color)}">${ctx.esc(ctx.L(status.label))}</span></div><p>${ctx.esc(found.customer?.name || "")} · ${ctx.money(found.total)}</p><ul>${(found.items || []).map((item) => `<li>${ctx.esc(item.title)} × ${item.qty}</li>`).join("")}</ul></div>`;
-    };
-    document.getElementById("acc-track")?.addEventListener("click", findOrder);
-    const onEnter = (event) => {
-      if (event.key === "Enter") findOrder();
-    };
-    document.getElementById("acc-phone")?.addEventListener("keydown", onEnter);
-    document.getElementById("acc-order")?.addEventListener("keydown", onEnter);
-  }
-
   function contactActionsHTML() {
     const wa = whatsappDigits(ctx.SET);
     const email = visibleChannel(ctx.SET, "email");
@@ -97,33 +64,20 @@ export function install(ctx) {
     if (!root) return;
     document.title = `${ctx.t("myAccount")} | ${ctx.L(ctx.SET.storeName)}`;
     const cust = ctx.R.getCustomer();
-    const orders = ctx.R.getOrders();
     const myOrders = cust ? ctx.R.getCustomerOrders() : [];
 
-    const trackCard = `
-      <section class="account-card account-track">
-        <h2 class="account-track-title">${ctx.esc(ctx.t("trackOrder"))}</h2>
-        <p class="account-track-hint">${ctx.esc(ctx.t("trackOrderText"))}</p>
-        <div class="account-track-body">
-          <div class="field"><label for="acc-phone">${ctx.esc(ctx.t("phone"))}</label><input id="acc-phone" inputmode="tel" placeholder="46 00 00 00" dir="ltr" autocomplete="tel"></div>
-          <p class="track-or" aria-hidden="true">${ctx.esc(ctx.t("trackOr"))}</p>
-          <div class="field"><label for="acc-order">${ctx.esc(ctx.t("orderId"))}</label><input id="acc-order" placeholder="RS-261022-A1B2" dir="ltr"></div>
-          <button class="btn btn-primary btn-block" type="button" id="acc-track">${ctx.esc(ctx.t("trackOrder"))}</button>
-          <div id="acc-result"></div>
-        </div>
-        ${
-          myOrders.length
-            ? `<h3 class="account-subtitle">${ctx.esc(ctx.t("recentOrders"))}</h3>
+    const ordersCard = myOrders.length
+      ? `<section class="account-card">
+        <h3 class="account-subtitle">${ctx.esc(ctx.t("recentOrders"))}</h3>
         <div class="account-orders">${myOrders
           .slice(0, 5)
           .map((order) => {
             const status = ctx.R.statusMeta(order.status);
             return `<div class="account-order"><div><strong>${ctx.esc(order.id)}</strong><small>${ctx.esc(ctx.R.formatDate(order.createdAt))} · ${ctx.esc(order.items?.length || 0)} ${ctx.esc(ctx.t("products"))}</small></div><span class="status-pill u-status-text" data-sv="status:${ctx.esc(status.color)}">${ctx.esc(ctx.L(status.label))}</span><b>${ctx.money(order.total)}</b></div>`;
           })
-          .join("")}</div>`
-            : `<p class="muted">${ctx.esc(ctx.t("noOrders"))}</p>`
-        }
-      </section>`;
+          .join("")}</div>
+      </section>`
+      : "";
 
     if (!cust) {
       root.innerHTML = `<div class="account-layout">
@@ -145,10 +99,7 @@ export function install(ctx) {
             <div class="field"><label>${ctx.esc(ctx.t("password"))}</label><input type="password" id="reg-password" required minlength="8" autocomplete="new-password"></div>
             <button class="btn btn-primary btn-block" type="submit">${ctx.esc(ctx.t("createAccount"))}</button>
           </form>
-          
-          </div>
         </section>
-        ${trackCard}
       </div>`;
 
       root.querySelectorAll("[data-auth-tab]").forEach((node) => {
@@ -281,7 +232,7 @@ export function install(ctx) {
           <h3 class="account-subtitle">${ctx.esc(ctx.t("myReviews"))}</h3>
           ${myReviews.length ? `<div class="account-reviews">${myReviews.map((review) => `<div class="account-review"><div class="grow"><strong>${ctx.esc(ctx.L(review.title))}</strong><small>${ctx.esc(review.productHandle)} · ${ctx.esc(ctx.R.formatDate(review.createdAt))}</small></div><span class="badge-soft ${review.status === "approved" ? "green" : review.status === "rejected" ? "red" : "orange"}">${ctx.esc(statusLabel[review.status] || review.status)}</span></div>`).join("")}</div>` : `<p class="muted">${ctx.esc(ctx.t("noReviews"))}</p>`}
         </section>
-        ${trackCard}
+        ${ordersCard}
       </div>`;
       root.querySelector("#account-logout")?.addEventListener("click", () => {
         ctx.R.customerLogout();
@@ -290,7 +241,5 @@ export function install(ctx) {
         renderAccount();
       });
     }
-
-    bindAccountTrack(orders);
   }
 }

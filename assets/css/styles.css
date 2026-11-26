@@ -845,6 +845,10 @@ svg { display: block; }
 .cart-remove { color: #999; }
 .cart-remove:hover { color: #d33; }
 .cart-remove svg { width: 16px; height: 16px; }
+.cart-track { border-top: 1px solid var(--line); padding: 14px 22px 16px; }
+.cart-track h4 { font-size: 15px; font-weight: 800; margin: 0 0 10px; }
+.cart-track .field { margin-bottom: 8px; }
+.cart-track .btn { margin-top: 4px; }
 .drawer-foot { border-top: 1px solid var(--line); padding: 16px 22px 20px; }
 .cart-sub { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; margin-bottom: 4px; }
 .cart-note { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
