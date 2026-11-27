@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.21 — 2026-11-27
+
+- Two-handle shopping bag mark on solid #2563eb.
+
 ## 1.18.20 — 2026-11-27
 
 - Two-handle shopping bag mark on solid #2563eb.
