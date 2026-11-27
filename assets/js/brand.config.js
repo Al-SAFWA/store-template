@@ -11,7 +11,7 @@ window.BRAND = {
   logo: "assets/img/brand-logo.svg",
   logoWhite: "assets/img/brand-logo-white.svg",
   favicon: "assets/img/favicon.svg",
-  colors: { primary: "#ff6400", ink: "#0f172a", purple: "#7c3aed", lavender: "#eef2ff" },
+  colors: { primary: "#7c3aed", ink: "#1a1028", purple: "#d946ef", lavender: "#f3e8ff" },
   font: "Cairo",
   country: {
     code: "MR",

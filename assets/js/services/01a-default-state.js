@@ -31,7 +31,7 @@ export function createDefaultState(ctx) {
     DEFAULT_WHATSAPP_TEMPLATES
   } = ctx;
 
-  const DEFAULT_COLORS = { primary: "#ff6400", ink: "#0f172a", purple: "#7c3aed", lavender: "#eef2ff" };
+  const DEFAULT_COLORS = { primary: "#7c3aed", ink: "#1a1028", purple: "#d946ef", lavender: "#f3e8ff" };
 
   function brandColors() {
     return Object.assign({}, DEFAULT_COLORS, B.colors || {});
@@ -332,7 +332,7 @@ export function createDefaultState(ctx) {
           cta: ctx.txt("تسوق الآن", "Découvrir"),
           href: "collection.html?handle=all",
           image: "assets/img/hero-1.webp",
-          bg: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 55%,#60a5fa 130%)"
+          bg: "linear-gradient(145deg,#3b0764 0%,#6d28d9 46%,#d946ef 115%)"
         },
         {
           id: "hero-2",
@@ -345,8 +345,7 @@ export function createDefaultState(ctx) {
           cta: ctx.txt("اكتشف ماك بوك", "Voir les MacBook"),
           href: "collection.html?handle=macbooks",
           image: "assets/img/hero-2.webp",
-          bg: "linear-gradient(135deg,#eef3ff 0%,#d9e5ff 45%,#f7c7ff 120%)",
-          dark: false
+          bg: "linear-gradient(145deg,#4c1d95 0%,#7c3aed 50%,#f0abfc 120%)"
         }
       ],
       offers: [

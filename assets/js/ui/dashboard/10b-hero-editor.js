@@ -10,7 +10,7 @@ export function install(ctx) {
   const HERO_PRESETS = [
     {
       id: "night",
-      bg: "linear-gradient(135deg,#1f1f2e 0%,#39255b 55%,#ff6400 130%)",
+      bg: "linear-gradient(145deg,#3b0764 0%,#6d28d9 46%,#d946ef 115%)",
       dark: true,
       ar: "ليلي",
       fr: "Nuit"
@@ -32,7 +32,13 @@ export function install(ctx) {
     { id: "sea", bg: "linear-gradient(135deg,#0b6fb8 0%,#00a651 100%)", dark: true, ar: "بحري", fr: "Mer" },
     { id: "black", bg: "linear-gradient(135deg,#111 0%,#444 100%)", dark: true, ar: "أسود", fr: "Noir" },
     { id: "white", bg: "linear-gradient(135deg,#ffffff 0%,#ececec 100%)", dark: false, ar: "أبيض", fr: "Blanc" },
-    { id: "orange", bg: "linear-gradient(135deg,#ff6400 0%,#ffb347 100%)", dark: true, ar: "برتقالي", fr: "Orange" }
+    {
+      id: "violet",
+      bg: "linear-gradient(145deg,#4c1d95 0%,#7c3aed 50%,#f0abfc 120%)",
+      dark: true,
+      ar: "بنفسجي",
+      fr: "Violet"
+    }
   ];
   const DEFAULT_IMAGE = "assets/img/hero-1.webp";
   Object.assign(ctx, { heroPanelHTML, heroEditor, saveHeroEditor, heroPresetFor, HERO_PRESETS });

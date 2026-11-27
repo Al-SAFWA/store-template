@@ -143,7 +143,7 @@ export function install(ctx) {
   }
 
   function managerBackground(manager) {
-    if (manager.role === "owner") return "linear-gradient(135deg,#ff6400,#a72396)";
+    if (manager.role === "owner") return "linear-gradient(135deg,#7c3aed,#d946ef)";
     return "#375e97";
   }
 

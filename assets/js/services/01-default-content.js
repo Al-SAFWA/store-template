@@ -220,8 +220,43 @@ export function install(ctx) {
     if (Array.isArray(src.coupons)) out.settings.coupons = src.coupons;
   }
 
+  function isHex(value, hex) {
+    return String(value || "").toLowerCase() === hex;
+  }
+
+  function migrateLegacyColors(colors) {
+    if (!isHex(colors?.primary, "#ff6400")) return colors;
+    return {
+      ...colors,
+      primary: "#7c3aed",
+      purple: isHex(colors.purple, "#7c3aed") ? "#d946ef" : colors.purple,
+      lavender: isHex(colors.lavender, "#eef2ff") ? "#f3e8ff" : colors.lavender,
+      ink: isHex(colors.ink, "#0f172a") ? "#1a1028" : colors.ink
+    };
+  }
+
+  function migrateHeroBg(slide) {
+    const bg = String(slide?.bg || "")
+      .replace(/\s+/g, "")
+      .toLowerCase();
+    if (bg === "linear-gradient(135deg,#1e3a8a0%,#2563eb55%,#60a5fa130%)") {
+      slide.bg = "linear-gradient(145deg,#3b0764 0%,#6d28d9 46%,#d946ef 115%)";
+      delete slide.dark;
+    } else if (bg === "linear-gradient(135deg,#eef3ff0%,#d9e5ff45%,#f7c7ff120%)") {
+      slide.bg = "linear-gradient(145deg,#4c1d95 0%,#7c3aed 50%,#f0abfc 120%)";
+      slide.dark = true;
+    }
+  }
+
+  function migrateLegacyPalette(settings) {
+    if (!settings) return;
+    if (settings.colors) settings.colors = migrateLegacyColors(settings.colors);
+    (settings.heroSlides || []).forEach(migrateHeroBg);
+  }
+
   function finishHydrate(out, saved) {
     keepSavedMarketing(out, saved);
+    migrateLegacyPalette(out.settings);
     out.settings.siteSettings = mergeSiteSettings(out.settings.siteSettings, out.settings);
     alignLegacySiteSettings(out.settings);
     applySiteSettingsToState(out.settings, ctx.lang);

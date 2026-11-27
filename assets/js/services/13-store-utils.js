@@ -122,7 +122,7 @@ export function install(ctx) {
   }
   function statusMeta(id) {
     const map = {
-      new: { label: ctx.txt("جديد", "Nouveau"), color: "#ff6400" },
+      new: { label: ctx.txt("جديد", "Nouveau"), color: "#7c3aed" },
       confirmed: { label: ctx.txt("مؤكد", "Confirmé"), color: "#0b6fb8" },
       preparing: { label: ctx.txt("قيد التجهيز", "En préparation"), color: "#8e44ad" },
       shipped: { label: ctx.txt("تم الشحن", "Expédié"), color: "#00a651" },

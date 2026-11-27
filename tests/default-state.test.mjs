@@ -2,6 +2,7 @@
    actions and the default state. They run without a browser: every helper below is a pure function. */
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { managerName, normalizeWhatsapp, staffRowToManager } from "../assets/js/services/04a-staff-rows.js";
 import { createDefaultTexts } from "../assets/js/services/01-default-texts.js";
 import { createDefaultState } from "../assets/js/services/01a-default-state.js";
@@ -89,7 +90,10 @@ test("createDefaultState: builds the settings tree and keeps collection handles 
   assert.equal(state.version, 1);
   assert.ok(state.settings.storeName.ar);
   assert.ok(state.settings.storeName.fr);
-  assert.equal(state.settings.colors.primary, "#ff6400");
+  assert.equal(state.settings.colors.primary, "#7c3aed");
+  assert.equal(state.settings.colors.purple, "#d946ef");
+  assert.equal(state.settings.colors.lavender, "#f3e8ff");
+  assert.equal(state.settings.colors.ink, "#1a1028");
   assert.equal(state.settings.country.code, "MR");
   assert.deepEqual(
     state.settings.pageSections.map((section) => section.id),
@@ -98,6 +102,13 @@ test("createDefaultState: builds the settings tree and keeps collection handles 
   assert.ok(Array.isArray(state.collections));
   assert.deepEqual(state.home, { anniversary: [], iphones: [], samsung: [], laptops: [] });
   assert.equal(state.settings.homeSections.length, 4);
+});
+
+test("stock orange palette is migrated to the violet card colors", () => {
+  const src = readFileSync(new URL("../assets/js/services/01-default-content.js", import.meta.url), "utf8");
+  assert.match(src, /function migrateLegacyPalette/);
+  assert.match(src, /primary: "#7c3aed"/);
+  assert.match(src, /#d946ef/);
 });
 
 test("alignLegacySiteSettings keeps a custom announcement instead of the default copy", () => {

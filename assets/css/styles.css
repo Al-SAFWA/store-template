@@ -22,17 +22,17 @@
 }
 
 :root {
-  --orange: #ff6400;
-  --ink: #232323;
+  --orange: #7c3aed;
+  --ink: #1a1028;
   --muted: #6c6c6c;
   --soft-muted: #969696;
   --line: #e4e4e4;
   --soft: #f7f7f7;
-  --lav: #f1ecf9;
-  --lav-2: #f4ebff;
-  --purple: #a72396;
-  --purple-deep: #7c1d84;
-  --purple-text: #5b1ea8;
+  --lav: #f3e8ff;
+  --lav-2: #ede9fe;
+  --purple: #d946ef;
+  --purple-deep: #6d28d9;
+  --purple-text: #5b21b6;
   --footer: #121212;
   --radius: 10px;
   --container: 1440px;
