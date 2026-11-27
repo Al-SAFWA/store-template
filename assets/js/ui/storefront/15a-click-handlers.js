@@ -121,7 +121,12 @@ function pickRating(e, el) {
 
 function findLine(ctx, el, datasetKey) {
   const variant = el.dataset[datasetKey];
-  return ctx.readCart().find((x) => x.handle === el.dataset.handle && String(x.variantId) === String(variant));
+  const handle = el.dataset.handle;
+  const items = ctx.readCart();
+  return (
+    items.find((x) => x.handle === handle && String(x.variantId) === String(variant)) ||
+    items.find((x) => x.handle === handle)
+  );
 }
 
 function cartIncrement(ctx, e, el) {

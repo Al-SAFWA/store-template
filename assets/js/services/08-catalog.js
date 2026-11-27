@@ -31,7 +31,7 @@ export function install(ctx) {
   function catalogOverlay(products, collections, coupons) {
     ctx.state.products = products;
     if (collections) ctx.state.collections = collections;
-    if (coupons) {
+    if (Array.isArray(coupons) && coupons.length) {
       ctx.state.settings = ctx.state.settings || {};
       ctx.state.settings.coupons = coupons;
     }

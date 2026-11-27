@@ -138,10 +138,11 @@ export function install(ctx) {
         () => ctx.toast(number)
       );
     });
-    $("apply-coupon")?.addEventListener("click", () => {
-      const code = $("co-coupon").value.trim().toUpperCase();
+    function applyCoupon() {
+      const code = $("co-coupon")?.value.trim().toUpperCase();
       if (!code) return;
-      const coupon = findCoupon(ctx.SET.coupons, code);
+      const list = ctx.SET.coupons?.length ? ctx.SET.coupons : ctx.R.state?.settings?.coupons;
+      const coupon = findCoupon(list, code);
       const res = couponDiscount(subtotal, coupon);
       if (!coupon || !res.code) {
         appliedCoupon = null;
@@ -151,6 +152,17 @@ export function install(ctx) {
         ctx.toast(`${ctx.t("couponApplied")}: ${res.code}`);
       }
       refresh();
+    }
+    $("apply-coupon")?.addEventListener("click", applyCoupon);
+    $("co-coupon")?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        applyCoupon();
+      }
+    });
+    $("checkout-form")?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      applyCoupon();
     });
 
     function lockButton() {

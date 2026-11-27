@@ -766,7 +766,16 @@ html[data-theme="dark"] .payment-offer-line { background: #352516; color: #ffc89
 .checkout-block { border: 1px solid var(--border); border-radius: 16px; padding: 12px; background: var(--surface); box-shadow: 0 1px 8px rgba(15, 23, 42, .04); }
 .checkout-block .field { margin-bottom: 8px; }
 .checkout-block .field:last-of-type { margin-bottom: 4px; }
-.checkout-block textarea { min-height: 64px; }
+.checkout-block textarea,
+#co-notes {
+  display: block;
+  width: 100%;
+  min-height: 88px;
+  height: 88px;
+  padding: 10px 12px;
+  line-height: 1.45;
+  resize: vertical;
+}
 .checkout-block-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .checkout-block-head span { width: 28px; height: 28px; flex: 0 0 28px; border-radius: 50%; display: grid; place-items: center; background: var(--orange); color: #fff; font-size: 12px; font-weight: 800; }
 .checkout-block-head h2 { font-size: 16px; margin: 0; }
@@ -2276,8 +2285,9 @@ body { font-family: var(--font-main, "Cairo", "Noto Sans Arabic", Tahoma, sans-s
     font-weight: 800;
   }
   .checkout-form .field input,
-  .checkout-form .field select,
-  .checkout-form .field textarea { min-height: 46px; font-size: 16px; }
+  .checkout-form .field select { min-height: 46px; font-size: 16px; }
+  .checkout-form .field textarea,
+  #co-notes { min-height: 88px; height: 88px; font-size: 16px; }
   .footer-main { padding-top: 28px; gap: 22px; }
   .footer-bottom { font-size: 12px; }
 }

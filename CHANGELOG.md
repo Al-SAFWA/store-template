@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.18 — 2026-11-26
+
+- Drop qty-0 cart lines; track is a closed button under the cart; coupon apply no longer reloads; notes field is usable.
+
 ## 1.18.17 — 2026-11-26
 
 - Track in cart only after first order; checkout fields in one card with notes; editor fills empty photo space.

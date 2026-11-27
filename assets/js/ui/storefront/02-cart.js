@@ -8,7 +8,7 @@ export function install(ctx) {
   function readCart() {
     try {
       const v = JSON.parse(localStorage.getItem(ctx.CART_KEY) || "[]");
-      return Array.isArray(v) ? v : [];
+      return Array.isArray(v) ? v.filter((row) => row && Number(row.qty) > 0) : [];
     } catch {
       return [];
     }
@@ -32,7 +32,9 @@ export function install(ctx) {
           (product.variants || []).find((v) => String(v.id) === String(it.variantId)) ||
           product.variants?.[0] ||
           baseVariant(product);
-        return { ...it, product, variant, line: (Number(variant?.price ?? product.price) || 0) * it.qty };
+        const qty = Math.max(0, Math.floor(Number(it.qty) || 0));
+        if (!qty) return null;
+        return { ...it, qty, product, variant, line: (Number(variant?.price ?? product.price) || 0) * qty };
       })
       .filter(Boolean);
   }
@@ -52,6 +54,10 @@ export function install(ctx) {
     const product = ctx.BY_HANDLE.get(handle);
     if (!product) return;
     const cap = maxOrderable(handle, variantId);
+    if (cap < 1) {
+      ctx.toast(ctx.t("soldOut"));
+      return;
+    }
     const cleanSpecs = Object.fromEntries(Object.entries(specs || {}).filter(([, v]) => v != null && v !== ""));
     const key = JSON.stringify(cleanSpecs);
     const items = readCart();
@@ -59,9 +65,14 @@ export function install(ctx) {
       (it) =>
         it.handle === handle && String(it.variantId) === String(variantId) && JSON.stringify(it.specs || {}) === key
     );
-    const wanted = (found ? found.qty : 0) + qty;
-    if (found) found.qty = Math.min(cap, wanted);
-    else items.push({ handle, variantId, qty: Math.min(cap, qty), specs: cleanSpecs });
+    const wanted = (found ? found.qty : 0) + Math.max(1, Number(qty) || 1);
+    const next = Math.min(cap, wanted);
+    if (next < 1) {
+      ctx.toast(ctx.t("soldOut"));
+      return;
+    }
+    if (found) found.qty = next;
+    else items.push({ handle, variantId, qty: next, specs: cleanSpecs });
     writeCart(items);
     ctx.toast(wanted > cap ? ctx.t("onlyLeft").replace("{n}", String(cap)) : ctx.t("addedToCart"));
   }
