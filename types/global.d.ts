@@ -172,6 +172,7 @@ export interface BrandConfig {
   logo?: string;
   logoWhite?: string;
   couponPrefix?: string;
+  colors?: { primary?: string; ink?: string; purple?: string; lavender?: string };
   [k: string]: unknown;
 }
 

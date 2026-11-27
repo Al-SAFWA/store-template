@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.37 — 2026-11-27
+
+- Keep typed banner, coupon and offer copy after save and remote overlay.
+- Match store colors to the purple product-card backgrounds.
+- Repaint the whole storefront chrome in channel violet (page, header, search, buttons, cards, footer).
+
 ## 1.18.36 — 2026-11-27
 
 - Keep typed banner, coupon and offer copy after save and remote overlay.

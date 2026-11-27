@@ -184,3 +184,15 @@ test("warranty badge is opt-in and Demo is stripped from vendor chips", () => {
   const productPage = readFileSync(new URL("../assets/js/ui/storefront/11-product-page.js", import.meta.url), "utf8");
   assert.equal(productPage.includes("ضمان 12 شهرًا يغطي"), false);
 });
+
+test("storefront chrome uses channel violet instead of white or magenta leftovers", () => {
+  const restore = readFileSync(new URL("../assets/css/restore.css", import.meta.url), "utf8");
+  const styles = readFileSync(new URL("../assets/css/styles.css", import.meta.url), "utf8");
+  assert.match(styles, /--bg:\s*#f4ecff/);
+  assert.match(restore, /--bg:\s*#f4ecff/);
+  assert.equal(styles.includes("background: #c2188b"), false);
+  assert.match(styles, /background: var\(--bg\)/);
+  assert.match(restore, /\.search-btn \{ background: linear-gradient\(135deg, var\(--orange\), var\(--purple\)\)/);
+  assert.match(restore, /\.btn-primary,\s*\.card-buy \{/);
+  assert.match(restore, /radial-gradient\(circle at 12% 0%, rgba\(192, 38, 211/);
+});

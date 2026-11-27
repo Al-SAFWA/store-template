@@ -18,7 +18,10 @@ export function install(ctx) {
   };
 
   function resolvedColors() {
-    const brand = window.BRAND?.colors || {};
+    const raw = window.BRAND && window.BRAND.colors;
+    const brand = /** @type {{ primary?: string, purple?: string, lavender?: string, ink?: string }} */ (
+      raw && typeof raw === "object" ? raw : {}
+    );
     const saved = ctx.state.settings.colors || {};
     const primary = String(saved.primary || "").toLowerCase();
     if (primary && primary !== "#ff6400") return saved;
