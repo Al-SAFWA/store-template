@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.19 — 2026-11-27
+
+- Two-handle shopping bag mark on solid #2563eb.
+
 ## 1.18.18 — 2026-11-26
 
 - Drop qty-0 cart lines; track is a closed button under the cart; coupon apply no longer reloads; notes field is usable.
