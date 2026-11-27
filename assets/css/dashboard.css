@@ -707,3 +707,23 @@ html[data-theme="dark"] select option { color: var(--text); background: var(--su
 .pe-two, .pe-media { width: 100%; max-width: 100%; min-width: 0; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
 .pe-two > *, .pe-media > *, .pe-field, .pe-step, .pe { min-width: 0; max-width: 100%; }
 .pe input, .pe select, .pe textarea { width: 100% !important; min-width: 0 !important; max-width: 100% !important; box-sizing: border-box !important; }
+
+/* Phone product-editor overflow (end of file). Two rules from the requested
+   block were dropped — see comments — because they conflict. */
+html, body { max-width: 100%; } /* no overflow-x:hidden: it clips instead of shrinking and fakes scrollWidth */
+*, *::before, *::after { box-sizing: border-box; }
+
+.modal *, [role="dialog"] *, [class*="modal"] *, [class*="drawer"] * { min-width: 0; }
+
+input, select, textarea, button { max-width: 100%; }
+input, select, textarea { width: 100%; }
+
+[role="dialog"], [class*="modal"], [class*="drawer"] { max-width: 100vw; }
+
+[class*="color"] { flex-wrap: wrap; }
+
+/* skipped [class*="grid"] { repeat(2, minmax(0,1fr)) } and the 480px 1-col
+   override: it does not match .pe-two (the overflow culprit) and would stack
+   .form-grid / .bi-grid / .dash-grid on the rest of the dashboard. */
+
+[class*="modal"] [class*="body"], [class*="modal"] [class*="content"] { padding-bottom: 96px; }
