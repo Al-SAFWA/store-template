@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { managerName, normalizeWhatsapp, staffRowToManager } from "../assets/js/services/04a-staff-rows.js";
 import { createDefaultTexts } from "../assets/js/services/01-default-texts.js";
 import { createDefaultState } from "../assets/js/services/01a-default-state.js";
+import { applySiteSettingsToState } from "../assets/js/domain/site-settings.js";
 
 /* The builders read `window.BRAND` (client brand config); the tests run without a DOM. */
 globalThis.window = globalThis.window || { BRAND: {} };
@@ -97,4 +98,22 @@ test("createDefaultState: builds the settings tree and keeps collection handles 
   assert.ok(Array.isArray(state.collections));
   assert.deepEqual(state.home, { anniversary: [], iphones: [], samsung: [], laptops: [] });
   assert.equal(state.settings.homeSections.length, 4);
+});
+
+test("alignLegacySiteSettings keeps a custom announcement instead of the default copy", () => {
+  const settings = {
+    announcement: { ar: "عرض العيد", fr: "Offre Aid" },
+    siteSettings: {
+      announcement: {
+        value: {
+          ar: "توصيل مجاني داخل نواكشوط • الدفع عند الاستلام أو عبر بنكيلي",
+          fr: "Livraison gratuite à Nouakchott • Paiement à la livraison ou Bankily"
+        },
+        is_visible: true
+      }
+    }
+  };
+  applySiteSettingsToState(settings);
+  assert.equal(settings.announcement.ar, "عرض العيد");
+  assert.equal(settings.siteSettings.announcement.value.ar, "عرض العيد");
 });

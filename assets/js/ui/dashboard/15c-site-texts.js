@@ -9,7 +9,7 @@ export function install(ctx) {
 
   function rows() {
     const settings = ctx.model.settings;
-    settings.siteSettings = mergeSiteSettings(settings.siteSettings);
+    settings.siteSettings = mergeSiteSettings(settings.siteSettings, settings);
     return settings.siteSettings;
   }
 

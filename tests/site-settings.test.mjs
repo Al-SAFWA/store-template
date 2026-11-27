@@ -45,3 +45,37 @@ test("applySiteSettingsToState copies return days and offers title", () => {
   assert.equal(settings.returnDays, 14);
   assert.equal(settings.homeSections[0].title.ar, "عروض");
 });
+
+test("applySiteSettingsToState does not overlay default announcement over typed copy", () => {
+  const settings = {
+    announcement: { ar: "عرض العيد", fr: "Offre Aid" },
+    siteSettings: mergeSiteSettings({
+      announcement: {
+        value: {
+          ar: "توصيل مجاني داخل نواكشوط • الدفع عند الاستلام أو عبر بنكيلي",
+          fr: "Livraison gratuite à Nouakchott • Paiement à la livraison ou Bankily"
+        },
+        is_visible: true
+      }
+    })
+  };
+  applySiteSettingsToState(settings, "ar");
+  assert.equal(settings.announcement.ar, "عرض العيد");
+  assert.equal(settings.siteSettings.announcement.value.ar, "عرض العيد");
+});
+
+test("mergeSiteSettings keeps custom legacy announcement over a default saved row", () => {
+  const merged = mergeSiteSettings(
+    {
+      announcement: {
+        value: {
+          ar: "توصيل مجاني داخل نواكشوط • الدفع عند الاستلام أو عبر بنكيلي",
+          fr: "Livraison gratuite à Nouakchott • Paiement à la livraison ou Bankily"
+        },
+        is_visible: true
+      }
+    },
+    { announcement: { ar: "عرض العيد", fr: "Offre Aid" } }
+  );
+  assert.equal(merged.announcement.value.ar, "عرض العيد");
+});

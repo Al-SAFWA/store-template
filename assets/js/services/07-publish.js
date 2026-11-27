@@ -56,6 +56,9 @@ export function install(ctx) {
   }
 
   async function overlaySiteSettingsTable(staff) {
+    // A draft means the merchant still has unpublished banner/text edits. Overlaying
+    // public.site_settings (often still the seed copy) would snap those fields back.
+    if (ctx.draft) return false;
     const table = ctx.CFG.siteSettingsTable || "site_settings";
     try {
       const rows = await ctx.supa(`/rest/v1/${table}?select=key,value,is_visible`, {}, staff);

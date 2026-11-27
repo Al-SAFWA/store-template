@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.32 — 2026-11-27
+
+- Keep typed banner, coupon and offer copy after save and remote overlay.
+
 ## 1.18.31 — 2026-11-27
 
 - Keep banner, coupon and offer edits after save.

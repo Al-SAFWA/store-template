@@ -18,7 +18,7 @@ export function install(ctx) {
     if (ctx.R.remote) {
       ctx.R.loadRemoteState()
         .then((updated) => {
-          if (updated && !ctx.dirty) {
+          if (updated && !ctx.dirty && !ctx.R.draft) {
             ctx.model = ctx.clone(ctx.R.state);
             ctx.renderRoute();
           }

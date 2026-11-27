@@ -9,6 +9,17 @@ const ask = (ctx, ar, fr) => confirm(ctx.dt(ar, fr));
 const ownerOnly = (ctx) => ctx.session?.role !== "owner";
 const onlyOwnerToast = (ctx) => ctx.toast(ctx.dt("للمالك فقط", "Propriétaire uniquement"), "error");
 
+function keepSavedCoupon(ctx) {
+  const saved = ctx.editBuffer;
+  if (!saved?.code) return;
+  const code = String(saved.code).toUpperCase();
+  const list = ctx.model.settings.coupons || [];
+  const index = list.findIndex((item) => String(item.code || "").toUpperCase() === code);
+  if (index >= 0) list[index] = { ...list[index], ...saved };
+  else list.unshift(saved);
+  ctx.model.settings.coupons = list;
+}
+
 /* ---------- marketing: coupons ---------- */
 
 function couponActions(ctx) {
@@ -49,6 +60,7 @@ function couponActions(ctx) {
           }
         );
         if (ok) {
+          keepSavedCoupon(ctx);
           ctx.saveDraftNow();
           ctx.closeModal();
           ctx.renderRoute();

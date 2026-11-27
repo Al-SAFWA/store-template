@@ -144,6 +144,37 @@ function cloneValue(value) {
   return value;
 }
 
+function i18nText(value) {
+  if (!value || typeof value !== "object") return { ar: String(value || ""), fr: String(value || "") };
+  return { ar: String(value.ar || ""), fr: String(value.fr || "") };
+}
+
+function i18nEq(a, b) {
+  const left = i18nText(a);
+  const right = i18nText(b);
+  return left.ar === right.ar && left.fr === right.fr;
+}
+
+function keepLegacyI18n(def, savedValue, currentValue) {
+  return (
+    def?.kind === "i18n" &&
+    currentValue &&
+    i18nEq(savedValue, def.defaultValue) &&
+    !i18nEq(currentValue, def.defaultValue)
+  );
+}
+
+function overlaySiteRow(prev, row, def) {
+  const fallback = prev || { value: row.value, is_visible: true };
+  const next = {
+    value: row.value != null ? cloneValue(row.value) : fallback.value,
+    is_visible: row.is_visible !== false && row.visible !== false
+  };
+  if (def?.kind === "number") next.value = Number(next.value);
+  if (keepLegacyI18n(def, next.value, fallback.value)) next.value = cloneValue(fallback.value);
+  return next;
+}
+
 /** Seed defaults from the older settings.returnDays / noRisk / announcement fields. */
 function applyLegacy(out, legacy) {
   if (!legacy || typeof legacy !== "object") return;
@@ -167,13 +198,7 @@ export function mergeSiteSettings(saved, legacy) {
   if (!saved || typeof saved !== "object") return out;
   for (const [key, row] of Object.entries(saved)) {
     if (!row || typeof row !== "object") continue;
-    const def = DEF_BY_KEY[key];
-    const prev = out[key] || { value: row.value, is_visible: true };
-    out[key] = {
-      value: row.value != null ? cloneValue(row.value) : prev.value,
-      is_visible: row.is_visible !== false && row.visible !== false
-    };
-    if (def?.kind === "number") out[key].value = Number(out[key].value);
+    out[key] = overlaySiteRow(out[key], row, DEF_BY_KEY[key]);
   }
   return out;
 }
@@ -208,7 +233,11 @@ export function siteNumber(settings, key, fallback = 0) {
 
 function copyVisibleI18n(settings, ss, key, field) {
   const row = ss[key];
-  if (row?.is_visible !== false && row?.value) settings[field] = row.value;
+  if (row?.is_visible === false || !row?.value) return;
+  const def = DEF_BY_KEY[key]?.defaultValue;
+  const current = settings[field];
+  if (current && def && keepLegacyI18n(DEF_BY_KEY[key], row.value, current)) return;
+  settings[field] = row.value;
 }
 
 function copyRenewal(settings) {
@@ -235,10 +264,39 @@ function scrubLegacyWarranty(ss) {
   row.value = { ar: "ضمان المتجر", fr: "Garantie boutique" };
 }
 
+const LEGACY_I18N = [
+  ["announcement", "announcement"],
+  ["categoriesTitle", "categories_title"],
+  ["serviceTitle", "service_title"],
+  ["trustTitle", "trusted_by"]
+];
+
+/** Keep settings.announcement (marketing page) and siteSettings.announcement (texts page) in sync.
+    Hydrate used to copy siteSettings LAST, so a saved banner snapped back to the default copy. */
+export function alignLegacySiteSettings(settings) {
+  if (!settings) return settings;
+  const ss = mergeSiteSettings(settings.siteSettings, settings);
+  for (const [legacyKey, ssKey] of LEGACY_I18N) {
+    const def = DEF_BY_KEY[ssKey]?.defaultValue;
+    const row = ss[ssKey] || { value: def, is_visible: true };
+    const legacy = settings[legacyKey];
+    if (!legacy) continue;
+    if (i18nEq(legacy, row.value)) continue;
+    if (!i18nEq(legacy, def)) {
+      row.value = i18nText(legacy);
+      ss[ssKey] = { ...row, value: row.value };
+    } else if (!i18nEq(row.value, def)) {
+      settings[legacyKey] = i18nText(row.value);
+    }
+  }
+  settings.siteSettings = ss;
+  return settings;
+}
+
 /** Copy siteSettings onto the legacy fields the rest of the app already reads. */
 export function applySiteSettingsToState(settings, _lang) {
   if (!settings) return settings;
-  settings.siteSettings = mergeSiteSettings(settings.siteSettings);
+  alignLegacySiteSettings(settings);
   const ss = settings.siteSettings;
   const days = Number(ss.return_days?.value);
   if (Number.isFinite(days) && days > 0) settings.returnDays = Math.min(90, Math.round(days));
@@ -259,7 +317,7 @@ export function applySiteSettingsToState(settings, _lang) {
 }
 
 export function siteSettingsToRows(settings) {
-  const ss = mergeSiteSettings(settings?.siteSettings);
+  const ss = mergeSiteSettings(settings?.siteSettings, settings);
   return Object.entries(ss).map(([key, row]) => ({
     key,
     value: row.value,

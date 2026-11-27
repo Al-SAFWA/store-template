@@ -73,6 +73,23 @@ export function install(ctx) {
     return { prods, cols, cps, meta };
   }
 
+  function marketingSnapshot(settings) {
+    return {
+      announcement: settings?.announcement,
+      offers: settings?.offers,
+      siteSettings: settings?.siteSettings,
+      closedMessage: settings?.closedMessage
+    };
+  }
+
+  function restoreMarketing(settings, snap) {
+    if (!settings || !snap) return;
+    if (snap.announcement) settings.announcement = snap.announcement;
+    if (snap.offers) settings.offers = snap.offers;
+    if (snap.siteSettings) settings.siteSettings = snap.siteSettings;
+    if (snap.closedMessage) settings.closedMessage = snap.closedMessage;
+  }
+
   /** Overlays the table rows on the state; returns true when anything changed. */
   function applyCatalogTables({ prods, cols, cps, meta }, silent) {
     const products = prods.map(({ row, variants, collectionHandles }) =>
@@ -81,8 +98,10 @@ export function install(ctx) {
     const collections = cols.length ? cols.map(rowToCollection) : null;
     const coupons = cps.map(rowToCoupon);
     const before = catalogSignature(ctx.state.products, ctx.state.collections, ctx.state.settings?.coupons);
+    const kept = marketingSnapshot(ctx.state.settings);
     catalogOverlay(products, collections, coupons);
-    ctx.state = ctx.hydrate(ctx.state); // normalise exactly like a fresh page load
+    ctx.state = ctx.hydrate(ctx.state); // normalise products; do not let defaults eat banner copy
+    restoreMarketing(ctx.state.settings, kept);
     ctx.writeJSON(ctx.LS_STATE, ctx.state);
     const after = catalogSignature(ctx.state.products, ctx.state.collections, ctx.state.settings?.coupons);
     catalogInfo.source = "tables";
