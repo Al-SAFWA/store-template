@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.34 — 2026-11-27
+
+- Keep typed banner, coupon and offer copy after save and remote overlay.
+- Match store colors to the purple product-card backgrounds.
+- Point the hero editor e2e at the violet night preset.
+
 ## 1.18.33 — 2026-11-27
 
 - Keep typed banner, coupon and offer copy after save and remote overlay.

@@ -102,6 +102,8 @@ test("createDefaultState: builds the settings tree and keeps collection handles 
   assert.ok(Array.isArray(state.collections));
   assert.deepEqual(state.home, { anniversary: [], iphones: [], samsung: [], laptops: [] });
   assert.equal(state.settings.homeSections.length, 4);
+  assert.match(state.settings.heroSlides[0].bg, /#3b0764/);
+  assert.match(state.settings.heroSlides[0].bg, /#d946ef/);
 });
 
 test("stock orange palette is migrated to the violet card colors", () => {
