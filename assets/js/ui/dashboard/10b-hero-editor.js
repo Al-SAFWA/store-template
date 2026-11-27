@@ -156,7 +156,7 @@ export function install(ctx) {
           <div class="image-field hs-image-field">
             ${slidePreviewHTML(buffer)}
             <input type="hidden" data-edit-path="image" value="${ctx.esc(buffer.image || "")}">
-            <label class="btn btn-soft hs-upload">${ctx.icon("image")} ${ctx.dt("تغيير الصورة", "Changer la photo")}<input type="file" accept="image/*" data-upload-path="image" hidden></label>
+            <label class="btn btn-soft hs-upload">${ctx.icon("image")} ${ctx.dt("تغيير الصورة", "Changer la photo")}<input type="file" accept="image/*" data-hero-upload hidden></label>
           </div>
           <p class="form-note">${ctx.dt("الأفضل صورة للجهاز بخلفية شفافة (PNG/WebP). تُصغَّر وتُضغط تلقائياً.", "Idéalement une photo du produit sur fond transparent (PNG/WebP). Redimensionnée automatiquement.")}</p>
         </section>
@@ -268,12 +268,15 @@ export function install(ctx) {
       const hrefInput = custom?.querySelector("input");
       if (hrefInput) hrefInput.value = value;
     });
-    // The shared upload handler mirrors the new URL into the hidden input and the <img> inside `.image-field`.
-    // Own upload pipeline (stops the shared handler): resize → white background knock-out → upload.
-    root.querySelector(".hs-image-field input[type=file]")?.addEventListener("change", (event) => {
-      event.stopPropagation();
-      uploadHeroImage(/** @type {HTMLInputElement} */ (event.currentTarget), buffer, paint);
-    });
+    // Own upload pipeline (must not share `[data-upload-path]`: the generic handler overwrote the cleaned photo).
+    root.querySelector("[data-hero-upload]")?.addEventListener(
+      "change",
+      (event) => {
+        event.stopImmediatePropagation();
+        uploadHeroImage(/** @type {HTMLInputElement} */ (event.currentTarget), buffer, paint);
+      },
+      true
+    );
     paint();
   }
 
@@ -307,6 +310,8 @@ export function install(ctx) {
   function saveHeroEditor() {
     const buffer = ctx.editBuffer;
     if (!buffer) return;
+    const hidden = document.querySelector('.hs-image-field input[data-edit-path="image"]');
+    if (hidden instanceof HTMLInputElement && hidden.value) buffer.image = hidden.value;
     const ar = String(buffer.title?.ar || "").trim();
     if (!ar) {
       ctx.toast(ctx.dt("اكتب عنوان الشريحة أولاً.", "Saisissez d’abord le titre."), "error");
@@ -320,8 +325,12 @@ export function install(ctx) {
     if (!buffer.href || buffer.href === "__custom") buffer.href = "collection.html?handle=all";
     const preset = heroPresetFor(buffer.bg);
     if (preset) buffer.dark = preset.dark;
-    if (ctx.pendingHeroIndex == null) ctx.model.settings.heroSlides.push(buffer);
-    else ctx.model.settings.heroSlides[ctx.pendingHeroIndex] = buffer;
+    const slides = (ctx.model.settings.heroSlides = ctx.model.settings.heroSlides || []);
+    const index = ctx.pendingHeroIndex;
+    if (index == null || index < 0 || index >= slides.length) slides.push(buffer);
+    else slides[index] = buffer;
+    ctx.dashTabs = ctx.dashTabs || {};
+    ctx.dashTabs.homepage = "home-hero";
     ctx.saveDraftNow();
     ctx.closeModal();
     ctx.renderRoute();

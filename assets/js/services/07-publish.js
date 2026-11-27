@@ -180,7 +180,7 @@ export function install(ctx) {
       const remote = Array.isArray(rows) ? rows[0] : null;
       const staff = ctx.session?.mode === "supabase";
       let adopted = false;
-      if (remote?.data && remoteIsNewer(remote)) {
+      if (remote?.data && remoteIsNewer(remote) && !ctx.draft) {
         adoptRemoteState(remote);
         adopted = true;
       }

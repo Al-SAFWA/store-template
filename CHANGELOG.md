@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.30 — 2026-11-27
+
+- Keep banner, coupon and offer edits after save.
+
 ## 1.18.29 — 2026-11-27
 
 - Product editor modal fits the phone; bag mark follows the theme.

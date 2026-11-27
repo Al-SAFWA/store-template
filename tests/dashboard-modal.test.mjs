@@ -28,3 +28,16 @@ test("opening a dashboard modal locks html and body scroll", () => {
   assert.match(helpers, /document\.body\.classList\.add\("no-scroll"\)/);
   assert.match(helpers, /document\.documentElement\.classList\.remove\("no-scroll"\)/);
 });
+
+test("saving coupons keeps the dashboard draft instead of reverting to published defaults", () => {
+  const misc = readFileSync(new URL("../assets/js/ui/dashboard/23-events-misc.js", import.meta.url), "utf8");
+  const save = readFileSync(new URL("../assets/js/ui/dashboard/22d-actions-settings.js", import.meta.url), "utf8");
+  const catalog = readFileSync(new URL("../assets/js/services/08-catalog.js", import.meta.url), "utf8");
+  const publish = readFileSync(new URL("../assets/js/services/07-publish.js", import.meta.url), "utf8");
+  assert.match(misc, /ctx\.dirty \|\| ctx\.R\.draft/);
+  assert.match(save, /finalizeCouponBuffer\(ctx\)/);
+  assert.match(save, /ctx\.saveDraftNow\(\)/);
+  assert.match(catalog, /if \(Array\.isArray\(coupons\)\) \{/);
+  assert.equal(catalog.includes("coupons.length"), false);
+  assert.match(publish, /remoteIsNewer\(remote\) && !ctx\.draft/);
+});

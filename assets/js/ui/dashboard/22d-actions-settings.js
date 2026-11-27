@@ -37,6 +37,7 @@ function couponActions(ctx) {
     },
     "save-coupon": async ({ node }) => {
       if (!finalizeCouponBuffer(ctx)) return;
+      ctx.saveDraftNow();
       if (ctx.tablesMode()) {
         const prev = node.dataset.index === "" ? null : ctx.model.settings.coupons[Number(node.dataset.index)];
         const ok = await ctx.catalogWrite(
@@ -48,6 +49,7 @@ function couponActions(ctx) {
           }
         );
         if (ok) {
+          ctx.saveDraftNow();
           ctx.closeModal();
           ctx.renderRoute();
         }

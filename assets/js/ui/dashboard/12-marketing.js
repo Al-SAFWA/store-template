@@ -178,7 +178,18 @@ export function finalizeCouponBuffer(ctx) {
   delete coupon.promo;
   const offers = (ctx.model.settings.offers = ctx.model.settings.offers || []);
   const current = offers[0] || {};
-  if (promo) offers[0] = promoFromCoupon(ctx, coupon, current);
-  else if (String(current.code || "").toUpperCase() === coupon.code) current.active = false;
+  const sameCode = String(current.code || "").toUpperCase() === coupon.code;
+  if (promo) {
+    const hasCopy = Boolean(current.title?.ar || current.title?.fr);
+    offers[0] =
+      sameCode && hasCopy
+        ? {
+            ...current,
+            active: true,
+            code: coupon.code,
+            endsAt: coupon.expiresAt ? `${String(coupon.expiresAt).slice(0, 10)}T23:59` : current.endsAt || ""
+          }
+        : promoFromCoupon(ctx, coupon, current);
+  } else if (sameCode) current.active = false;
   return coupon;
 }

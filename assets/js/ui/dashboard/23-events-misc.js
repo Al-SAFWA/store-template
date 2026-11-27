@@ -237,11 +237,15 @@ export function install(ctx) {
     ctx.lastOrderCount = count;
   });
 
-  window.addEventListener("restore:changed", () => {
-    if (!ctx.dirty) {
-      ctx.model = ctx.clone(ctx.R.state);
-      if (ctx.session) ctx.renderRoute();
-    }
+  window.addEventListener("restore:changed", (event) => {
+    const source = /** @type {CustomEvent} */ (event).detail?.source;
+    // Catalog listener above already copies products/collections/coupons.
+    // Never replace the whole dashboard model with published JSON while a draft exists —
+    // the 2.5s remote poll was wiping banner / offers / coupons back to defaults after save.
+    if (source === "catalog") return;
+    if (ctx.dirty || ctx.R.draft) return;
+    ctx.model = ctx.clone(ctx.R.state);
+    if (ctx.session) ctx.renderRoute();
   });
 
   window.addEventListener("restore:reviews", () => {
