@@ -171,6 +171,8 @@ test("stale demo name and مجددة copy are scrubbed; apply-brand keeps the ba
   assert.match(header, /logo-mark/);
   assert.match(header, /fill="currentColor"/);
   assert.match(header, /function logoSVG/);
+  assert.match(header, /logo-words/);
+  assert.equal(header.includes("<text class=\"logo-name\""), false);
 });
 
 test("warranty badge is opt-in and Demo is stripped from vendor chips", () => {

@@ -125,12 +125,14 @@ svg { display: block; }
   gap: 24px;
   height: 78px;
 }
-.logo { display: inline-flex; align-items: center; justify-self: start; color: var(--orange); }
-.logo img, .logo svg { width: auto; max-width: 190px; height: auto; max-height: 48px; object-fit: contain; object-position: center; display: block; }
-.logo-name { fill: var(--ink); font-family: var(--font-main, Tahoma, Arial, sans-serif); }
-.logo-sub { fill: var(--muted); font-family: var(--font-main, Arial, Helvetica, sans-serif); }
-html[data-theme="dark"] .logo-name { fill: #fff; }
-html[data-theme="dark"] .logo-sub { fill: #cbd5e1; }
+.logo { display: inline-flex; align-items: center; gap: 10px; min-width: 0; max-width: 100%; justify-self: start; color: var(--orange); }
+.logo-mark { flex: 0 0 auto; width: 40px; height: 40px; display: block; }
+.logo img { width: auto; max-width: 160px; max-height: 48px; object-fit: contain; object-position: center; display: block; }
+.logo-words { display: flex; flex-direction: column; justify-content: center; min-width: 0; gap: 1px; }
+.logo-name { color: var(--ink); font-family: var(--font-main, Tahoma, Arial, sans-serif); font-weight: 800; font-size: 15px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: min(42vw, 220px); }
+.logo-sub { color: var(--muted); font-family: var(--font-main, Arial, Helvetica, sans-serif); font-size: 11px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: min(42vw, 220px); }
+html[data-theme="dark"] .logo-name { color: #fff; }
+html[data-theme="dark"] .logo-sub { color: #cbd5e1; }
 
 .menu-btn {
   display: none;
@@ -702,9 +704,10 @@ html[data-theme="dark"] .logo-sub { fill: #cbd5e1; }
   padding: 40px var(--pad) 34px;
 }
 .footer .logo { color: var(--orange); }
-.footer .logo img, .footer .logo svg { width: 168px; max-width: 168px; height: auto; }
-.footer .logo-name { fill: #fff; }
-.footer .logo-sub { fill: #cbd5e1; }
+.footer .logo-mark { width: 48px; height: 48px; }
+.footer .logo img { width: auto; max-width: 168px; max-height: 48px; }
+.footer .logo-name { color: #fff; }
+.footer .logo-sub { color: #cbd5e1; }
 .footer h4 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #fff; }
 .footer-contact h4 { margin-top: 30px; }
 .footer p, .footer a { font-size: 12px; color: #b9b9b9; }
@@ -1166,7 +1169,8 @@ html[data-theme="dark"] .logo-sub { fill: #cbd5e1; }
 @media (max-width: 1100px) {
   :root { --pad: 28px; }
   .header-top { grid-template-columns: 140px minmax(0, 1fr) auto; gap: 16px; }
-  .logo img, .logo svg { max-width: 168px; max-height: 44px; }
+  .logo-mark { width: 36px; height: 36px; }
+  .logo img { max-width: 140px; max-height: 44px; }
   .search { height: 46px; }
   .header-actions { gap: 6px; }
   .lang { display: none; }
@@ -1187,9 +1191,10 @@ html[data-theme="dark"] .logo-sub { fill: #cbd5e1; }
   .menu-btn { display: none; }
   .logo {
     position: static; transform: none; grid-column: 1; grid-row: 1; justify-self: start; align-self: center;
-    height: auto; max-width: 100%; overflow: visible;
+    height: auto; max-width: 100%; overflow: hidden;
   }
-  .logo img, .logo svg { max-width: min(168px, 100%); max-height: 44px; }
+  .logo-mark { width: 36px; height: 36px; }
+  .logo img { max-width: min(140px, 100%); max-height: 44px; }
   .header-actions { grid-column: 2; }
   .nav-scroll { display: none; }
   .search { grid-column: 1 / -1; grid-row: 2; width: 100%; max-width: none; margin-left: 0; margin-top: 4px; height: 44px; }
@@ -1246,7 +1251,7 @@ html[data-theme="dark"] .logo-sub { fill: #cbd5e1; }
   .header-top { grid-template-columns: 1fr auto; position: relative; padding-inline-start: 6px; }
   .logo {
     position: static; transform: none; grid-column: 1; grid-row: 1; justify-self: start; align-self: center;
-    height: auto; max-width: 100%; overflow: visible;
+    height: auto; max-width: 100%; overflow: hidden;
   }
   .country {
     position: absolute; left: 56px; top: 19px;
@@ -1256,7 +1261,7 @@ html[data-theme="dark"] .logo-sub { fill: #cbd5e1; }
   .search { height: 42px; }
   .country .country-name { display: inline; }
   .country > svg { display: none; }
-  .hero-slide img { max-height: none; height: auto; object-fit: cover; }
+  .hero-slide img { max-height: 180px; height: auto; object-fit: contain; }
   .hero-arrow { width: 34px; height: 34px; }
   .hero-dots { left: 12px; }
   .categories { margin-top: 26px; }

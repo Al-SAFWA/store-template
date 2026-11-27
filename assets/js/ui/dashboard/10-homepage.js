@@ -4,7 +4,7 @@
 
 /** @param {DashboardCtx} ctx */
 export function install(ctx) {
-  Object.assign(ctx, { viewHomepage, heroEditor, saveHeroEditor, homeSectionEditor, moveInArray });
+  Object.assign(ctx, { viewHomepage, homeSectionEditor, moveInArray });
   const PAGE_SECTION_LABELS = {
     hero: { ar: "السلايدر الرئيسي", fr: "Hero / Slider" },
     trust: { ar: "شريط الثقة", fr: "Barre de confiance" },
@@ -59,51 +59,6 @@ export function install(ctx) {
           <button class="btn btn-soft u-mt-10" data-action="add-home-section">${ctx.icon("plus")} ${ctx.dt("إضافة قسم منتجات", "Ajouter une section")}</button>
         </div></article>
       </div>`;
-  }
-
-  ctx.pendingHeroIndex = null;
-  function heroEditor(index) {
-    const isNew = index == null;
-    const buffer = isNew
-      ? {
-          id: `hero-${Date.now().toString(36)}`,
-          visible: true,
-          title: { ar: "", fr: "" },
-          subtitle: { ar: "", fr: "" },
-          cta: { ar: "تسوق الآن", fr: "Découvrir" },
-          href: "collection.html?handle=all",
-          image: "assets/img/hero-iphone.svg",
-          bg: "linear-gradient(135deg,#1f1f2e 0%,#39255b 55%,#ff6400 130%)",
-          dark: true
-        }
-      : ctx.clone(ctx.model.settings.heroSlides[index]);
-    ctx.editBuffer = buffer;
-    ctx.pendingHeroIndex = isNew ? null : index;
-    ctx.openModal(
-      isNew ? ctx.dt("شريحة جديدة", "Nouvelle diapositive") : ctx.lng(buffer.title),
-      `
-      <div class="form-grid">
-        ${ctx.editBi(ctx.dt("العنوان", "Titre"), "title", buffer.title)}
-        ${ctx.editBi(ctx.dt("العنوان الفرعي", "Sous-titre"), "subtitle", buffer.subtitle, { type: "textarea", rows: 3 })}
-        ${ctx.editBi(ctx.dt("زر الدعوة", "Bouton"), "cta", buffer.cta)}
-        ${ctx.editInput(ctx.dt("رابط الزر", "Lien du bouton"), "href", { value: buffer.href })}
-        <div class="field span-2"><label>CSS background</label><input data-edit-path="bg" value="${ctx.esc(buffer.bg)}" dir="ltr"></div>
-        <div class="field span-2">${ctx.imageEditor(ctx.dt("صورة الجهاز", "Image appareil"), "image", buffer.image)}</div>
-        <div class="span-2">${ctx.editToggle(ctx.dt("نص داكن على خلفية فاتحة", "Texte foncé sur fond clair"), "dark", buffer.dark === false)}</div>
-      </div>`,
-      {
-        footer: ctx.editorFooter(!isNew, "delete-hero-buffer")
-      }
-    );
-  }
-  function saveHeroEditor() {
-    if (!ctx.editBuffer) return;
-    if (ctx.pendingHeroIndex == null) ctx.model.settings.heroSlides.push(ctx.editBuffer);
-    else ctx.model.settings.heroSlides[ctx.pendingHeroIndex] = ctx.editBuffer;
-    ctx.saveDraftNow();
-    ctx.closeModal();
-    ctx.renderRoute();
-    ctx.toast(ctx.dt("تم حفظ السلايدر", "Slider enregistré"), "good");
   }
 
   function homeSectionEditor(id) {
