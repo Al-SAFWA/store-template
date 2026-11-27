@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.18.35 — 2026-11-27
+
+- Keep typed banner, coupon and offer copy after save and remote overlay.
+- Match store colors to the purple product-card backgrounds.
+- Do not rewrite a merchant-picked sky hero during hydrate.
+
 ## 1.18.34 — 2026-11-27
 
 - Keep typed banner, coupon and offer copy after save and remote overlay.

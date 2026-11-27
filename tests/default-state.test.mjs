@@ -111,6 +111,8 @@ test("stock orange palette is migrated to the violet card colors", () => {
   assert.match(src, /function migrateLegacyPalette/);
   assert.match(src, /primary: "#7c3aed"/);
   assert.match(src, /#d946ef/);
+  assert.match(src, /function migrateStockHeroes/);
+  assert.match(src, /oldSky/);
 });
 
 test("alignLegacySiteSettings keeps a custom announcement instead of the default copy", () => {

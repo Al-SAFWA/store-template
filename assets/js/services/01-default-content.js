@@ -235,23 +235,29 @@ export function install(ctx) {
     };
   }
 
-  function migrateHeroBg(slide) {
-    const bg = String(slide?.bg || "")
+  function normBg(bg) {
+    return String(bg || "")
       .replace(/\s+/g, "")
       .toLowerCase();
-    if (bg === "linear-gradient(135deg,#1e3a8a0%,#2563eb55%,#60a5fa130%)") {
-      slide.bg = "linear-gradient(145deg,#3b0764 0%,#6d28d9 46%,#d946ef 115%)";
-      delete slide.dark;
-    } else if (bg === "linear-gradient(135deg,#eef3ff0%,#d9e5ff45%,#f7c7ff120%)") {
-      slide.bg = "linear-gradient(145deg,#4c1d95 0%,#7c3aed 50%,#f0abfc 120%)";
-      slide.dark = true;
-    }
+  }
+
+  /** Only rewrite the untouched stock pair. Sky/blue are still merchant presets. */
+  function migrateStockHeroes(settings) {
+    const slides = settings.heroSlides;
+    if (!Array.isArray(slides) || slides.length < 2) return;
+    const oldNight = "linear-gradient(135deg,#1e3a8a0%,#2563eb55%,#60a5fa130%)";
+    const oldSky = "linear-gradient(135deg,#eef3ff0%,#d9e5ff45%,#f7c7ff120%)";
+    if (normBg(slides[0].bg) !== oldNight || normBg(slides[1].bg) !== oldSky) return;
+    slides[0].bg = "linear-gradient(145deg,#3b0764 0%,#6d28d9 46%,#d946ef 115%)";
+    delete slides[0].dark;
+    slides[1].bg = "linear-gradient(145deg,#4c1d95 0%,#7c3aed 50%,#f0abfc 120%)";
+    slides[1].dark = true;
   }
 
   function migrateLegacyPalette(settings) {
     if (!settings) return;
     if (settings.colors) settings.colors = migrateLegacyColors(settings.colors);
-    (settings.heroSlides || []).forEach(migrateHeroBg);
+    migrateStockHeroes(settings);
   }
 
   function finishHydrate(out, saved) {
