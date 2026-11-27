@@ -31,7 +31,7 @@ export function createDefaultState(ctx) {
     DEFAULT_WHATSAPP_TEMPLATES
   } = ctx;
 
-  const DEFAULT_COLORS = { primary: "#2563eb", ink: "#0f172a", purple: "#7c3aed", lavender: "#eef2ff" };
+  const DEFAULT_COLORS = { primary: "#ff6400", ink: "#0f172a", purple: "#7c3aed", lavender: "#eef2ff" };
 
   function brandColors() {
     return Object.assign({}, DEFAULT_COLORS, B.colors || {});

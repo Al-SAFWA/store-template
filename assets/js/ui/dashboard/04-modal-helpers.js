@@ -32,11 +32,13 @@ export function install(ctx) {
           ${footer ? `<div class="dash-modal-foot">${footer}</div>` : ""}
         </section>
       </div>`;
+    document.documentElement.classList.add("no-scroll");
     document.body.classList.add("no-scroll");
     if (onMount) onMount(ctx.modalRoot);
   }
   function closeModal() {
     ctx.modalRoot.innerHTML = "";
+    document.documentElement.classList.remove("no-scroll");
     document.body.classList.remove("no-scroll");
     ctx.editBuffer = null;
   }

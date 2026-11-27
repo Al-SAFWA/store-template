@@ -107,7 +107,16 @@ html[data-theme="dark"] .cat-arrow { background: var(--surface); border-color: v
 
 .header-top { grid-template-columns: auto minmax(0, 1fr) auto; gap: 22px; }
 .logo { background: transparent; justify-self: start; }
-.logo img { width: auto; max-width: 190px; height: auto; max-height: 48px; object-fit: contain; object-position: center; background: transparent; }
+.logo { color: var(--orange); }
+.logo img, .logo svg { width: auto; max-width: 190px; height: auto; max-height: 48px; object-fit: contain; object-position: center; background: transparent; display: block; }
+.logo-name { fill: var(--ink); font-family: var(--font-main, Tahoma, Arial, sans-serif); }
+.logo-sub { fill: var(--muted); font-family: var(--font-main, Arial, Helvetica, sans-serif); }
+html[data-theme="dark"] .logo-name { fill: #fff; }
+html[data-theme="dark"] .logo-sub { fill: #cbd5e1; }
+.footer .logo { color: var(--orange); }
+.footer .logo img, .footer .logo svg { width: 168px; max-width: 168px; height: auto; }
+.footer .logo-name { fill: #fff; }
+.footer .logo-sub { fill: #cbd5e1; }
 .search { background: var(--surface-2); border: 1px solid transparent; transition: border-color .2s, background .2s; }
 .search:focus-within { border-color: var(--orange); background: var(--surface); }
 .search input { color: var(--text); }
@@ -1050,7 +1059,7 @@ body[data-page="account"] .main-nav { display: none !important; }
 @media (max-width: 640px) {
   .announcement { display: block; font-size: 9px; padding: 0; }
   .header-top { gap: 8px; }
-  .logo img { max-width: 168px; max-height: 44px; }
+  .logo img, .logo svg { max-width: 168px; max-height: 44px; }
   /* keep the language code visible on phones: a lone 19px flag was not recognised as a switch (demo1 feedback) */
   .lang-current > svg:last-child { display: none; }
   .lang-current { padding: 0 8px; min-height: 30px; gap: 5px; border: 1px solid var(--line, #e5e7eb); border-radius: 999px; font-weight: 700; font-size: 11px; }
@@ -1115,7 +1124,7 @@ body[data-page="account"] .main-nav { display: none !important; }
   .account-card { padding: 18px; }
 }
 
-body.no-scroll { overflow: hidden; }
+html.no-scroll, body.no-scroll { overflow: hidden; overscroll-behavior: none; }
 
 .tp-star, .tp-logo .mark { background: #f5a623; }
 .tp-star.off { background: #dcdce6; }
@@ -1144,7 +1153,7 @@ html[data-theme="dark"] .nav-drop a:hover { background: var(--surface-2); }
    Customer accounts, customer reviews and account dropdown
    -------------------------------------------------------------------------- */
 .grow { flex: 1 1 auto; min-width: 0; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
 .form-grid .span-2 { grid-column: span 2; }
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }

@@ -46,6 +46,19 @@ export function install(ctx) {
     return ctx.R.theme === "dark" ? ctx.t("light") : ctx.t("dark");
   }
 
+  function logoSVG() {
+    const name = ctx.L(ctx.SET.storeName) || "";
+    const other = ctx.R.lang === "ar" ? ctx.SET.storeName?.fr || "" : ctx.SET.storeName?.ar || "";
+    return `<svg class="logo-mark" viewBox="0 0 190 80" width="190" height="80" aria-hidden="true">
+        <rect x="0" y="8" width="64" height="64" rx="16" fill="currentColor"/>
+        <path d="M22 39c0-10.5 3-14 5.5-14s5.5 3.5 5.5 14" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M31 39c0-10.5 3-14 5.5-14s5.5 3.5 5.5 14" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M18.2 38.2h27.6c1.6 0 2.7 1.3 2.5 2.8l-2.1 18.6c-.3 2.2-2.1 3.8-4.3 3.8H22.1c-2.2 0-4-1.6-4.3-3.8l-2.1-18.6c-.2-1.5.9-2.8 2.5-2.8z" fill="#fff"/>
+        <text class="logo-name" x="76" y="40" font-size="28" font-weight="700">${ctx.esc(name)}</text>
+        <text class="logo-sub" x="76" y="62" font-size="15">${ctx.esc(other)}</text>
+      </svg>`;
+  }
+
   function themeButtonIcon() {
     return ctx.R.theme === "dark" ? ctx.ICON.sun : ctx.ICON.moon;
   }
@@ -89,7 +102,7 @@ export function install(ctx) {
             : ""
       }
       <div class="container header-top">
-        <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.esc(ctx.R.theme === "dark" ? ctx.SET.logoWhite || ctx.SET.logo : ctx.SET.logo)}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="190" height="80" decoding="async"></a>
+        <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}">${logoSVG()}</a>
         ${
           slimChrome
             ? ""
@@ -245,7 +258,7 @@ export function install(ctx) {
       <footer class="footer">
         <div class="container footer-main">
           <div>
-            <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}"><img src="${ctx.SET.logoWhite}" alt="${ctx.esc(ctx.L(ctx.SET.storeName))}" width="190" height="80" decoding="async"></a>
+            <a class="logo" href="index.html" aria-label="${ctx.esc(ctx.L(ctx.SET.storeName))}">${logoSVG()}</a>
             <div class="footer-contact">
               <h4>${ctx.esc(ctx.t("contactUs"))}</h4>
               ${

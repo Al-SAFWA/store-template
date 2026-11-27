@@ -168,6 +168,9 @@ test("stale demo name and مجددة copy are scrubbed; apply-brand keeps the ba
   const brand = readFileSync(new URL("../scripts/apply-brand.mjs", import.meta.url), "utf8");
   assert.match(brand, /never rewrite those files/);
   assert.equal(brand.includes('writeFileSync(P("assets/img/brand-logo'), false);
+  assert.match(header, /logo-mark/);
+  assert.match(header, /fill="currentColor"/);
+  assert.match(header, /function logoSVG/);
 });
 
 test("warranty badge is opt-in and Demo is stripped from vendor chips", () => {

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.25 — 2026-11-27
+
+- Product editor modal fits the phone; bag mark follows the theme.
+
 ## 1.18.24 — 2026-11-27
 
 - Two-handle shopping bag mark on solid #2563eb.

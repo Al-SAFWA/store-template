@@ -88,7 +88,7 @@ test("createDefaultState: builds the settings tree and keeps collection handles 
   assert.equal(state.version, 1);
   assert.ok(state.settings.storeName.ar);
   assert.ok(state.settings.storeName.fr);
-  assert.equal(state.settings.colors.primary, "#2563eb");
+  assert.equal(state.settings.colors.primary, "#ff6400");
   assert.equal(state.settings.country.code, "MR");
   assert.deepEqual(
     state.settings.pageSections.map((section) => section.id),
