@@ -163,6 +163,25 @@ function promoFromCoupon(ctx, coupon, current) {
   };
 }
 
+function couponEndsAt(coupon, fallback) {
+  return coupon.expiresAt ? `${String(coupon.expiresAt).slice(0, 10)}T23:59` : fallback || "";
+}
+
+function applyCouponPromo(ctx, coupon, promo) {
+  const offers = (ctx.model.settings.offers = ctx.model.settings.offers || []);
+  const current = offers[0] || {};
+  const sameCode = String(current.code || "").toUpperCase() === coupon.code;
+  if (!promo) {
+    if (sameCode) current.active = false;
+    return;
+  }
+  const hasCopy = Boolean(current.title?.ar || current.title?.fr);
+  offers[0] =
+    sameCode && hasCopy
+      ? { ...current, active: true, code: coupon.code, endsAt: couponEndsAt(coupon, current.endsAt) }
+      : promoFromCoupon(ctx, coupon, current);
+}
+
 /** Normalises the editor buffer and mirrors it into the homepage banner when asked. Called by save-coupon. */
 export function finalizeCouponBuffer(ctx) {
   const coupon = ctx.editBuffer;
@@ -176,20 +195,6 @@ export function finalizeCouponBuffer(ctx) {
   if (coupon.type !== "fixed") coupon.type = "percent";
   const promo = Boolean(coupon.promo);
   delete coupon.promo;
-  const offers = (ctx.model.settings.offers = ctx.model.settings.offers || []);
-  const current = offers[0] || {};
-  const sameCode = String(current.code || "").toUpperCase() === coupon.code;
-  if (promo) {
-    const hasCopy = Boolean(current.title?.ar || current.title?.fr);
-    offers[0] =
-      sameCode && hasCopy
-        ? {
-            ...current,
-            active: true,
-            code: coupon.code,
-            endsAt: coupon.expiresAt ? `${String(coupon.expiresAt).slice(0, 10)}T23:59` : current.endsAt || ""
-          }
-        : promoFromCoupon(ctx, coupon, current);
-  } else if (sameCode) current.active = false;
+  applyCouponPromo(ctx, coupon, promo);
   return coupon;
 }

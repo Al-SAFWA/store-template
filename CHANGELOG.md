@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.31 — 2026-11-27
+
+- Keep banner, coupon and offer edits after save.
+
 ## 1.18.30 — 2026-11-27
 
 - Keep banner, coupon and offer edits after save.

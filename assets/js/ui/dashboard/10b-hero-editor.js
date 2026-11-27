@@ -307,28 +307,34 @@ export function install(ctx) {
     }
   }
 
+  function fillHeroFrench(buffer) {
+    for (const key of ["title", "subtitle", "cta"]) {
+      buffer[key] = buffer[key] || { ar: "", fr: "" };
+      if (!String(buffer[key].fr || "").trim()) buffer[key].fr = buffer[key].ar || "";
+    }
+  }
+
+  function commitHeroSlide(buffer) {
+    const slides = (ctx.model.settings.heroSlides = ctx.model.settings.heroSlides || []);
+    const index = ctx.pendingHeroIndex;
+    if (index == null || index < 0 || index >= slides.length) slides.push(buffer);
+    else slides[index] = buffer;
+  }
+
   function saveHeroEditor() {
     const buffer = ctx.editBuffer;
     if (!buffer) return;
     const hidden = document.querySelector('.hs-image-field input[data-edit-path="image"]');
     if (hidden instanceof HTMLInputElement && hidden.value) buffer.image = hidden.value;
-    const ar = String(buffer.title?.ar || "").trim();
-    if (!ar) {
+    if (!String(buffer.title?.ar || "").trim()) {
       ctx.toast(ctx.dt("اكتب عنوان الشريحة أولاً.", "Saisissez d’abord le titre."), "error");
       return;
     }
-    // French falls back to Arabic so the FR storefront never shows an empty hero.
-    for (const key of ["title", "subtitle", "cta"]) {
-      buffer[key] = buffer[key] || { ar: "", fr: "" };
-      if (!String(buffer[key].fr || "").trim()) buffer[key].fr = buffer[key].ar || "";
-    }
+    fillHeroFrench(buffer);
     if (!buffer.href || buffer.href === "__custom") buffer.href = "collection.html?handle=all";
     const preset = heroPresetFor(buffer.bg);
     if (preset) buffer.dark = preset.dark;
-    const slides = (ctx.model.settings.heroSlides = ctx.model.settings.heroSlides || []);
-    const index = ctx.pendingHeroIndex;
-    if (index == null || index < 0 || index >= slides.length) slides.push(buffer);
-    else slides[index] = buffer;
+    commitHeroSlide(buffer);
     ctx.dashTabs = ctx.dashTabs || {};
     ctx.dashTabs.homepage = "home-hero";
     ctx.saveDraftNow();
