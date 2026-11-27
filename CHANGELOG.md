@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.18.26 — 2026-11-27
+
+- Product editor modal fits the phone; bag mark follows the theme.
+
 ## 1.18.25 — 2026-11-27
 
 - Product editor modal fits the phone; bag mark follows the theme.
