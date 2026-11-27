@@ -2341,3 +2341,59 @@ body { font-family: var(--font-main, "Cairo", "Noto Sans Arabic", Tahoma, sans-s
 .store-probe-fail { color: #b91c1c; }
 .store-probe-hint { margin: 10px 0 0; font-size: 12px; color: var(--muted); }
 .store-probe-clip { position: absolute; inset-inline-start: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+/* Channel theme: TikTok product-card violets — page, header, buttons, cards, footer. */
+:root {
+  --bg: #f4ecff;
+  --surface: #ffffff;
+  --surface-2: #efe6ff;
+  --surface-3: #e6d7ff;
+  --header-bg: rgba(248, 242, 255, .96);
+  --footer: #14061f;
+  --shadow: 0 14px 36px rgba(76, 29, 149, .12);
+  --shadow-soft: 0 18px 50px rgba(76, 29, 149, .14);
+}
+html[data-theme="dark"] {
+  --bg: #110817;
+  --surface: #1a1024;
+  --surface-2: #22142f;
+  --surface-3: #2a1838;
+  --header-bg: rgba(17, 8, 23, .94);
+  --footer: #0a0410;
+}
+.announcement {
+  background: linear-gradient(90deg, #5b21b6, #c026d3, #7c3aed, #c026d3, #5b21b6);
+  background-size: 220% 100%;
+}
+.site-header {
+  border-bottom: 1px solid color-mix(in srgb, var(--orange) 18%, transparent);
+}
+.search {
+  background: color-mix(in srgb, var(--orange) 12%, var(--surface));
+}
+.search-btn {
+  background: linear-gradient(135deg, var(--orange), var(--purple));
+  color: #fff;
+}
+.btn-primary,
+.card-buy {
+  background: linear-gradient(135deg, var(--orange) 0%, var(--purple) 100%);
+  color: #fff;
+}
+.cat-card {
+  background: linear-gradient(180deg, var(--surface) 50%, var(--surface-2));
+}
+.product-card {
+  border-color: color-mix(in srgb, var(--orange) 14%, var(--border));
+  box-shadow: 0 8px 22px rgba(88, 28, 135, .06);
+}
+.community {
+  background: linear-gradient(155deg, #5b21b6 0%, #7c3aed 48%, #d946ef 100%);
+}
+.footer {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(192, 38, 211, .28), transparent 42%),
+    radial-gradient(circle at 90% 100%, rgba(109, 40, 217, .35), transparent 40%),
+    var(--footer);
+}
+.footer-promo { color: #f0abfc; }

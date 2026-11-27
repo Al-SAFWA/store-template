@@ -17,6 +17,19 @@ export function install(ctx) {
     "System UI": 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", sans-serif'
   };
 
+  function resolvedColors() {
+    const brand = window.BRAND?.colors || {};
+    const saved = ctx.state.settings.colors || {};
+    const primary = String(saved.primary || "").toLowerCase();
+    if (primary && primary !== "#ff6400") return saved;
+    return {
+      primary: brand.primary || "#7c3aed",
+      purple: brand.purple || "#d946ef",
+      lavender: brand.lavender || "#f3e8ff",
+      ink: brand.ink || "#1a1028"
+    };
+  }
+
   function applyDocument() {
     const html = document.documentElement;
     const dashboard = document.body?.dataset.page === "dashboard";
@@ -26,7 +39,7 @@ export function install(ctx) {
       html.dataset.lang = ctx.lang;
     }
     html.dataset.theme = ctx.theme;
-    const colors = ctx.state.settings.colors || {};
+    const colors = resolvedColors();
     if (colors.primary) html.style.setProperty("--orange", colors.primary);
     if (colors.ink && ctx.theme !== "dark") html.style.setProperty("--ink", colors.ink);
     else html.style.removeProperty("--ink");
